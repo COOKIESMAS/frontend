@@ -1,9 +1,33 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
 import pen1 from '../assets/image/pen_1.svg'
 import body1 from '../assets/image/body_1.png'
 import hairTwin from '../assets/image/hair_twin.png'
 import { itemsData } from '../constant/items'
+
+// Interfaces for typing
+interface Item {
+  name: string
+  asset: string
+}
+
+type SubCategoryItems = Item[]
+
+interface ItemsData {
+  face: { default: SubCategoryItems }
+  clothes: { hat: SubCategoryItems; outfit: SubCategoryItems }
+  decorations: { default: SubCategoryItems }
+}
+
+interface SelectedItems {
+  face: string | null
+  hat: string | null
+  outfit: string | null
+  decorations: string | null
+}
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -17,7 +41,7 @@ const FlexWrapper = styled.div<{
   display: flex;
   flex-direction: ${(props) => props.direction || 'row'};
   justify-content: ${(props) => props.justify || 'flex-start'};
-  align-items: ${(props) => props.align || 'stretch'};
+  align-items: ${(props) => props.align || 'start'};
   gap: ${(props) => props.gap || '0'};
   flex-wrap: ${(props) => props.wrap || 'nowrap'};
   width: ${(props) => props.width || 'auto'};
@@ -41,6 +65,14 @@ const PageWrapper = styled.main`
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Prevents content from spilling out */
+`
+
+const HeaderWrapper = styled(FlexWrapper)`
+  align-items: end;
+`
+
+const HeaderLeftWrapper = styled(FlexWrapper)`
+  align-items: center;
 `
 
 const StyledButton = styled.button`
@@ -77,11 +109,17 @@ const CompleteButton = styled(StyledButton)`
   color: white;
 `
 
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px 0;
+const BackButton = styled.button`
+  background: none;
+  border: none;
+  color: black;
+  font-size: 24px;
+  cursor: pointer;
+`
+
+const PageTitle = styled.h1`
+  font-size: 18px;
+  margin: 0;
 `
 
 const CookieWrapper = styled.div`
@@ -176,38 +214,61 @@ const SelectItem = styled.div<{ isSelected: boolean }>`
   }
 `
 function MakePage() {
-  const [selectedItems, setSelectedItems] = useState({
+  const navigate = useNavigate()
+  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
     face: null,
     hat: hairTwin, // Default hair
     outfit: null,
     decorations: null,
   })
-  const [mainCategory, setMainCategory] = useState('clothes')
-  const [subCategory, setSubCategory] = useState('hat')
+  const [mainCategory, setMainCategory] = useState<
+    'face' | 'clothes' | 'decorations'
+  >('clothes')
+  const [subCategory, setSubCategory] = useState<string>('hat')
 
-  const handleItemSelect = (keyToUpdate, asset) => {
+  const handleItemSelect = (
+    keyToUpdate: keyof SelectedItems,
+    asset: string | null,
+  ) => {
     setSelectedItems((prev) => ({ ...prev, [keyToUpdate]: asset }))
   }
 
-  const currentSubCategories = Object.keys(itemsData[mainCategory])
-  const currentItems = itemsData[mainCategory][subCategory] || []
+  const typedItemsData = itemsData as ItemsData
+
+  const currentCategoryData = typedItemsData[mainCategory]
+  const currentSubCategories = Object.keys(
+    currentCategoryData,
+  ) as (keyof typeof currentCategoryData)[]
+  const currentItems: Item[] = (currentCategoryData[
+    subCategory as keyof typeof currentCategoryData
+  ] || []) as Item[]
 
   // This key determines which property in `selectedItems` to check/update.
   const selectionKey =
     mainCategory === 'face' || mainCategory === 'decorations'
       ? mainCategory
-      : subCategory
+      : (subCategory as keyof SelectedItems)
 
   return (
     <AppContainer>
       <PageWrapper>
-        <FlexWrapper>
-          <FlexWrapper></FlexWrapper>
+        <HeaderWrapper
+          justify="space-between"
+          align="start"
+          width="100%"
+          style={{ padding: '10px' }}
+        >
+          <HeaderLeftWrapper>
+            <BackButton onClick={() => navigate(-1)}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </BackButton>
+            <PageTitle>쿠키만들기</PageTitle>
+          </HeaderLeftWrapper>
           <FlexWrapper gap="4px">
             <GradientButton>랜덤 바꾸기</GradientButton>
             <CompleteButton>완성 !</CompleteButton>
           </FlexWrapper>
-        </FlexWrapper>
+        </HeaderWrapper>
 
         <CookieWrapper>
           <CookiePenImg src={pen1} alt="dish" zIndex={1} />
@@ -227,13 +288,18 @@ function MakePage() {
 
         <BottomSheetWrapper>
           <TabsContainer>
-            {Object.keys(itemsData).map((cat) => (
+            {Object.keys(typedItemsData).map((cat) => (
               <Tab
                 key={cat}
-                isActive={mainCategory === cat}
+                isActive={
+                  mainCategory === (cat as 'face' | 'clothes' | 'decorations')
+                }
                 onClick={() => {
-                  setMainCategory(cat)
-                  setSubCategory(Object.keys(itemsData[cat])[0])
+                  setMainCategory(cat as 'face' | 'clothes' | 'decorations')
+                  const firstSubCategory = Object.keys(
+                    typedItemsData[cat as keyof ItemsData],
+                  )[0]
+                  setSubCategory(firstSubCategory)
                 }}
               >
                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -243,7 +309,7 @@ function MakePage() {
 
           {currentSubCategories.length > 1 && (
             <TabsContainer>
-              {currentSubCategories.map((subCat) => (
+              {currentSubCategories.map((subCat: string) => (
                 <Tab
                   key={subCat}
                   isActive={subCategory === subCat}
