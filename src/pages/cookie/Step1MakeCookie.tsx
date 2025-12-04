@@ -243,7 +243,7 @@ const styleMap: { [key in keyof SelectedItems]?: CSSProperties } = {
   onePiece: { width: '60%', transform: 'translate(-50%, -50%)' },
 }
 
-function MakePage() {
+function Step1MakeCookie() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
 
@@ -294,6 +294,10 @@ function MakePage() {
     })
   }
 
+  const handleGoNext = () => {
+    navigate('/cookie/step2')
+  }
+
   const typedItemsData = itemsData as ItemsData
 
   const currentSubCategories = Object.keys(typedItemsData[mainCategory])
@@ -316,7 +320,7 @@ function MakePage() {
           </HeaderLeftWrapper>
           <FlexWrapper gap="4px">
             <GradientButton>랜덤 바꾸기</GradientButton>
-            <CompleteButton>완성 !</CompleteButton>
+            <CompleteButton onClick={handleGoNext}>완성 !</CompleteButton>
           </FlexWrapper>
         </HeaderWrapper>
 
@@ -415,4 +419,4 @@ function MakePage() {
   )
 }
 
-export default MakePage
+export default Step1MakeCookie
