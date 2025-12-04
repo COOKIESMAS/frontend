@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import pen1 from '../assets/image/pen_1.svg'
 import body1 from '../assets/image/body_1.png'
 import hairTwin from '../assets/image/hair_twin.png'
-import body2 from '../assets/image/body_2.png'
 import { itemsData } from '../constant/items'
 
 const FlexWrapper = styled.div<{
@@ -45,11 +44,20 @@ const PageWrapper = styled.main`
 `
 
 const StyledButton = styled.button`
-  border-radius: 20px;
-  padding: 10px 30px;
+  border-radius: 8px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
+  background-color: black;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+`
+
+const GradientButton = styled(StyledButton)`
   background: conic-gradient(
     from 0deg,
     #d70000 5%,
@@ -63,11 +71,10 @@ const StyledButton = styled.button`
   border: 1px solid #ffc0cb;
   box-shadow: 0 0 5px rgba(255, 192, 203, 0.7);
   color: white;
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+`
+
+const CompleteButton = styled(StyledButton)`
+  color: white;
 `
 
 const ButtonGroup = styled.div`
@@ -194,10 +201,14 @@ function MakePage() {
   return (
     <AppContainer>
       <PageWrapper>
-        <ButtonGroup>
-          <StyledButton>랜덤 바꾸기</StyledButton>
-          <StyledButton>완성 !</StyledButton>
-        </ButtonGroup>
+        <FlexWrapper>
+          <FlexWrapper></FlexWrapper>
+          <FlexWrapper gap="4px">
+            <GradientButton>랜덤 바꾸기</GradientButton>
+            <CompleteButton>완성 !</CompleteButton>
+          </FlexWrapper>
+        </FlexWrapper>
+
         <CookieWrapper>
           <CookiePenImg src={pen1} alt="dish" zIndex={1} />
           <CookieBodyImg src={body1} alt="cookie body" zIndex={2} />
