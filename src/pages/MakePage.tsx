@@ -1,44 +1,44 @@
-import { useState } from 'react';
-import styled from 'styled-components';
-import { useSetAtom } from 'jotai';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
-import pen1 from '../assets/image/pen_1.svg';
-import body1 from '../assets/image/body_1.png';
-import hairTwin from '../assets/image/hair_twin.png';
-import { itemsData } from '../constant/items';
-import { dialogAtom } from '../store/dialog';
+import { useState } from 'react'
+import styled from 'styled-components'
+import { useSetAtom } from 'jotai'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
+import pen1 from '../assets/image/pen_1.svg'
+import body1 from '../assets/image/body_1.png'
+import hairTwin from '../assets/image/hair_twin.png'
+import { itemsData } from '../constant/items'
+import { dialogAtom } from '../store/dialog'
 
 // Interfaces for typing
 interface Item {
-  name: string;
-  asset: string;
+  name: string
+  asset: string
 }
 
-type SubCategoryItems = Item[];
+type SubCategoryItems = Item[]
 
 interface ItemsData {
-  face: { default: SubCategoryItems };
-  clothes: { hat: SubCategoryItems; outfit: SubCategoryItems };
-  decorations: { default: SubCategoryItems };
+  face: { default: SubCategoryItems }
+  clothes: { hat: SubCategoryItems; outfit: SubCategoryItems }
+  decorations: { default: SubCategoryItems }
 }
 
 interface SelectedItems {
-  face: string | null;
-  hat: string | null;
-  outfit: string | null;
-  decorations: string | null;
+  face: string | null
+  hat: string | null
+  outfit: string | null
+  decorations: string | null
 }
 
 const FlexWrapper = styled.div<{
-  direction?: 'row' | 'column';
-  justify?: string;
-  align?: string;
-  gap?: string;
-  wrap?: string;
-  width?: string;
-  height?: string;
+  direction?: 'row' | 'column'
+  justify?: string
+  align?: string
+  gap?: string
+  wrap?: string
+  width?: string
+  height?: string
 }>`
   display: flex;
   flex-direction: ${(props) => props.direction || 'row'};
@@ -48,7 +48,7 @@ const FlexWrapper = styled.div<{
   flex-wrap: ${(props) => props.wrap || 'nowrap'};
   width: ${(props) => props.width || 'auto'};
   height: ${(props) => props.height || 'auto'};
-`;
+`
 
 const AppContainer = styled.div`
   display: flex;
@@ -56,7 +56,7 @@ const AppContainer = styled.div`
   align-items: center;
   height: 100vh;
   background-color: #f0f2f5; /* A neutral background for the whole page */
-`;
+`
 
 const PageWrapper = styled.main`
   position: relative;
@@ -67,15 +67,15 @@ const PageWrapper = styled.main`
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Prevents content from spilling out */
-`;
+`
 
 const HeaderWrapper = styled(FlexWrapper)`
   align-items: end;
-`;
+`
 
 const HeaderLeftWrapper = styled(FlexWrapper)`
   align-items: center;
-`;
+`
 
 const StyledButton = styled.button`
   border-radius: 8px;
@@ -89,7 +89,7 @@ const StyledButton = styled.button`
     1px -1px 0 #000,
     -1px 1px 0 #000,
     1px 1px 0 #000;
-`;
+`
 
 const GradientButton = styled(StyledButton)`
   background: conic-gradient(
@@ -105,11 +105,11 @@ const GradientButton = styled(StyledButton)`
   border: 1px solid #ffc0cb;
   box-shadow: 0 0 5px rgba(255, 192, 203, 0.7);
   color: white;
-`;
+`
 
 const CompleteButton = styled(StyledButton)`
   color: white;
-`;
+`
 
 const BackButton = styled.button`
   background: none;
@@ -117,12 +117,12 @@ const BackButton = styled.button`
   color: black;
   font-size: 24px;
   cursor: pointer;
-`;
+`
 
 const PageTitle = styled.h1`
   font-size: 18px;
   margin: 0;
-`;
+`
 
 const CookieWrapper = styled.div`
   position: relative;
@@ -131,7 +131,7 @@ const CookieWrapper = styled.div`
   max-height: 380px;
   margin: 0 auto;
   flex-shrink: 0; /* Prevents the cookie from shrinking */
-`;
+`
 
 const CookiePartImg = styled.img<{ zIndex: number }>`
   position: absolute;
@@ -141,18 +141,18 @@ const CookiePartImg = styled.img<{ zIndex: number }>`
   width: 80%;
   height: auto;
   z-index: ${(props) => props.zIndex};
-`;
+`
 
 const CookiePenImg = styled(CookiePartImg)`
   width: 80%;
-`;
+`
 const CookieBodyImg = styled(CookiePartImg)`
   width: 60%;
-`;
+`
 const CookieHairImg = styled(CookiePartImg)`
   width: 60%;
   transform: translate(-50%, -64%);
-`;
+`
 
 const BottomSheetWrapper = styled.div`
   width: 100%;
@@ -165,7 +165,7 @@ const BottomSheetWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Ensures content within is scrollable if needed */
-`;
+`
 
 const TabsContainer = styled.div`
   display: flex;
@@ -174,7 +174,7 @@ const TabsContainer = styled.div`
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
   margin-bottom: 10px;
-`;
+`
 
 const Tab = styled.button<{ isActive: boolean }>`
   background: none;
@@ -184,7 +184,7 @@ const Tab = styled.button<{ isActive: boolean }>`
   color: ${(props) => (props.isActive ? 'black' : '#aaa')};
   cursor: pointer;
   padding: 5px;
-`;
+`
 
 const GridContainer = styled.div`
   display: grid;
@@ -193,7 +193,7 @@ const GridContainer = styled.div`
   flex-grow: 1; /* Occupies remaining space */
   overflow-y: auto; /* Enables scrolling */
   padding: 10px 5px;
-`;
+`
 
 const SelectItem = styled.div<{ isSelected: boolean }>`
   width: 100%;
@@ -214,28 +214,28 @@ const SelectItem = styled.div<{ isSelected: boolean }>`
     object-fit: cover;
     border-radius: 8px; /* Restored to 8px to match outer border radius */
   }
-`;
+`
 
 function MakePage() {
-  const navigate = useNavigate();
-  const setDialogState = useSetAtom(dialogAtom);
+  const navigate = useNavigate()
+  const setDialogState = useSetAtom(dialogAtom)
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
     face: null,
     hat: hairTwin, // Default hair
     outfit: null,
     decorations: null,
-  });
+  })
   const [mainCategory, setMainCategory] = useState<
     'face' | 'clothes' | 'decorations'
-  >('clothes');
-  const [subCategory, setSubCategory] = useState<string>('hat');
+  >('clothes')
+  const [subCategory, setSubCategory] = useState<string>('hat')
 
   const handleItemSelect = (
     keyToUpdate: keyof SelectedItems,
     asset: string | null,
   ) => {
-    setSelectedItems((prev) => ({ ...prev, [keyToUpdate]: asset }));
-  };
+    setSelectedItems((prev) => ({ ...prev, [keyToUpdate]: asset }))
+  }
 
   const handleGoBack = () => {
     setDialogState({
@@ -244,24 +244,24 @@ function MakePage() {
       message: '만들던 쿠키가 사라져요!',
       onConfirm: () => navigate(-1),
       onCancel: () => {},
-    });
-  };
+    })
+  }
 
-  const typedItemsData = itemsData as ItemsData;
+  const typedItemsData = itemsData as ItemsData
 
-  const currentCategoryData = typedItemsData[mainCategory];
+  const currentCategoryData = typedItemsData[mainCategory]
   const currentSubCategories = Object.keys(
     currentCategoryData,
-  ) as (keyof typeof currentCategoryData)[];
+  ) as (keyof typeof currentCategoryData)[]
   const currentItems: Item[] = (currentCategoryData[
     subCategory as keyof typeof currentCategoryData
-  ] || []) as Item[];
+  ] || []) as Item[]
 
   // This key determines which property in `selectedItems` to check/update.
   const selectionKey =
     mainCategory === 'face' || mainCategory === 'decorations'
       ? mainCategory
-      : (subCategory as keyof SelectedItems);
+      : (subCategory as keyof SelectedItems)
 
   return (
     <AppContainer>
@@ -309,11 +309,11 @@ function MakePage() {
                   mainCategory === (cat as 'face' | 'clothes' | 'decorations')
                 }
                 onClick={() => {
-                  setMainCategory(cat as 'face' | 'clothes' | 'decorations');
+                  setMainCategory(cat as 'face' | 'clothes' | 'decorations')
                   const firstSubCategory = Object.keys(
                     typedItemsData[cat as keyof ItemsData],
-                  )[0];
-                  setSubCategory(firstSubCategory);
+                  )[0]
+                  setSubCategory(firstSubCategory)
                 }}
               >
                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -365,7 +365,7 @@ function MakePage() {
         </BottomSheetWrapper>
       </PageWrapper>
     </AppContainer>
-  );
+  )
 }
 
-export default MakePage;
+export default MakePage
