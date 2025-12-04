@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import MakePage from '../pages/MakePage'
+import MakePage from '@/pages/MakePage'
 
 const Router = () => {
   return (

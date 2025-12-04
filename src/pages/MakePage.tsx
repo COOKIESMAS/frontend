@@ -1,35 +1,39 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import styled from 'styled-components'
 import { useSetAtom } from 'jotai'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import pen1 from '../assets/image/pen_1.svg'
-import body1 from '../assets/image/body_1.png'
-import hairTwin from '../assets/image/hair_twin.png'
-import { itemsData } from '../constant/items'
-import { dialogAtom } from '../store/dialog'
+import pen1 from '@/assets/image/pen_1.svg'
+import { itemsData } from '@/constant/items'
+import { dialogAtom } from '@/store/dialog'
 
-// Interfaces for typing
+// --- TYPE DEFINITIONS ---
 interface Item {
   name: string
   asset: string
 }
 
-type SubCategoryItems = Item[]
+type ItemCategory = { [key: string]: Item[] }
 
 interface ItemsData {
-  face: { default: SubCategoryItems }
-  clothes: { hat: SubCategoryItems; outfit: SubCategoryItems }
-  decorations: { default: SubCategoryItems }
+  face: ItemCategory
+  clothes: ItemCategory
 }
 
 interface SelectedItems {
-  face: string | null
+  body: string | null
+  eyes: string | null
+  mouth: string | null
+  hair: string | null
+  blush: string | null
   hat: string | null
-  outfit: string | null
-  decorations: string | null
+  top: string | null
+  pants: string | null
+  onePiece: string | null
 }
+
+// --- STYLED COMPONENTS (unchanged) ---
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -55,18 +59,18 @@ const AppContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5; /* A neutral background for the whole page */
+  background-color: #f0f2f5;
 `
 
 const PageWrapper = styled.main`
   position: relative;
   max-width: 375px;
   width: 100%;
-  height: 100%; /* Typical mobile screen height */
+  height: 100%;
   background-color: #e8c7c7;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevents content from spilling out */
+  overflow: hidden;
 `
 
 const HeaderWrapper = styled(FlexWrapper)`
@@ -130,7 +134,7 @@ const CookieWrapper = styled.div`
   height: 100%;
   max-height: 380px;
   margin: 0 auto;
-  flex-shrink: 0; /* Prevents the cookie from shrinking */
+  flex-shrink: 0;
 `
 
 const CookiePartImg = styled.img<{ zIndex: number }>`
@@ -146,13 +150,6 @@ const CookiePartImg = styled.img<{ zIndex: number }>`
 const CookiePenImg = styled(CookiePartImg)`
   width: 80%;
 `
-const CookieBodyImg = styled(CookiePartImg)`
-  width: 60%;
-`
-const CookieHairImg = styled(CookiePartImg)`
-  width: 60%;
-  transform: translate(-50%, -64%);
-`
 
 const BottomSheetWrapper = styled.div`
   width: 100%;
@@ -161,10 +158,10 @@ const BottomSheetWrapper = styled.div`
   border-top-right-radius: 20px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  flex-grow: 1; /* Fills available vertical space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Ensures content within is scrollable if needed */
+  overflow: hidden;
 `
 
 const TabsContainer = styled.div`
@@ -190,8 +187,8 @@ const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  flex-grow: 1; /* Occupies remaining space */
-  overflow-y: auto; /* Enables scrolling */
+  flex-grow: 1;
+  overflow-y: auto;
   padding: 10px 5px;
 `
 
@@ -202,8 +199,13 @@ const SelectItem = styled.div<{ isSelected: boolean }>`
   background-color: #f0f0f0;
   border-radius: 8px;
   cursor: pointer;
-  border: 2px solid ${(props) => (props.isSelected ? '#87CEEB' : 'transparent')}; /* Light blue border */
+  border: 2px solid ${(props) => (props.isSelected ? '#87CEEB' : 'transparent')};
   transition: border-color 0.2s ease-in-out;
+  user-select: none; /* Standard property */
+  -webkit-user-drag: none; /* Safari, Chrome */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
 
   & > img {
     position: absolute;
@@ -211,30 +213,75 @@ const SelectItem = styled.div<{ isSelected: boolean }>`
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 8px; /* Restored to 8px to match outer border radius */
+    object-fit: contain;
+    border-radius: 8px;
   }
 `
+
+// --- Z-INDEX & STYLE MAPPINGS ---
+const zIndexMap: { [key in keyof SelectedItems]?: number } = {
+  body: 2,
+  onePiece: 3,
+  top: 3,
+  pants: 3,
+  blush: 4,
+  mouth: 5,
+  eyes: 5,
+  hair: 6,
+  hat: 7,
+}
+
+const styleMap: { [key in keyof SelectedItems]?: CSSProperties } = {
+  body: { width: '60%', transform: 'translate(-50%, -50%)' },
+  eyes: { width: '15%', transform: 'translate(-50%, -500%)' },
+  mouth: { width: '8%', transform: 'translate(-50%, -250%)' },
+  hair: { width: '37%', transform: 'translate(-50%, -150%)' },
+  blush: { width: '20%', transform: 'translate(-50%, -500%)' },
+  hat: { width: '70%', transform: 'translate(-50%, -70%)' },
+  top: { width: '60%', transform: 'translate(-50%, -50%)' },
+  pants: { width: '60%', transform: 'translate(-50%, -50%)' },
+  onePiece: { width: '60%', transform: 'translate(-50%, -50%)' },
+}
 
 function MakePage() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
+
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
-    face: null,
-    hat: hairTwin, // Default hair
-    outfit: null,
-    decorations: null,
+    body: itemsData.face.body[0].asset,
+    eyes: null,
+    mouth: null,
+    hair: null,
+    blush: null,
+    hat: null,
+    top: null,
+    pants: null,
+    onePiece: null,
   })
-  const [mainCategory, setMainCategory] = useState<
-    'face' | 'clothes' | 'decorations'
-  >('clothes')
-  const [subCategory, setSubCategory] = useState<string>('hat')
+
+  const [mainCategory, setMainCategory] = useState<keyof ItemsData>('face')
+  const [subCategory, setSubCategory] = useState<string>('body')
 
   const handleItemSelect = (
     keyToUpdate: keyof SelectedItems,
     asset: string | null,
   ) => {
-    setSelectedItems((prev) => ({ ...prev, [keyToUpdate]: asset }))
+    setSelectedItems((prev) => {
+      const newItems = { ...prev, [keyToUpdate]: asset }
+
+      // Exclusive selection logic for clothes
+      if (keyToUpdate === 'onePiece' && asset !== null) {
+        newItems.top = null
+        newItems.pants = null
+      } else if (
+        (keyToUpdate === 'top' || keyToUpdate === 'pants') &&
+        asset !== null
+      ) {
+        newItems.onePiece = null
+      }
+
+      return newItems
+    })
   }
 
   const handleGoBack = () => {
@@ -249,19 +296,8 @@ function MakePage() {
 
   const typedItemsData = itemsData as ItemsData
 
-  const currentCategoryData = typedItemsData[mainCategory]
-  const currentSubCategories = Object.keys(
-    currentCategoryData,
-  ) as (keyof typeof currentCategoryData)[]
-  const currentItems: Item[] = (currentCategoryData[
-    subCategory as keyof typeof currentCategoryData
-  ] || []) as Item[]
-
-  // This key determines which property in `selectedItems` to check/update.
-  const selectionKey =
-    mainCategory === 'face' || mainCategory === 'decorations'
-      ? mainCategory
-      : (subCategory as keyof SelectedItems)
+  const currentSubCategories = Object.keys(typedItemsData[mainCategory])
+  const currentItems: Item[] = typedItemsData[mainCategory][subCategory] || []
 
   return (
     <AppContainer>
@@ -286,18 +322,19 @@ function MakePage() {
 
         <CookieWrapper>
           <CookiePenImg src={pen1} alt="dish" zIndex={1} />
-          <CookieBodyImg src={body1} alt="cookie body" zIndex={2} />
-          {Object.entries(selectedItems).map(
-            ([key, asset]) =>
-              asset && (
-                <CookieHairImg
-                  key={key}
-                  src={asset}
-                  alt={`${key} item`}
-                  zIndex={key === 'outfit' ? 3 : 4} // Example z-index logic
-                />
-              ),
-          )}
+          {Object.entries(selectedItems).map(([key, asset]) => {
+            if (!asset) return null
+            const typedKey = key as keyof SelectedItems
+            return (
+              <CookiePartImg
+                key={key}
+                src={asset}
+                alt={`${key} item`}
+                zIndex={zIndexMap[typedKey] || 0}
+                style={styleMap[typedKey] || {}}
+              />
+            )
+          })}
         </CookieWrapper>
 
         <BottomSheetWrapper>
@@ -305,13 +342,13 @@ function MakePage() {
             {Object.keys(typedItemsData).map((cat) => (
               <Tab
                 key={cat}
-                isActive={
-                  mainCategory === (cat as 'face' | 'clothes' | 'decorations')
-                }
+                isActive={mainCategory === (cat as keyof ItemsData)}
                 onClick={() => {
-                  setMainCategory(cat as 'face' | 'clothes' | 'decorations')
+                  const newMainCat = cat as keyof ItemsData
+                  setMainCategory(newMainCat)
+                  // Set subCategory to the first one in the new main category
                   const firstSubCategory = Object.keys(
-                    typedItemsData[cat as keyof ItemsData],
+                    typedItemsData[newMainCat],
                   )[0]
                   setSubCategory(firstSubCategory)
                 }}
@@ -321,33 +358,43 @@ function MakePage() {
             ))}
           </TabsContainer>
 
-          {currentSubCategories.length > 1 && (
-            <TabsContainer>
-              {currentSubCategories.map((subCat: string) => (
-                <Tab
-                  key={subCat}
-                  isActive={subCategory === subCat}
-                  onClick={() => setSubCategory(subCat)}
-                >
-                  {subCat.charAt(0).toUpperCase() + subCat.slice(1)}
-                </Tab>
-              ))}
-            </TabsContainer>
-          )}
+          <TabsContainer>
+            {currentSubCategories.map((subCat) => (
+              <Tab
+                key={subCat}
+                isActive={subCategory === subCat}
+                onClick={() => setSubCategory(subCat)}
+              >
+                {subCat.charAt(0).toUpperCase() + subCat.slice(1)}
+              </Tab>
+            ))}
+          </TabsContainer>
 
           <GridContainer>
             {currentItems.map((item) => (
               <SelectItem
                 key={item.name}
-                isSelected={selectedItems[selectionKey] === item.asset}
-                onClick={() => handleItemSelect(selectionKey, item.asset)}
+                isSelected={
+                  selectedItems[subCategory as keyof SelectedItems] ===
+                  item.asset
+                }
+                onClick={() =>
+                  handleItemSelect(
+                    subCategory as keyof SelectedItems,
+                    item.asset,
+                  )
+                }
               >
-                <img src={item.asset} alt={item.name} />
+                <img src={item.asset} alt={item.name} draggable="false" />
               </SelectItem>
             ))}
             <SelectItem
-              isSelected={selectedItems[selectionKey] === null}
-              onClick={() => handleItemSelect(selectionKey, null)}
+              isSelected={
+                selectedItems[subCategory as keyof SelectedItems] === null
+              }
+              onClick={() =>
+                handleItemSelect(subCategory as keyof SelectedItems, null)
+              }
             >
               <div
                 style={{
