@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
@@ -80,15 +81,40 @@ const FormSection = styled.section`
   position: relative;
 `
 
+const TextareaWrapper = styled.div`
+  position: relative;
+  height: 100%;
+  max-height: 374px;
+`
+
 const LetterTextarea = styled.textarea`
   resize: none;
-  height: 374px;
+  height: 100%;
   width: 100%;
   padding: 8px 4px;
   font-size: 14px;
   border: none;
   border-radius: 10px;
   // Galmuri14 font 적용 예정
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #e7b472;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #f7bfbf;
+  }
+`
+
+const CharacterCounter = styled.div`
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 12px;
+  color: #888;
 `
 
 // 하단 버튼 영역
@@ -119,6 +145,7 @@ const SubmitButton = styled.button`
 function Step3WriteLetter() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
+  const [letterContent, setLetterContent] = useState('')
 
   const handleGoBack = () => {
     navigate(-1)
@@ -157,7 +184,14 @@ function Step3WriteLetter() {
 
         {/* 입력폼 */}
         <FormSection>
-          <LetterTextarea />
+          <TextareaWrapper>
+            <LetterTextarea
+              value={letterContent}
+              onChange={(e) => setLetterContent(e.target.value)}
+              maxLength={300}
+            />
+            <CharacterCounter>{letterContent.length}/300</CharacterCounter>
+          </TextareaWrapper>
         </FormSection>
 
         {/* 하단 버튼 */}
