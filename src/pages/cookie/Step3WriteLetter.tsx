@@ -154,8 +154,9 @@ function Step3WriteLetter() {
   const handleSubmit = () => {
     setDialogState({
       isOpen: true,
-      title: '나가시겠습니까?',
-      message: '만들던 쿠키가 사라져요!',
+      title: '이대로 편지를 보낼까요?',
+      cancelText: '아니오',
+      confirmText: '네!',
       onConfirm: () => navigate('/cookie/finish'),
       onCancel: () => {},
     })
