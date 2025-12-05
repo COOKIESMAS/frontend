@@ -4,6 +4,7 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled, { css } from 'styled-components'
 import ProfileCard from '@/components/ProfileCard' // 경로가 다르면 수정하세요
+import { useNavigate } from 'react-router-dom'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -248,6 +249,8 @@ const TooltipInner = styled.div`
 /* ================================================ */
 
 function Step2ChooseReceiver() {
+  const navigate = useNavigate()
+
   const [activeToggle, setActiveToggle] = useState<'student' | 'pro'>('student')
   const [tooltipPosition, setTooltipPosition] = useState<'top' | 'bottom'>(
     'top',
@@ -299,6 +302,10 @@ function Step2ChooseReceiver() {
   // Handlers to keep tooltip open when moving between trigger and tooltip
   const openTooltip = () => setIsOpen(true)
   const closeTooltip = () => setIsOpen(false)
+
+  const handleGoNext = () => {
+    navigate('/cookie/step3')
+  }
 
   return (
     <AppContainer>
@@ -423,7 +430,7 @@ function Step2ChooseReceiver() {
 
         {/* 하단 버튼 */}
         <BottomSection>
-          <SubmitButton>
+          <SubmitButton onClick={handleGoNext}>
             편지 쓰러 가기
             <span>→</span>
           </SubmitButton>
