@@ -1,5 +1,6 @@
 import Step1MakeCookie from '@/pages/cookie/Step1MakeCookie'
 import Step2ChooseReceiver from '@/pages/cookie/Step2ChooseReceiver'
+import Step3WriteLetter from '@/pages/cookie/Step3WriteLetter'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 const Router = () => {
@@ -11,6 +12,7 @@ const Router = () => {
           <Route index element={<Navigate to="step1" replace />} />
           <Route path="step1" element={<Step1MakeCookie />} />
           <Route path="step2" element={<Step2ChooseReceiver />} />
+          <Route path="step3" element={<Step3WriteLetter />} />
         </Route>
       </Routes>
     </BrowserRouter>
