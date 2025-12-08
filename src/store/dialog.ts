@@ -1,13 +1,13 @@
-import { atom } from 'jotai';
+import { atom } from 'jotai'
 
 interface DialogState {
-  isOpen: boolean;
-  title: string;
-  message: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  confirmText?: string;
-  cancelText?: string;
+  isOpen: boolean
+  title: string
+  onConfirm: () => void
+  onCancel: () => void
+  message?: string
+  confirmText?: string
+  cancelText?: string
 }
 
 export const dialogAtom = atom<DialogState>({
@@ -16,4 +16,4 @@ export const dialogAtom = atom<DialogState>({
   message: '',
   onConfirm: () => {},
   onCancel: () => {},
-});
+})

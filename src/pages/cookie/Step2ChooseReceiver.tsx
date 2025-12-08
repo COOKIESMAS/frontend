@@ -303,6 +303,10 @@ function Step2ChooseReceiver() {
   const openTooltip = () => setIsOpen(true)
   const closeTooltip = () => setIsOpen(false)
 
+  const handleGoBack = () => {
+    navigate(-1)
+  }
+
   const handleGoNext = () => {
     navigate('/cookie/step3')
   }
@@ -318,7 +322,7 @@ function Step2ChooseReceiver() {
           style={{ padding: '10px' }}
         >
           <HeaderLeftWrapper>
-            <BackButton>
+            <BackButton onClick={handleGoBack}>
               <FontAwesomeIcon icon={faChevronLeft} />
             </BackButton>
             <PageTitle>보낼 사람 선택</PageTitle>

@@ -1,16 +1,16 @@
-import React from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import React from 'react'
+import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
 interface DialogProps {
-  isOpen: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
+  isOpen: boolean
+  onConfirm: () => void
+  onCancel: () => void
+  title: string
+  message?: string
+  confirmText?: string
+  cancelText?: string
 }
 
 const DialogOverlay = styled.div<{ isOpen: boolean }>`
@@ -24,18 +24,22 @@ const DialogOverlay = styled.div<{ isOpen: boolean }>`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-`;
+`
 
 const DialogContent = styled.div`
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
+  width: 320px;
   max-width: 400px;
+  min-height: 186px;
   text-align: center;
   position: relative;
-`;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`
 
 const CloseButton = styled.button`
   position: absolute;
@@ -45,21 +49,22 @@ const CloseButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 20px;
-`;
+`
 
 const DialogTitle = styled.h2`
-  margin-top: 0;
-`;
+  font-size: 20px;
+  margin: 8px;
+`
 
 const DialogMessage = styled.p`
   margin-bottom: 20px;
-`;
+`
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
   gap: 12px;
-`;
+`
 
 const StyledButton = styled.button`
   border-radius: 8px;
@@ -68,17 +73,17 @@ const StyledButton = styled.button`
   font-size: 16px;
   font-weight: bold;
   border: none;
-`;
+`
 
 const ConfirmButton = styled(StyledButton)`
-  background-color: #d9534f;
+  background-color: #2f2f2f;
   color: white;
-`;
+`
 
 const CancelButton = styled(StyledButton)`
-  background-color: #f0f2f5;
-  color: black;
-`;
+  background-color: #d9534f;
+  color: white;
+`
 
 const Dialog: React.FC<DialogProps> = ({
   isOpen,
@@ -96,14 +101,14 @@ const Dialog: React.FC<DialogProps> = ({
           <FontAwesomeIcon icon={faXmark} />
         </CloseButton>
         <DialogTitle>{title}</DialogTitle>
-        <DialogMessage>{message}</DialogMessage>
+        {message && <DialogMessage>{message}</DialogMessage>}
         <ButtonGroup>
           <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
           <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
         </ButtonGroup>
       </DialogContent>
     </DialogOverlay>
-  );
-};
+  )
+}
 
-export default Dialog;
+export default Dialog
