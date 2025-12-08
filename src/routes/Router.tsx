@@ -1,3 +1,4 @@
+import Finish from '@/pages/cookie/Finish'
 import Step1MakeCookie from '@/pages/cookie/Step1MakeCookie'
 import Step2ChooseReceiver from '@/pages/cookie/Step2ChooseReceiver'
 import Step3WriteLetter from '@/pages/cookie/Step3WriteLetter'
@@ -13,6 +14,7 @@ const Router = () => {
           <Route path="step1" element={<Step1MakeCookie />} />
           <Route path="step2" element={<Step2ChooseReceiver />} />
           <Route path="step3" element={<Step3WriteLetter />} />
+          <Route path="finish" element={<Finish />} />
         </Route>
       </Routes>
     </BrowserRouter>
