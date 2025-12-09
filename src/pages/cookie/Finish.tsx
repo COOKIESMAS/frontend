@@ -39,18 +39,22 @@ const PageWrapper = styled.main`
   background-color: #e8c7c7;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
   padding: 48px 24px;
 `
 
 const MainWrapper = styled(FlexWrapper)``
 
-const CelebrateImg = styled.img``
+const CelebrateImg = styled.img`
+  margin-bottom: 40px;
+`
 
 const Title = styled.h1`
   // font S-Core Dream 적용 예정
   font-size: 28px;
   margin: 0;
+  margin-bottom: 10px;
 `
 
 const Text = styled.p`
@@ -58,13 +62,14 @@ const Text = styled.p`
   font-size: 14px;
   font-weight: bold;
   margin: 0;
+  white-space: pre-line;
+  line-height: 26px;
 `
 
 const BottomButtonWrapper = styled(FlexWrapper)``
 
 const StyledButton = styled.button<{
   backgroundColor?: 'primary' | 'secondary'
-  hasRightIcon?: boolean
 }>`
   position: relative;
   width: 100%;
@@ -78,12 +83,6 @@ const StyledButton = styled.button<{
     props.backgroundColor == 'primary' ? '#e2ae71' : '#ffffff'};
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-
-  ${({ hasRightIcon }) =>
-    hasRightIcon &&
-    `
-    padding-right: 48px; /* 아이콘을 위한 추가 패딩 */
-  `}
 `
 
 const IconWrapper = styled.span`
@@ -105,16 +104,17 @@ function Finish() {
   return (
     <AppContainer>
       <PageWrapper>
+        <div></div>
         <MainWrapper direction="column" align="center" justify="center">
           <CelebrateImg src={celebrate} />
           <Title>쿠키 배달 완료!</Title>
-          <Text>이싸피 님의 오븐에서 따뜻하게 구우지고 있어요</Text>
+          <Text>{`이싸피 님의 오븐에서 
+          따뜻하게 구우지고 있어요`}</Text>
         </MainWrapper>
         <BottomButtonWrapper direction="column" gap="16px">
           <StyledButton
             onClick={() => handleNavigate('/cookie/step1')}
             backgroundColor="primary"
-            hasRightIcon
           >
             다른 쿠키 더 굽기
             <IconWrapper>
@@ -124,7 +124,6 @@ function Finish() {
           <StyledButton
             onClick={() => handleNavigate('/home')}
             backgroundColor="secondary"
-            hasRightIcon
           >
             홈으로 가기
             <IconWrapper>
