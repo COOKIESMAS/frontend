@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import celebrate from '@/assets/image/celebrate.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -60,7 +62,11 @@ const Text = styled.p`
 
 const BottomButtonWrapper = styled(FlexWrapper)``
 
-const Button = styled.button`
+const StyledButton = styled.button<{
+  backgroundColor?: 'primary' | 'secondary'
+  hasRightIcon?: boolean
+}>`
+  position: relative;
   width: 100%;
   padding: 16px;
   border-radius: 40px;
@@ -68,14 +74,23 @@ const Button = styled.button`
   font-weight: bold;
   font-size: 16px;
   // IM_Hyemin 폰트 적용 예정
-  background: #e2ae71;
+  background: ${(props) =>
+    props.backgroundColor == 'primary' ? '#e2ae71' : '#ffffff'};
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  ${({ hasRightIcon }) =>
+    hasRightIcon &&
+    `
+    padding-right: 48px; /* 아이콘을 위한 추가 패딩 */
+  `}
+`
+
+const IconWrapper = styled.span`
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
 `
 
 /* ===== tooltip 관련 스타일 (Label을 hover 또는 focus-within 했을 때 프로필 카드 노출) ===== */
@@ -96,10 +111,26 @@ function Finish() {
           <Text>이싸피 님의 오븐에서 따뜻하게 구우지고 있어요</Text>
         </MainWrapper>
         <BottomButtonWrapper direction="column" gap="16px">
-          <Button onClick={() => handleNavigate('/cookie/step1')}>
+          <StyledButton
+            onClick={() => handleNavigate('/cookie/step1')}
+            backgroundColor="primary"
+            hasRightIcon
+          >
             다른 쿠키 더 굽기
-          </Button>
-          <Button onClick={() => handleNavigate('/home')}>홈으로 가기</Button>
+            <IconWrapper>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </IconWrapper>
+          </StyledButton>
+          <StyledButton
+            onClick={() => handleNavigate('/home')}
+            backgroundColor="secondary"
+            hasRightIcon
+          >
+            홈으로 가기
+            <IconWrapper>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </IconWrapper>
+          </StyledButton>
         </BottomButtonWrapper>
       </PageWrapper>
     </AppContainer>
