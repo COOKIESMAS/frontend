@@ -1,0 +1,24 @@
+<svg width="510" height="580" viewBox="0 0 510 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="231" cy="236" r="13" fill="white" style="fill:white;fill-opacity:1;"/>
+<path d="M241 236C241 241.523 236.523 246 231 246C225.477 246 221 241.523 221 236C221 230.477 225.477 226 231 226C236.523 226 241 230.477 241 236Z" fill="black" style="fill:black;fill-opacity:1;"/>
+<g filter="url(#filter0_f_652_16407)">
+<path d="M229.571 231.714C229.571 233.292 228.292 234.571 226.714 234.571C225.136 234.571 223.857 233.292 223.857 231.714C223.857 230.136 225.136 228.857 226.714 228.857C228.292 228.857 229.571 230.136 229.571 231.714Z" fill="white" style="fill:white;fill-opacity:1;"/>
+</g>
+<circle cx="280" cy="236" r="13" fill="white" style="fill:white;fill-opacity:1;"/>
+<path d="M290 236C290 241.523 285.523 246 280 246C274.477 246 270 241.523 270 236C270 230.477 274.477 226 280 226C285.523 226 290 230.477 290 236Z" fill="black" style="fill:black;fill-opacity:1;"/>
+<g filter="url(#filter1_f_652_16407)">
+<path d="M278.571 231.714C278.571 233.292 277.292 234.571 275.714 234.571C274.136 234.571 272.857 233.292 272.857 231.714C272.857 230.136 274.136 228.857 275.714 228.857C277.292 228.857 278.571 230.136 278.571 231.714Z" fill="white" style="fill:white;fill-opacity:1;"/>
+</g>
+<defs>
+<filter id="filter0_f_652_16407" x="222.857" y="227.857" width="7.71436" height="7.71436" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur_652_16407"/>
+</filter>
+<filter id="filter1_f_652_16407" x="271.857" y="227.857" width="7.71436" height="7.71436" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur_652_16407"/>
+</filter>
+</defs>
+</svg>
