@@ -19,10 +19,11 @@ export const Landing: React.FC = () => {
     return `/mainpageCookie_0${index}.png`
   })
 
-  const handleGoogleLogin = () => {
-    // TODO: 여기에서 실제 Google OAuth 요청 시작
-    navigate('/auth/google/loading')
-  }
+const handleGoogleLogin = () => {
+  // 로딩 페이지로 이동
+  navigate('/api/v1/auth/google/login')
+}
+
 
   return (
     <>

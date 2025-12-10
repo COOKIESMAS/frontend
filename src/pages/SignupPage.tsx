@@ -1,12 +1,14 @@
-// src/pages/SignupPage.tsx (예시 경로)
 import React from 'react'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 import SignupFlow from '../components/auth/SignupFlow'
 
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate()
+
   return (
     <ChakraProvider value={defaultSystem}>
-      <SignupFlow />
+      <SignupFlow onCompleted={() => navigate('/home')} />
     </ChakraProvider>
   )
 }
