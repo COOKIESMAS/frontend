@@ -5,6 +5,8 @@ import {
   type SubCategoriesOf,
   type ItemsData,
   type Item,
+  type SelectedItems,
+  itemsData,
 } from '@/constant/items'
 
 /**
@@ -64,4 +66,20 @@ export function getAssetsForSub(
   if (!main) return []
   const items = getItemsFor(main, sub, itemsData)
   return items.map((i) => i.asset).filter(Boolean)
+}
+
+// makeDefaultSelected: 초기 SelectedItems 생성 함수 (face 기본값 보장)
+export function makeDefaultSelected(): SelectedItems {
+  return {
+    body: itemsData.face.body.data[0].asset,
+    eyes: itemsData.face.eyes.data[0].asset,
+    mouth: itemsData.face.mouth.data[0].asset,
+    hair: null,
+    blush: null,
+    hat: null,
+    top: null,
+    pants: null,
+    onePiece: null,
+    accessory: null,
+  }
 }
