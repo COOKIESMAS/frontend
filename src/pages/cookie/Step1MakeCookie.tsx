@@ -1,7 +1,5 @@
-// src/pages/cookie/Step1MakeCookie.tsx
-import { useState } from 'react'
 import styled from 'styled-components'
-import { useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
@@ -9,7 +7,6 @@ import {
   itemsData,
   type SelectedItems,
   type SelectableSubCategoryKey,
-  type MainCategoryKey,
   MAIN_CATEGORY_SUBS,
 } from '@/constant/items'
 import { dialogAtom } from '@/store/dialog'
@@ -17,7 +14,13 @@ import CookieImageRenderer from '@/components/cookie/CookieImageRenderer'
 import CategoryTabs from '@/components/cookie/CategoryTabs'
 import SubCategoryTabs from '@/components/cookie/SubCategoryTabs'
 import ItemsGrid from '@/components/cookie/ItemsGrid'
-import { getItemsFor, getAssetsForSub } from '@/utils/items-utils'
+import { getItemsFor } from '@/utils/items-utils'
+import {
+  mainCategoryAtom,
+  selectedItemsAtom,
+  subCategoryAtom,
+} from '@/store/atoms/cookieAtoms'
+import { randomizeSelectedItemsAtom } from '@/store/effects/cookieRandomEffects'
 
 const AppContainer = styled.div`
   display: flex;
@@ -120,22 +123,10 @@ export default function Step1MakeCookie() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
 
-  const [mainCategory, setMainCategory] = useState<MainCategoryKey>('face')
-  const [subCategory, setSubCategory] =
-    useState<SelectableSubCategoryKey>('body')
-
-  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
-    body: itemsData.face.body.data[0].asset,
-    eyes: itemsData.face.eyes.data[0].asset,
-    mouth: itemsData.face.mouth.data[0].asset,
-    hair: null,
-    blush: null,
-    hat: null,
-    top: null,
-    pants: null,
-    onePiece: null,
-    accessory: null,
-  })
+  const [mainCategory, setMainCategory] = useAtom(mainCategoryAtom)
+  const [subCategory, setSubCategory] = useAtom(subCategoryAtom)
+  const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom)
+  const triggerRandomize = useSetAtom(randomizeSelectedItemsAtom)
 
   // 기존 exclusive logic 포함, plus toggle + required 방지
   const handleItemSelect = (
@@ -185,61 +176,8 @@ export default function Step1MakeCookie() {
   ] as readonly SelectableSubCategoryKey[]
   const currentItems = getItemsFor(mainCategory, subCategory, itemsData)
 
-  // 랜덤 선택 로직 (필수는 항상 채움, 기타는 절반확률로 비우거나 채움)
-  function randomizeAllParts() {
-    setSelectedItems((prev) => {
-      const next = { ...prev }
-
-      // 모든 서브 키 수집
-      const mains = Object.keys(MAIN_CATEGORY_SUBS) as MainCategoryKey[]
-      const allSubKeys = new Set<SelectableSubCategoryKey>()
-      for (const m of mains) {
-        for (const s of MAIN_CATEGORY_SUBS[m]) {
-          allSubKeys.add(s)
-        }
-      }
-
-      const pickRandom = (arr: string[]) =>
-        arr.length ? arr[Math.floor(Math.random() * arr.length)] : null
-
-      allSubKeys.forEach((subKey) => {
-        const assets = getAssetsForSub(subKey, itemsData)
-        if (!assets.length) {
-          next[subKey] = null
-          return
-        }
-
-        if (REQUIRED_SUBCATEGORIES.includes(subKey)) {
-          // 필수는 무조건 하나 선택
-          next[subKey] = pickRandom(assets)
-          return
-        }
-
-        // 비필수 항목은 50% 확률로 비활성화 또는 선택
-        const keep = Math.random() > 0.5
-        next[subKey] = keep ? pickRandom(assets) : null
-      })
-
-      // clothes exclusive 조정
-      if (next.onePiece) {
-        next.top = null
-        next.pants = null
-      } else if (next.top || next.pants) {
-        next.onePiece = null
-      }
-
-      // 안전장치: 혹시 REQUIRED가 비어있으면 채움
-      for (const r of REQUIRED_SUBCATEGORIES) {
-        if (!next[r]) {
-          const assets = getAssetsForSub(r, itemsData)
-          next[r] = assets.length
-            ? assets[Math.floor(Math.random() * assets.length)]
-            : null
-        }
-      }
-
-      return next
-    })
+  const randomizeAllParts = () => {
+    triggerRandomize({ required: REQUIRED_SUBCATEGORIES, keepProbability: 0.5 })
   }
 
   return (
