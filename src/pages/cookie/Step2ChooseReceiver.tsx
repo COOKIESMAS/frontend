@@ -1,11 +1,28 @@
 // src/pages/cookie/Step2ChooseReceiver.tsx
-import { useState, useRef, useLayoutEffect } from 'react'
+import { useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons' // Regular 아이콘 사용 유지
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled, { css } from 'styled-components'
 import ProfileCard from '@/components/ProfileCard' // 경로가 다르면 수정하세요
 import { useNavigate } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import {
+  campusAtom,
+  classAtom,
+  nameAtom,
+  mattermostAtom,
+} from '@/store/atoms/receiverAtoms'
+import {
+  CAMPUS,
+  CAMPUS_LABELS,
+  type CampusKey,
+  getClassesForCampus,
+  // getStudentsForClass, // 학생 목록은 이제 사용하지 않음
+  isDuplicatedUser,
+} from '@/constant/user'
 
+/* --- styled components (unchanged) --- */
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
   justify?: string
@@ -68,7 +85,8 @@ const PageTitle = styled.h1`
 
 const Title = styled.h1`
   text-align: center;
-  font-size: 18px;
+  font-size: 20px;
+  // font will Pretendard
   font-weight: bold;
   margin: 20px 0 16px;
 `
@@ -76,8 +94,9 @@ const Title = styled.h1`
 // 토글 영역
 const ToggleWrapper = styled.div`
   display: flex;
-  background: #f7bfbf;
-  border-radius: 12px;
+  background-color: rgba(118, 118, 128, 0.12);
+  border: 1px solid #eeeeef;
+  border-radius: 18px;
   padding: 8px;
   margin-bottom: 24px;
 `
@@ -89,8 +108,11 @@ const ToggleButton = styled.button<{ active?: boolean }>`
   padding: 10px 0;
   cursor: pointer;
   font-size: 16px;
+  font-weight: 500;
+  line-height: 18px;
   background: ${({ active }) => (active ? '#fff' : 'transparent')};
   color: #000;
+  // font will Pretendard
 `
 
 // 폼 영역
@@ -104,9 +126,18 @@ const FormSection = styled.section`
 
 const Label = styled.label`
   font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-weight: normal;
+  // font will pretendard
+  line-height: 24px;
   display: inline-block;
+`
+
+// Label과 아이콘 사이 간격 조정을 위한 styled component
+const MattermostLabel = styled(Label)`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help; /* 툴팁이 있음을 시각적으로 알림 */
 `
 
 const LabelAnchor = styled.div`
@@ -121,17 +152,25 @@ const Select = styled.select`
   padding: 14px;
   border-radius: 16px;
   border: 1px solid #eee;
-  font-size: 14px;
+  font-size: 18px;
+  // font will Galmuri14
+  line-height: 24px;
   background-color: inherit;
+  color: #a3a3a3;
 `
 
 const Input = styled.input`
   width: 100%;
   padding: 14px;
+  height: 56px; /* Select와 높이 맞춤 */
   border-radius: 16px;
   border: 1px solid #eee;
   font-size: 14px;
   box-sizing: border-box;
+  background-color: inherit;
+  // font will Galmuri14
+  font-size: 18px;
+  line-height: 24px;
 
   &:focus {
     outline: none;
@@ -163,20 +202,17 @@ const SubmitButton = styled.button`
   gap: 10px;
 `
 
-/* ===== tooltip 관련 스타일 (Label을 hover 또는 focus-within 했을 때 프로필 카드 노출) ===== */
-
-/* LabelWrap: 툴팁의 기준점 (relative) */
+/* Tooltip styles (unchanged) */
 const LabelWrap = styled.div`
   position: relative;
   display: inline-block;
   width: 100%;
-  /* allow keyboard focus inside (input) to trigger :focus-within on parent */
+  /* LabelWrap 전체가 아닌 LabelAnchor에 hover/focus가 적용되어야 함 */
   &:focus-within {
     outline: none;
   }
 `
 
-/* Tooltip container is absolutely positioned above or below the label/input */
 const TooltipContainer = styled.div<{ position: 'top' | 'bottom' }>`
   position: absolute;
   left: 0;
@@ -195,17 +231,17 @@ const TooltipContainer = styled.div<{ position: 'top' | 'bottom' }>`
   ${({ position }) =>
     position === 'top'
       ? css`
-          bottom: 100%; /* 라벨 기준 바로 위 */
+          bottom: 100%;
           margin-bottom: 10px;
         `
       : css`
-          top: 100%; /* 라벨 기준 바로 아래 */
+          top: 100%;
           margin-top: 10px;
         `}
 
-  /* show when parent LabelWrap is hovered or focused (input inside), or when tooltip itself is hovered */
-  ${LabelWrap}:hover &,
-  ${LabelWrap}:focus-within &,
+  /* LabelAnchor에 hover/focus 시 툴팁 표시 */
+  ${LabelAnchor}:hover &,
+  ${LabelAnchor}:focus-within &,
   &:hover {
     opacity: 1;
     visibility: visible;
@@ -215,7 +251,6 @@ const TooltipContainer = styled.div<{ position: 'top' | 'bottom' }>`
   }
 `
 
-/* optional arrow below tooltip */
 const TooltipArrow = styled.div<{ position: 'top' | 'bottom' }>`
   position: absolute;
   left: 24px;
@@ -241,12 +276,11 @@ const TooltipArrow = styled.div<{ position: 'top' | 'bottom' }>`
         `}
 `
 
-/* small helper text inside tooltip wrapper if needed */
 const TooltipInner = styled.div`
   padding: 6px;
 `
 
-/* ================================================ */
+/* --------------------------------------- */
 
 function Step2ChooseReceiver() {
   const navigate = useNavigate()
@@ -256,9 +290,17 @@ function Step2ChooseReceiver() {
     'top',
   )
 
+  // jotai atoms
+  const [campus, setCampus] = useAtom(campusAtom)
+  const [classNum, setClassNum] = useAtom(classAtom)
+  const [name, setName] = useAtom(nameAtom) // 이제 Input 값으로 사용
+  const [mattermostId, setMattermostId] = useAtom(mattermostAtom)
+
   const labelWrapRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
+
+  const campusOptions = Object.values(CAMPUS) as CampusKey[]
 
   const computePosition = () => {
     if (!labelWrapRef.current) return
@@ -267,10 +309,8 @@ function Step2ChooseReceiver() {
     const spaceAbove = labelRect.top
     const spaceBelow = window.innerHeight - labelRect.bottom
 
-    // try to measure tooltip actual height if rendered
-    let tooltipHeight = 300 // fallback
+    let tooltipHeight = 300
     if (tooltipRef.current) {
-      // offsetHeight works even if visibility: hidden for positioned elements
       const h = tooltipRef.current.offsetHeight
       if (h && !Number.isNaN(h)) tooltipHeight = h
     }
@@ -284,7 +324,6 @@ function Step2ChooseReceiver() {
     }
   }
 
-  // Recompute when tooltip is opened, on resize/scroll and when toggle changes
   useLayoutEffect(() => {
     if (!isOpen) return
     computePosition()
@@ -296,10 +335,8 @@ function Step2ChooseReceiver() {
       window.removeEventListener('resize', onResize)
       window.removeEventListener('scroll', onResize, true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, activeToggle])
 
-  // Handlers to keep tooltip open when moving between trigger and tooltip
   const openTooltip = () => setIsOpen(true)
   const closeTooltip = () => setIsOpen(false)
 
@@ -308,13 +345,56 @@ function Step2ChooseReceiver() {
   }
 
   const handleGoNext = () => {
-    navigate('/cookie/step3')
+    // name이 빈 문자열일 경우 null로 처리
+    const finalName = name?.trim() || null
+    setName(finalName)
+
+    if (finalName) {
+      navigate('/cookie/step3')
+    } else {
+      alert('성명을 입력해주세요.') // 간단한 유효성 검사 예시
+    }
   }
+
+  /**
+   * Mattermost input 표시 조건:
+   * 1. 교육생 모드(student)일 때
+   * 2. 캠퍼스, 반, 이름이 모두 유효한 값으로 설정되었고
+   * 3. 해당 조합이 user.ts의 duplicatedUserData에 있을 경우
+   */
+  const shouldShowMattermost =
+    activeToggle === 'student' &&
+    Boolean(campus && classNum && name && name.trim()) &&
+    isDuplicatedUser(campus!, classNum as number, name!.trim() as string)
+
+  // clear dependent fields if parent changes
+  useEffect(() => {
+    // campus 변경 시, class & name & mattermost 초기화
+    setClassNum(null)
+    setName(null)
+    setMattermostId(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campus])
+
+  useEffect(() => {
+    // class 변경 시, name & mattermost 초기화
+    setName(null)
+    setMattermostId(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classNum])
+
+  // activeToggle이 변경될 때 campus, classNum, name, mattermostId 초기화
+  useEffect(() => {
+    setCampus(null) // 기본 캠퍼스('seoul')로 초기화
+    setClassNum(null)
+    setName(null)
+    setMattermostId(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeToggle])
 
   return (
     <AppContainer>
       <PageWrapper>
-        {/* 상단 헤더 */}
         <HeaderWrapper
           justify="space-between"
           align="start"
@@ -329,10 +409,8 @@ function Step2ChooseReceiver() {
           </HeaderLeftWrapper>
         </HeaderWrapper>
 
-        {/* 타이틀 */}
         <Title>누구의 오븐에 넣을까요?</Title>
 
-        {/* 토글 */}
         <ToggleWrapper>
           <ToggleButton
             active={activeToggle === 'student'}
@@ -348,93 +426,132 @@ function Step2ChooseReceiver() {
           </ToggleButton>
         </ToggleWrapper>
 
-        {/* 입력폼 */}
         <FormSection>
+          {/* 교육생 선택 시 캠퍼스 및 반 선택 */}
           {activeToggle === 'student' && (
             <>
               <div>
                 <Label>캠퍼스</Label>
-                <Select>
-                  <option>선택</option>
+                <Select
+                  value={campus ?? ''}
+                  onChange={(e) =>
+                    setCampus((e.target.value as CampusKey) || null)
+                  }
+                >
+                  <option value="">선택</option> {/* '선택' 옵션 추가 */}
+                  {campusOptions.map((c) => (
+                    <option key={c} value={c}>
+                      {CAMPUS_LABELS[c]}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
               <div>
                 <Label>반</Label>
-                <Select>
-                  <option>선택</option>
+                <Select
+                  value={classNum ?? ''}
+                  onChange={(e) =>
+                    setClassNum(e.target.value ? Number(e.target.value) : null)
+                  }
+                  disabled={!campus} // campus가 선택되지 않으면 disabled
+                >
+                  <option value="">선택</option>
+                  {/* campus가 null이 아닐 때만 반 목록을 가져옴 */}
+                  {campus &&
+                    getClassesForCampus(campus).map((num) => (
+                      <option key={num} value={num}>
+                        {num}반
+                      </option>
+                    ))}
                 </Select>
               </div>
             </>
           )}
 
+          {/* 성명 입력 (Input) */}
           <div>
-            <Label>성명</Label>
-            <Input placeholder="입력" />
+            <Label htmlFor="receiver-name">성함</Label>
+            <Input
+              id="receiver-name"
+              placeholder="입력"
+              value={name ?? ''}
+              onChange={(e) => setName(e.target.value || null)}
+            />
           </div>
 
-          {/* Mattermost 아이디 필드: Label + Input을 같은 LabelWrap 안에 넣어 포커스 시에도 툴팁이 보이게 함 */}
-          <LabelWrap
-            ref={labelWrapRef}
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            onFocus={openTooltip}
-            onBlur={(e) => {
-              // If focus moved into tooltip, keep open
-              const related = (e as React.FocusEvent)
-                .relatedTarget as Node | null
-              if (tooltipRef.current && tooltipRef.current.contains(related))
-                return
-              closeTooltip()
-            }}
-          >
-            <LabelAnchor>
-              <Label htmlFor="mattermost-id">Mattermost 아이디</Label>
+          <LabelWrap ref={labelWrapRef}>
+            {/* Mattermost input: shouldShowMattermost 조건에 따라 표시/숨김 */}
+            {shouldShowMattermost ? (
+              <>
+                <LabelAnchor
+                  // LabelAnchor가 마우스 이벤트 및 포커스 이벤트를 처리하여 툴팁을 띄웁니다.
+                  onMouseEnter={openTooltip}
+                  onMouseLeave={closeTooltip}
+                  onFocus={openTooltip}
+                  onBlur={(e) => {
+                    const related = (e as React.FocusEvent)
+                      .relatedTarget as Node | null
+                    if (
+                      tooltipRef.current &&
+                      tooltipRef.current.contains(related)
+                    )
+                      return
+                    closeTooltip()
+                  }}
+                >
+                  {/* MattermostLabel: 레이블 텍스트와 아이콘을 포함 */}
+                  <MattermostLabel htmlFor="mattermost-id">
+                    Mattermost 아이디
+                    <FontAwesomeIcon icon={faCircleQuestion} />
+                  </MattermostLabel>
 
-              {/* Tooltip (ProfileCard) - 라벨 기준으로 위치 */}
-              <TooltipContainer
-                ref={tooltipRef}
-                position={tooltipPosition}
-                role="dialog"
-                aria-hidden={!isOpen}
-                style={{
-                  // If not open, keep CSS-driven hidden; when open ensure visibility for measurement
-                  visibility: isOpen ? 'visible' : undefined,
-                  opacity: isOpen ? 1 : undefined,
-                  pointerEvents: isOpen ? 'auto' : undefined,
-                  transform: isOpen ? 'translateY(0)' : undefined,
-                }}
-                onMouseEnter={openTooltip}
-                onMouseLeave={closeTooltip}
-                onFocus={openTooltip}
-                onBlur={(e) => {
-                  const related = (e as React.FocusEvent)
-                    .relatedTarget as Node | null
-                  if (
-                    labelWrapRef.current &&
-                    labelWrapRef.current.contains(related)
-                  )
-                    return
-                  closeTooltip()
-                }}
-              >
-                <TooltipInner>
-                  <ProfileCard />
-                </TooltipInner>
-                <TooltipArrow position={tooltipPosition} />
-              </TooltipContainer>
-            </LabelAnchor>
-            <Input
-              id="mattermost-id"
-              placeholder="@를 제외한 아이디를 입력해주세요"
-              aria-describedby="mattermost-help"
-            />
+                  {/* 툴팁 컨테이너 */}
+                  <TooltipContainer
+                    ref={tooltipRef}
+                    position={tooltipPosition}
+                    role="dialog"
+                    aria-hidden={!isOpen}
+                    // 툴팁 자체에 마우스를 올렸을 때 툴팁이 닫히지 않도록 이벤트 처리
+                    onMouseEnter={openTooltip}
+                    onMouseLeave={closeTooltip}
+                    onFocus={openTooltip}
+                    onBlur={closeTooltip}
+                  >
+                    <TooltipInner>
+                      <ProfileCard />
+                    </TooltipInner>
+                    <TooltipArrow position={tooltipPosition} />
+                  </TooltipContainer>
+                </LabelAnchor>
+
+                {/* 실제 Mattermost Input 필드 */}
+                <Input
+                  id="mattermost-id"
+                  placeholder="@를 제외한 아이디를 입력해주세요"
+                  value={mattermostId ?? ''}
+                  onChange={(e) => setMattermostId(e.target.value || null)}
+                  aria-describedby="mattermost-help"
+                />
+              </>
+            ) : (
+              // shouldShowMattermost가 false일 때의 Input (숨김/비활성화)
+              <Input
+                id="mattermost-id"
+                placeholder="수신자 목록에 없으면 아이디 입력란이 보이지 않습니다."
+                value=""
+                readOnly
+                disabled // disabled로 비활성화하여 포커스 방지
+                style={{ display: 'none' }} // 아예 보이지 않도록 처리 (자리 차지 방지)
+              />
+            )}
           </LabelWrap>
         </FormSection>
-
-        {/* 하단 버튼 */}
         <BottomSection>
-          <SubmitButton onClick={handleGoNext}>
+          <SubmitButton
+            onClick={handleGoNext}
+            aria-disabled={!name || name.trim() === ''}
+          >
             편지 쓰러 가기
             <span>→</span>
           </SubmitButton>
