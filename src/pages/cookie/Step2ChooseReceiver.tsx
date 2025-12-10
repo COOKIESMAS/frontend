@@ -385,7 +385,7 @@ function Step2ChooseReceiver() {
 
   // activeToggle이 변경될 때 campus, classNum, name, mattermostId 초기화
   useEffect(() => {
-    setCampus(campusOptions[0]) // 기본 캠퍼스('seoul')로 초기화
+    setCampus(null) // 기본 캠퍼스('seoul')로 초기화
     setClassNum(null)
     setName(null)
     setMattermostId(null)
