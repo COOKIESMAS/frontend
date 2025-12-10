@@ -1,13 +1,16 @@
 import {
   MAIN_CATEGORY_SUBS,
-  type Item,
-  type ItemsData,
   type MainCategoryKey,
   type SelectableSubCategoryKey,
   type SubCategoriesOf,
+  type ItemsData,
+  type Item,
 } from '@/constant/items'
 
-function isSubCategoryOf<M extends MainCategoryKey>(
+/**
+ * 타입 가드: 주어진 main에 sub가 포함되는지 검사
+ */
+export function isSubCategoryOf<M extends MainCategoryKey>(
   main: M,
   sub: SelectableSubCategoryKey,
 ): sub is SubCategoriesOf<M> {
@@ -16,23 +19,49 @@ function isSubCategoryOf<M extends MainCategoryKey>(
   ).includes(sub)
 }
 
-function getItemsFor<M extends MainCategoryKey>(
+/**
+ * 타입 안전한 조회 유틸: main, sub, itemsData 를 받아 Item[] 반환
+ */
+export function getItemsFor<M extends MainCategoryKey>(
   main: M,
   sub: SelectableSubCategoryKey,
   itemsData: ItemsData,
 ): Item[] {
-  // 타입 가드: sub가 main의 서브카테고리인지 검사
   if (!isSubCategoryOf(main, sub)) return []
-
-  // 여기서 TS는 sub 타입이 좁혀짐 → SubCategoriesOf<M>
-  // 그럼 itemsData[main]도 SubCategoryRecord<M>으로 자동 좁혀짐
-  const category = itemsData[main]
-
-  // 이제 category[sub]는 무조건 존재하는 key로 간주됨
+  const category = itemsData[main] // TS가 여기서 추론 가능
   const subObj = category[sub]
-
   if (!subObj) return []
   return subObj.data
 }
 
-export { isSubCategoryOf, getItemsFor }
+/**
+ * mainCategoryKey 를 찾아 반환 (없으면 null)
+ */
+export function findMainForSub(
+  sub: SelectableSubCategoryKey,
+): MainCategoryKey | null {
+  const mains = Object.keys(MAIN_CATEGORY_SUBS) as MainCategoryKey[]
+  for (const m of mains) {
+    if (
+      (MAIN_CATEGORY_SUBS[m] as readonly SelectableSubCategoryKey[]).includes(
+        sub,
+      )
+    ) {
+      return m
+    }
+  }
+  return null
+}
+
+/**
+ * 특정 sub 에 대해 itemsData에서 asset 문자열 목록을 반환
+ */
+export function getAssetsForSub(
+  sub: SelectableSubCategoryKey,
+  itemsData: ItemsData,
+): string[] {
+  const main = findMainForSub(sub)
+  if (!main) return []
+  const items = getItemsFor(main, sub, itemsData)
+  return items.map((i) => i.asset).filter(Boolean)
+}
