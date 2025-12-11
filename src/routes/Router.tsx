@@ -10,6 +10,7 @@ import Step3WriteLetter from '@/pages/cookie/Step3WriteLetter'
 import Home from '@/pages/Home'
 import Layout from '@/components/Layout'
 import SendList from '@/pages/cookie/SendList'
+import CookieDetail from '@/pages/cookie/CookieDetail'
 
 const Router = () => {
   return (
@@ -41,7 +42,7 @@ const Router = () => {
             <Route path="step3" element={<Step3WriteLetter />} />
             <Route path="finish" element={<Finish />} />
             <Route path="send" element={<SendList />} />
-            {/* <Route path="/:id" element={<CookieDetailPage />} /> */}
+            <Route path=":id" element={<CookieDetail />} />
           </Route>
         </Route>
       </Routes>
