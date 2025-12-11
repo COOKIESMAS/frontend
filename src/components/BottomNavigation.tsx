@@ -75,7 +75,7 @@ const IconWrapper = styled.div<{ colorStyle?: 'primary' }>`
 export default function BottomNavigation() {
   return (
     <BottomNavWrapper>
-      <NavItem to="/sent">
+      <NavItem to="/cookie/send">
         <IconWrapper>
           <FontAwesomeIcon icon={faCookieBite} />
         </IconWrapper>
