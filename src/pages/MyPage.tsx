@@ -230,7 +230,7 @@ export default function MyPage() {
   return (
     <Container>
       <Header>
-        <BackBtn aria-label="뒤로" onClick={() => navigate(-1)}>
+        <BackBtn aria-label="뒤로" onClick={() => navigate('/home')}>
           <FontAwesomeIcon icon={faChevronLeft} />
         </BackBtn>
         <Title>마이페이지</Title>
