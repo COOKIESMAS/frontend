@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 /* PageWrapper 이 relative 인 것을 이용하여
@@ -56,13 +57,15 @@ const MenuList = styled.ul`
   margin: 0;
 `
 
-const MenuItem = styled.li`
+const MenuItem = styled(Link)`
   padding: 16px 0;
   display: flex;
   justify-content: space-between;
   font-size: 16px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     opacity: 0.7;
@@ -89,13 +92,13 @@ export default function SideMenu({
         </UserSection>
 
         <MenuList>
-          <MenuItem>
+          <MenuItem to="/mypage">
             마이페이지 <span>›</span>
           </MenuItem>
-          <MenuItem>
+          <MenuItem to="/notice">
             공지사항 <span>›</span>
           </MenuItem>
-          <MenuItem>
+          <MenuItem to="/contact">
             문의하기 <span>›</span>
           </MenuItem>
         </MenuList>
