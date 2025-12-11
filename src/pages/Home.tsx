@@ -8,6 +8,8 @@ import Text1 from '@/assets/image/text_1.svg'
 import HomeTitleImg from '@/assets/image/home_title.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react'
+import SideMenu from '@/components/SideMenu'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -107,6 +109,9 @@ const ButtonText = styled.span`
 
 export default function Home() {
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const openMenu = () => setIsMenuOpen(true)
+  const closeMenu = () => setIsMenuOpen(false)
 
   const handleNavigate = (dst: string) => {
     navigate(dst)
@@ -118,7 +123,7 @@ export default function Home() {
         <ImageRenderer>
           <HomeTitle src={HomeTitleImg} />
         </ImageRenderer>
-        <MenuButton>
+        <MenuButton onClick={openMenu}>
           <MenuIcon icon={faBars} />
         </MenuButton>
 
@@ -170,7 +175,9 @@ export default function Home() {
             </FlexWrapper>
           </FlexWrapper>
         </FlexWrapper>
+        <SideMenu open={isMenuOpen} onClose={closeMenu} />
       </PageWrapper>
+
       <BottomNavigation />
     </AppContainer>
   )
