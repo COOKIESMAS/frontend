@@ -1,0 +1,285 @@
+import React from 'react'
+import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { Link, useNavigate } from 'react-router-dom'
+
+// 예시 asset (프로젝트에 있는 실제 이미지로 바꿔주세요)
+import defaultCookieThumb from '@/assets/image/home_cookie.svg' // 대체 이미지 경로
+
+/* --------------------- 스타일 --------------------- */
+
+// 페이지 내부 레이아웃(이 파일은 Layout의 Outlet 내부에서 렌더됩니다)
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+`
+
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`
+
+const BackButton = styled.button`
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  font-size: 20px;
+`
+
+const PageTitle = styled.h2`
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+`
+
+const BadgeWrapper = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`
+
+const CountBadge = styled.div`
+  min-width: 64px;
+  background: linear-gradient(
+    180deg,
+    rgba(125, 58, 15, 0.8),
+    rgba(125, 58, 15, 0.5) /* 50% 불투명도 (끝) */
+  );
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 6px;
+  box-shadow: 0 6px 12px rgba(138, 75, 35, 0.25);
+  font-weight: 700;
+`
+
+// 리스트 영역 (스크롤)
+const ListArea = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* 스크롤 여백 */
+  padding-bottom: 94px; /* 하단 네비 겹침 방지 */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* 1. 스크롤바 전체 컨테이너 스타일 */
+  &::-webkit-scrollbar {
+    width: 6px; /* 스크롤바 너비 */
+    background-color: transparent; /* 배경을 투명하게 설정 */
+  }
+
+  /* 2. 스크롤바 핸들 (실제 움직이는 막대) 스타일 */
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* 어두운 색상에 20% 투명도 적용 */
+    border-radius: 10px; /* 둥근 모서리 */
+  }
+
+  /* 3. 스크롤바 트랙 (핸들이 움직이는 경로) 스타일 */
+  &::-webkit-scrollbar-track {
+    background-color: transparent; /* 트랙을 투명하게 설정 */
+  }
+`
+
+// 카드
+// 기존: const Card = styled.article`  ...
+// 변경 ↓
+const Card = styled(Link)`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+
+  &:active {
+    opacity: 0.8;
+  }
+`
+
+const Thumb = styled.img`
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #eee;
+  flex-shrink: 0;
+`
+
+const CardBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`
+
+const ToText = styled.div`
+  font-weight: 800;
+  font-size: 16px;
+  color: #2b2b2b;
+`
+
+const MessagePreview = styled.div`
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const CardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+`
+
+const DateText = styled.div`
+  font-size: 12px;
+  color: #9b9b9b;
+`
+
+const Status = styled.div<{ success?: boolean }>`
+  font-size: 13px;
+  font-weight: 700;
+  color: ${({ success }) => (success ? '#2aa84f' : '#c07a3f')};
+`
+
+const EmptyStateWrapper = styled.div`
+  margin-top: 32px;
+  padding: 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  color: #63422b;
+`
+
+/* --------------------- 데이터 타입 --------------------- */
+type SendItem = {
+  id: string
+  toName: string
+  toMeta?: string // (캠퍼스/반)
+  messagePreview: string
+  date: string
+  status: 'done' | 'sending' | 'failed'
+  thumb?: string
+}
+
+/* --------------------- 하위 컴포넌트 --------------------- */
+
+function CookieCard({ item }: { item: SendItem }) {
+  return (
+    <Card to={`/cookie/${item.id}`}>
+      <Thumb src={item.thumb ?? defaultCookieThumb} alt="cookie thumb" />
+      <CardBody>
+        <ToText>
+          To. {item.toName}
+          {item.toMeta ? ` (${item.toMeta})` : ''}
+        </ToText>
+        <MessagePreview>{item.messagePreview}</MessagePreview>
+
+        <CardFooter>
+          <DateText>{item.date}</DateText>
+          <Status success={item.status === 'done'}>
+            {item.status === 'done'
+              ? '전송 완료'
+              : item.status === 'sending'
+                ? '전송 중'
+                : '전송 실패'}
+          </Status>
+        </CardFooter>
+      </CardBody>
+    </Card>
+  )
+}
+
+/* --------------------- 페이지 컴포넌트 --------------------- */
+
+export default function SendList() {
+  const navigate = useNavigate()
+
+  // 예시 데이터 — 실제로는 props 또는 API 호출로 교체
+  const items: SendItem[] = [
+    {
+      id: '1',
+      toName: '이싸피',
+      toMeta: '구미 6반',
+      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
+      date: '2025.12.15',
+      status: 'done',
+    },
+    {
+      id: '2',
+      toName: '이싸피',
+      toMeta: '구미 6반',
+      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
+      date: '2025.12.15',
+      status: 'done',
+    },
+    {
+      id: '3',
+      toName: '이싸피',
+      toMeta: '구미 6반',
+      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
+      date: '2025.12.15',
+      status: 'done',
+    },
+    {
+      id: '4',
+      toName: '이싸피',
+      toMeta: '구미 6반',
+      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
+      date: '2025.12.15',
+      status: 'done',
+    },
+  ]
+
+  const totalCount = items.length
+
+  return (
+    <Container>
+      <HeaderRow>
+        <BackButton onClick={() => navigate(-1)}>
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </BackButton>
+
+        <PageTitle>보낸 쿠키</PageTitle>
+
+        <BadgeWrapper>
+          <CountBadge>
+            <div style={{ fontSize: 12 }}>보낸 쿠키</div>
+            <div style={{ fontSize: 20, lineHeight: 1 }}>{totalCount}개</div>
+          </CountBadge>
+        </BadgeWrapper>
+      </HeaderRow>
+
+      <ListArea>
+        {items.length === 0 ? (
+          <EmptyStateWrapper>
+            아직 보낸 쿠키가 없습니다.
+            <div style={{ marginTop: 8, fontSize: 13 }}>
+              쿠키를 만들어 친구에게 전해보세요.
+            </div>
+          </EmptyStateWrapper>
+        ) : (
+          items.map((it) => <CookieCard key={it.id} item={it} />)
+        )}
+      </ListArea>
+    </Container>
+  )
+}
