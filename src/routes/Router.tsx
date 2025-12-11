@@ -1,8 +1,8 @@
-// src/routes/Router.tsx
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import LandingPage from '../pages/LandingPage'
 import GoogleConnectingPage from '../pages/GoogleConnectingPage'
 import SignupPage from '../pages/SignupPage'
+import MyOvenPage from '../pages/MyOvenPage'
 
 const Router = () => {
   return (
@@ -15,6 +15,8 @@ const Router = () => {
         <Route path="/auth/callback" element={<GoogleConnectingPage />} />
         {/* SSAFY 인증 페이지 */}
         <Route path="/api/v1/auth/ssafy" element={<SignupPage />} />
+        {/* 내 오븐 페이지 */}
+        <Route path="/myoven" element={<MyOvenPage />} />
       </Routes>
     </BrowserRouter>
   )
