@@ -2,12 +2,15 @@ import Finish from '@/pages/cookie/Finish'
 import Step1MakeCookie from '@/pages/cookie/Step1MakeCookie'
 import Step2ChooseReceiver from '@/pages/cookie/Step2ChooseReceiver'
 import Step3WriteLetter from '@/pages/cookie/Step3WriteLetter'
+import Home from '@/pages/Home'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="home" element={<Home />} />
         <Route path="/cookie">
           {/* /cookie로 들어오면 /cookie/step1로 리다이렉트 */}
           <Route index element={<Navigate to="step1" replace />} />
