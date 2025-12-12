@@ -2,7 +2,6 @@
 import React, { type ChangeEvent } from 'react'
 import { Button } from '@chakra-ui/react'
 import {
-  BottomButtonContainer,
   CodeForm,
   CodeHeader,
   CodeSubText,
@@ -10,7 +9,9 @@ import {
   FieldGroup,
   FieldLabel,
   ResendText,
-  TextField,
+  CodeInputRow,
+  CodeInputField,
+  CodeInputHint,
 } from './SignupFlow.styles'
 
 interface SignupStepCodeProps {
@@ -42,21 +43,19 @@ export const SignupStepCode: React.FC<SignupStepCodeProps> = ({
       <CodeForm>
         <FieldGroup>
           <FieldLabel htmlFor="code">인증 코드</FieldLabel>
-          <TextField
-            id="code"
-            value={code}
-            onChange={onChangeCode}
-            placeholder="인증 코드를 입력해주세요"
-          />
+
+          {/* ✅ 인풋 + “코드는 10분 동안 유효해요” 한 박스 안에 배치 */}
+          <CodeInputRow>
+            <CodeInputField
+              id="code"
+              value={code}
+              onChange={onChangeCode}
+              placeholder="입력"
+            />
+            <CodeInputHint>코드는 10분 동안 유효해요</CodeInputHint>
+          </CodeInputRow>
         </FieldGroup>
-
-        <ResendText type="button" onClick={onClickResendCode}>
-          인증 코드 재발송
-        </ResendText>
-      </CodeForm>
-
-      <BottomButtonContainer>
-        <Button
+                <Button
           width="100%"
           height="52px"
           borderRadius="12px"
@@ -70,7 +69,12 @@ export const SignupStepCode: React.FC<SignupStepCodeProps> = ({
         >
           인증하기
         </Button>
-      </BottomButtonContainer>
+
+        {/* ✅ 버튼 아래에 재발송 텍스트 */}
+        <ResendText type="button" onClick={onClickResendCode}>
+          인증 코드 재발송
+        </ResendText>
+      </CodeForm>
     </>
   )
 }
