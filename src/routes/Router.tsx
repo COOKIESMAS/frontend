@@ -12,6 +12,7 @@ import Layout from '@/components/Layout'
 import SendList from '@/pages/cookie/SendList'
 import CookieDetail from '@/pages/cookie/CookieDetail'
 import MyPage from '@/pages/MyPage'
+import NoticePage from '@/pages/NoticePage'
 
 const Router = () => {
   return (
@@ -35,6 +36,7 @@ const Router = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/myoven" element={<MyOvenPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/notice" element={<NoticePage />} />
 
           {/* cookie 관련은 Layout 내부에 중첩 */}
           <Route path="/cookie">
