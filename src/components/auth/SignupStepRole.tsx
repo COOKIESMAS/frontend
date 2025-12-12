@@ -1,3 +1,4 @@
+// src/components/auth/SignupStepRole.tsx
 import React from 'react'
 import { Button } from '@chakra-ui/react'
 import {
@@ -38,7 +39,7 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
           onClick={handleSelect('student')}
         >
           <RoleImage src="/signup01.png" alt="SSAFY생" />
-          <RoleText>싸피생 (Student)</RoleText>
+          <RoleText>싸피생</RoleText>
         </RoleButton>
 
         <RoleButton
@@ -47,7 +48,7 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
           onClick={handleSelect('instructor')}
         >
           <RoleImage src="/signup02.png" alt="프로님/강사님" />
-          <RoleText>프로님 / 강사님 (Instructor)</RoleText>
+          <RoleText>프로님 / 강사님</RoleText>
         </RoleButton>
       </RoleButtonsContainer>
 
@@ -58,8 +59,12 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
           borderRadius="12px"
           backgroundColor={canNext ? '#2F2F2F' : '#C4C4C4'}
           color="#FFFFFF"
-          _hover={{ backgroundColor: canNext ? '#1f1f1f' : '#C4C4C4' }}
+          _hover={{
+            backgroundColor: canNext ? '#1f1f1f' : '#C4C4C4',
+          }}
           disabled={!canNext}
+          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+          fontSize="16px"
           onClick={onNext}
         >
           SSAFY 인증하기

@@ -10,7 +10,6 @@ export interface CampusOption {
   maxClass: number
 }
 
-// TODO: 백엔드에서 로드하도록 변경 예정
 export const CAMPUS_OPTIONS: CampusOption[] = [
   { key: 'SEOUL', label: '서울', maxClass: 22 },
   { key: 'DAEJEON', label: '대전', maxClass: 8 },

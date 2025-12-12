@@ -2,6 +2,7 @@
 import React, { type ChangeEvent } from 'react'
 import { Button } from '@chakra-ui/react'
 import {
+  BackButton,
   BottomButtonContainer,
   FieldGroup,
   FieldLabel,
@@ -27,6 +28,7 @@ interface SignupStepFormProps {
   onChangeName: (event: ChangeEvent<HTMLInputElement>) => void
   onChangeMmId: (event: ChangeEvent<HTMLInputElement>) => void
   onClickRequestCode: () => void
+  onClickBack: () => void
 }
 
 export const SignupStepForm: React.FC<SignupStepFormProps> = ({
@@ -43,9 +45,14 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
   onChangeName,
   onChangeMmId,
   onClickRequestCode,
+  onClickBack,
 }) => {
   return (
     <>
+      <BackButton type="button" onClick={onClickBack}>
+        ←
+      </BackButton>
+
       <StepTitle>정보를 입력해주세요</StepTitle>
 
       <FormContainer>
@@ -106,7 +113,9 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
           />
         </FieldGroup>
 
-        <NoticeText>입력하신 정보로 Mattermost DM을 전송합니다</NoticeText>
+        <NoticeText>
+          입력하신 정보로 메타모스트 DM을 전송합니다
+        </NoticeText>
       </FormContainer>
 
       <BottomButtonContainer>
@@ -117,9 +126,13 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
           backgroundColor={canRequestCode ? '#2F2F2F' : '#C4C4C4'}
           color="#FFFFFF"
           _hover={{
-            backgroundColor: canRequestCode ? '#1f1f1f' : '#C4C4C4',
+            backgroundColor: canRequestCode
+              ? '#1f1f1f'
+              : '#C4C4C4',
           }}
           disabled={!canRequestCode}
+          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+          fontSize="16px"
           onClick={onClickRequestCode}
         >
           인증코드 받기

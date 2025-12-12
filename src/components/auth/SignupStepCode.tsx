@@ -5,8 +5,10 @@ import {
   BottomButtonContainer,
   CodeForm,
   CodeHeader,
+  CodeInputRow,
   CodeSubText,
   CodeTitle,
+  CodeValidityText,
   FieldGroup,
   FieldLabel,
   ResendText,
@@ -36,18 +38,25 @@ export const SignupStepCode: React.FC<SignupStepCodeProps> = ({
           <br />
           인증 코드를 입력해주세요
         </CodeTitle>
-        <CodeSubText>메시지 도착까지 1분 정도 소요될 수 있어요</CodeSubText>
+        <CodeSubText>
+          메세지 도착까지 1분정도 소요될 수 있어요
+        </CodeSubText>
       </CodeHeader>
 
       <CodeForm>
         <FieldGroup>
           <FieldLabel htmlFor="code">인증 코드</FieldLabel>
-          <TextField
-            id="code"
-            value={code}
-            onChange={onChangeCode}
-            placeholder="인증 코드를 입력해주세요"
-          />
+          <CodeInputRow>
+            <TextField
+              id="code"
+              value={code}
+              onChange={onChangeCode}
+              placeholder="인증 코드를 입력해주세요"
+            />
+            <CodeValidityText>
+              코드는 10분 동안 유효해요
+            </CodeValidityText>
+          </CodeInputRow>
         </FieldGroup>
 
         <ResendText type="button" onClick={onClickResendCode}>
@@ -63,9 +72,13 @@ export const SignupStepCode: React.FC<SignupStepCodeProps> = ({
           backgroundColor={canVerifyCode ? '#2F2F2F' : '#C4C4C4'}
           color="#FFFFFF"
           _hover={{
-            backgroundColor: canVerifyCode ? '#1f1f1f' : '#C4C4C4',
+            backgroundColor: canVerifyCode
+              ? '#1f1f1f'
+              : '#C4C4C4',
           }}
           disabled={!canVerifyCode}
+          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+          fontSize="16px"
           onClick={onClickVerifyCode}
         >
           인증하기

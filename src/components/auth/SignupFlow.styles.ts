@@ -1,34 +1,77 @@
+// src/components/auth/SignupFlow.styles.ts
 import styled from 'styled-components'
 
 export const SignupPageWrapper = styled.div`
+  /* 폰트 로딩 */
   @font-face {
     font-family: 'DNFBitBitv2';
-    src: url('/DNFBitBitv2.otf') format('opentype');
+    src: url('/fonts/DNFBitBitv2.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
   }
 
-  font-family: 'DNFBitBitv2', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', sans-serif;
+  @font-face {
+    font-family: 'Galmuri14';
+    src: url('/fonts/Galmuri14.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'MoneygraphyPixel';
+    src: url('/fonts/Moneygraphy-Pixel.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'IM_Hyemin';
+    src: url('/fonts/IM_Hyemin-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'IM_Hyemin';
+    src: url('/fonts/IM_Hyemin-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  font-family: 'Pretendard', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   width: 100%;
   min-height: 100vh;
-  background-color: #e8c393;
+  background-color: #baebff;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 24px 16px;
+  align-items: stretch;
 `
 
 export const SignupCard = styled.div`
   width: 100%;
-  max-width: 480px;
-  background-color: #fff7ea;
-  border-radius: 24px;
-  padding: 24px 20px 88px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  max-width: 375px;
+  min-height: 100vh;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 32px 24px 88px;
+  box-sizing: border-box;
   position: relative;
-  min-height: 520px;
 `
 
 export const TopGraphic = styled.div`
@@ -69,22 +112,29 @@ export const IntroTextContainer = styled.div`
   margin-top: 12px;
 `
 
+/* Intro 텍스트: Pretendard Medium 24px */
 export const IntroLine = styled.p`
-  font-size: 20px;
-  color: #2c231c;
+  font-family: 'Pretendard', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #21112c;
   line-height: 1.4;
 `
 
 export const BottomButtonContainer = styled.div`
   position: absolute;
-  left: 20px;
-  right: 20px;
+  left: 24px;
+  right: 24px;
   bottom: 24px;
 `
 
 export const StepTitle = styled.h2`
-  font-size: 22px;
-  color: #2c231c;
+  font-family: 'Pretendard', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #21112c;
   text-align: center;
   margin-bottom: 24px;
 `
@@ -102,8 +152,10 @@ export const RoleButton = styled.button<{ selected: boolean }>`
   width: 100%;
   padding: 12px 16px;
   border-radius: 16px;
-  border: 2px solid ${({ selected }) => (selected ? '#E83B40' : '#e0d0b3')};
-  background-color: ${({ selected }) => (selected ? '#fff0eb' : '#ffffff')};
+  border: 2px solid
+    ${({ selected }) => (selected ? '#E83B40' : '#e0d0b3')};
+  background-color: ${({ selected }) =>
+    selected ? '#fff0eb' : '#ffffff'};
   cursor: pointer;
   gap: 12px;
   outline: none;
@@ -119,9 +171,12 @@ export const RoleImage = styled.img`
   flex-shrink: 0;
 `
 
+/* 싸피생 / 프로님 텍스트: Galmuri14 18px */
 export const RoleText = styled.span`
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
   font-size: 18px;
-  color: #2c231c;
+  color: #21112c;
 `
 
 export const FormContainer = styled.div`
@@ -134,21 +189,27 @@ export const FieldGroup = styled.div`
   margin-bottom: 16px;
 `
 
+/* 라벨: IM_Hyemin Bold 16px */
 export const FieldLabel = styled.label`
-  font-size: 14px;
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
   margin-bottom: 4px;
-  color: #2c231c;
+  color: #21112c;
 `
 
+/* 입력/셀렉트 placeholder 및 텍스트: Galmuri14 18px */
 export const SelectField = styled.select`
   width: 100%;
   height: 48px;
   border-radius: 12px;
   border: 2px solid #c4c4c4;
   padding: 0 12px;
-  font-size: 16px;
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-size: 18px;
   background-color: #ffffff;
-  font-family: inherit;
   outline: none;
 
   &:focus {
@@ -167,47 +228,87 @@ export const TextField = styled.input`
   border-radius: 12px;
   border: 2px solid #c4c4c4;
   padding: 0 12px;
-  font-size: 16px;
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-size: 18px;
   background-color: #ffffff;
-  font-family: inherit;
   outline: none;
+
+  &::placeholder {
+    font-family: 'Galmuri14', system-ui, -apple-system,
+      BlinkMacSystemFont, sans-serif;
+    font-size: 18px;
+    color: #b0b0b0;
+  }
 
   &:focus {
     border-color: #2baeff;
   }
 `
 
+/* 안내 문구: IM_Hyemin Bold 14px */
 export const NoticeText = styled.p`
-  font-size: 12px;
-  color: #666666;
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #21112c;
   margin-top: 4px;
 `
 
 export const CodeHeader = styled.div`
-  text-align: center;
+  text-align: left;
   margin-top: 16px;
 `
 
+/* 코드 입력 타이틀: Pretendard Medium 24px */
 export const CodeTitle = styled.h2`
-  font-size: 20px;
-  color: #2c231c;
+  font-family: 'Pretendard', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #21112c;
   line-height: 1.4;
   margin-bottom: 8px;
 `
 
+/* 서브텍스트: IM_Hyemin Bold 14px, #21112C */
 export const CodeSubText = styled.p`
-  font-size: 12px;
-  color: #666666;
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #21112c;
 `
 
 export const CodeForm = styled.div`
   margin-top: 32px;
 `
 
+/* 코드 입력 줄: input + "코드는 10분 동안 유효해요" */
+export const CodeInputRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+export const CodeValidityText = styled.span`
+  white-space: nowrap;
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #6b6a6a;
+`
+
+/* 재발송: IM_Hyemin Bold 14px, #5D5D5D */
 export const ResendText = styled.button`
   margin-top: 4px;
-  font-size: 12px;
-  color: #2baeff;
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #5d5d5d;
   background: transparent;
   border: none;
   padding: 0;
@@ -227,14 +328,34 @@ export const SuccessImage = styled.img`
   display: block;
 `
 
+/* 성공 타이틀: Pretendard Regular 28px */
 export const SuccessTitle = styled.h2`
-  font-size: 22px;
-  color: #2c231c;
+  font-family: 'Pretendard', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
+  color: #21112c;
   margin-bottom: 8px;
 `
 
+/* 성공 서브텍스트: IM_Hyemin Bold 14px */
 export const SuccessSubText = styled.p`
+  font-family: 'IM_Hyemin', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
   font-size: 14px;
-  color: #2c231c;
+  color: #21112c;
   line-height: 1.5;
+`
+
+/* 폼/코드 단계에서 왼쪽 상단 뒤로가기 버튼 */
+export const BackButton = styled.button`
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: transparent;
+  border: none;
+  color: #21112c;
+  font-size: 24px;
+  cursor: pointer;
 `

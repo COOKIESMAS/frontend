@@ -1,3 +1,4 @@
+// src/components/auth/SignupStepIntro.tsx
 import React from 'react'
 import { Button } from '@chakra-ui/react'
 import {
@@ -14,7 +15,9 @@ interface SignupStepIntroProps {
   onNext: () => void
 }
 
-export const SignupStepIntro: React.FC<SignupStepIntroProps> = ({ onNext }) => {
+export const SignupStepIntro: React.FC<SignupStepIntroProps> = ({
+  onNext,
+}) => {
   return (
     <>
       <TopGraphic>
@@ -36,6 +39,8 @@ export const SignupStepIntro: React.FC<SignupStepIntroProps> = ({ onNext }) => {
           backgroundColor="#2F2F2F"
           color="#FFFFFF"
           _hover={{ backgroundColor: '#1f1f1f' }}
+          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+          fontSize="16px"
           onClick={onNext}
         >
           다음
