@@ -98,30 +98,31 @@ export const CloudImageTop = styled.img`
 export const CloudImageBottom = styled.img`
   position: absolute;
   bottom: -10px;
-  left: 32px;
+  left: 230px;
   width: 120px;
   height: auto;
 `
 
 export const SignupMainImage = styled.img`
   position: absolute;
-  top: 16px;
+  top: 18px;
   left: 50%;
   transform: translateX(-50%);
-  height: 160px;
+  height: 180px;
   width: auto;
 `
 
 export const IntroTextContainer = styled.div`
   text-align: left;
   margin-top: 12px;
+  text-align: center;
 `
 
 /** 친구들에게 쿠키를 구워주려면 ~ SSAFY 인증이 필요해요 */
 export const IntroLine = styled.p`
   font-family: 'Pretendard-Medium', system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   color: #2c231c;
   line-height: 1.4;
 `
@@ -179,7 +180,7 @@ export const RoleImage = styled.img`
 export const RoleText = styled.span`
   font-family: 'Galmuri14', system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   color: #2c231c;
 `
 
