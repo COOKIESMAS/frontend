@@ -9,6 +9,7 @@ import {
   StepTitle,
 } from './SignupFlow.styles'
 import type { RoleState, SignupRole } from './signupTypes'
+import styled from 'styled-components'
 
 interface SignupStepRoleProps {
   role: RoleState
@@ -28,7 +29,7 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
   }
 
   return (
-    <>
+    <SignupStepRoleBlock>
       <StepTitle>어떤 SSAFY이신가요?</StepTitle>
 
       <RoleButtonsContainer>
@@ -65,6 +66,16 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
           SSAFY 인증하기
         </Button>
       </BottomButtonContainer>
-    </>
+    </SignupStepRoleBlock>
   )
 }
+
+const SignupStepRoleBlock = styled.div`
+  /* width: 100%;
+  height: 100%;           
+  display: flex;
+  flex-direction: column;
+  align-items: center;    
+  justify-content: center;
+  position: relative;      */
+`
