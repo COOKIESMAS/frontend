@@ -2,7 +2,6 @@
 import React, { type ChangeEvent } from 'react'
 import { Button } from '@chakra-ui/react'
 import {
-  BackButton,
   BottomButtonContainer,
   FieldGroup,
   FieldLabel,
@@ -10,9 +9,12 @@ import {
   NoticeText,
   SelectField,
   TextField,
-  StepTitle,
+  StepFormHeader,
+  StepFormBackButton,
 } from './SignupFlow.styles'
 import type { CampusKey, CampusOption } from './signupTypes'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 
 interface SignupStepFormProps {
   isStudent: boolean
@@ -28,6 +30,8 @@ interface SignupStepFormProps {
   onChangeName: (event: ChangeEvent<HTMLInputElement>) => void
   onChangeMmId: (event: ChangeEvent<HTMLInputElement>) => void
   onClickRequestCode: () => void
+
+  /** 역할 선택(step=selectRole) 화면으로 돌아가기 */
   onClickBack: () => void
 }
 
@@ -49,11 +53,12 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
 }) => {
   return (
     <>
-      <BackButton type="button" onClick={onClickBack}>
-        ←
-      </BackButton>
-
-      <StepTitle>정보를 입력해주세요</StepTitle>
+      {/* 🔙 상단 좌측 뒤로가기 영역 */}
+      <StepFormHeader>
+        <StepFormBackButton type="button" onClick={onClickBack}>
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </StepFormBackButton>
+      </StepFormHeader>
 
       <FormContainer>
         {isStudent && (
@@ -114,7 +119,7 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
         </FieldGroup>
 
         <NoticeText>
-          입력하신 정보로 메타모스트 DM을 전송합니다
+          입력하신 정보로 Mattermost DM을 전송합니다
         </NoticeText>
       </FormContainer>
 
@@ -126,13 +131,9 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
           backgroundColor={canRequestCode ? '#2F2F2F' : '#C4C4C4'}
           color="#FFFFFF"
           _hover={{
-            backgroundColor: canRequestCode
-              ? '#1f1f1f'
-              : '#C4C4C4',
+            backgroundColor: canRequestCode ? '#1f1f1f' : '#C4C4C4',
           }}
           disabled={!canRequestCode}
-          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
-          fontSize="16px"
           onClick={onClickRequestCode}
         >
           인증코드 받기
