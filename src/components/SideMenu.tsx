@@ -1,3 +1,4 @@
+import { useUser } from '@/hooks/queries/useUser'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -79,6 +80,10 @@ export default function SideMenu({
   open: boolean
   onClose: () => void
 }) {
+  const { data, isLoading } = useUser()
+
+  if (isLoading) return null
+
   return (
     <>
       {/* 뒤 배경 */}
@@ -87,8 +92,10 @@ export default function SideMenu({
       {/* 메뉴 패널 */}
       <SideMenuWrapper open={open}>
         <UserSection>
-          <UserClass>구미 6반</UserClass>
-          <UserName>김싸피</UserName>
+          <UserClass>
+            {data?.campus} {data?.classNumber}반
+          </UserClass>
+          <UserName>{data?.name}</UserName>
         </UserSection>
 
         <MenuList>
