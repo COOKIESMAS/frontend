@@ -21,7 +21,7 @@ const Router = () => {
         <Route path="/landing" element={<LandingPage />} />
         {/* 구글 로그인 진입 로딩 */}
         <Route
-          path="/api/v1/auth/google/login"
+          path="/auth/google/login"
           element={<GoogleConnectingPage />}
         />
         {/* ✅ 백엔드에서 리다이렉트해 주는 콜백 URL */}

@@ -104,6 +104,11 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     setStep('form')
   }
 
+  /** 🔙 폼에서 역할 선택 화면으로 돌아가기 */
+  const goBackFromForm = () => {
+    setStep('selectRole')
+  }
+
   /** 백엔드 role 매핑: student -> STUDENT, instructor -> STAFF */
   const getBackendRole = () => {
     if (role === 'student') return 'STUDENT'
@@ -235,6 +240,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
       canClickVerifyCode={canClickVerifyCode}
       onNextFromIntro={goToNextFromIntro}
       onNextFromRole={goToFormStep}
+      onBackFromForm={goBackFromForm}
       onChangeCampus={handleCampusChange}
       onChangeClass={handleClassChange}
       onChangeName={handleNameChange}
@@ -245,6 +251,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
       onClickResendCode={handleResendCode}
       onClickVerifyCode={handleVerifyCode}
       onClickGoToCookie={handleGoToCookie}
+      onBackFromForm={goBackFromForm}
     />
   )
 }

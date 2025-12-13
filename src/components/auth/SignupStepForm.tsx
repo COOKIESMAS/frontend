@@ -9,9 +9,12 @@ import {
   NoticeText,
   SelectField,
   TextField,
-  StepTitle,
+  StepFormHeader,
+  StepFormBackButton,
 } from './SignupFlow.styles'
 import type { CampusKey, CampusOption } from './signupTypes'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 
 interface SignupStepFormProps {
   isStudent: boolean
@@ -27,6 +30,9 @@ interface SignupStepFormProps {
   onChangeName: (event: ChangeEvent<HTMLInputElement>) => void
   onChangeMmId: (event: ChangeEvent<HTMLInputElement>) => void
   onClickRequestCode: () => void
+
+  /** 🔥 역할 선택 단계로 돌아가기 */
+  onClickBack: () => void
 }
 
 export const SignupStepForm: React.FC<SignupStepFormProps> = ({
@@ -43,10 +49,16 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
   onChangeName,
   onChangeMmId,
   onClickRequestCode,
+  onClickBack,
 }) => {
   return (
     <>
-      <StepTitle>정보를 입력해주세요</StepTitle>
+      {/* 🔙 상단 좌측 뒤로가기 영역 */}
+      <StepFormHeader>
+        <StepFormBackButton type="button" onClick={onClickBack}>
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </StepFormBackButton>
+      </StepFormHeader>
 
       <FormContainer>
         {isStudent && (
@@ -106,7 +118,9 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
           />
         </FieldGroup>
 
-        <NoticeText>입력하신 정보로 Mattermost DM을 전송합니다</NoticeText>
+        <NoticeText>
+          입력하신 정보로 Mattermost DM을 전송합니다
+        </NoticeText>
       </FormContainer>
 
       <BottomButtonContainer>
