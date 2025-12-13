@@ -104,6 +104,10 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     setStep('form')
   }
 
+  const goBackFromForm = () => {
+    setStep('selectRole')
+  }
+
   /** 백엔드 role 매핑: student -> STUDENT, instructor -> STAFF */
   const getBackendRole = () => {
     if (role === 'student') return 'STUDENT'
@@ -235,6 +239,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
       canClickVerifyCode={canClickVerifyCode}
       onNextFromIntro={goToNextFromIntro}
       onNextFromRole={goToFormStep}
+      onBackFromForm={goBackFromForm}
       onChangeCampus={handleCampusChange}
       onChangeClass={handleClassChange}
       onChangeName={handleNameChange}

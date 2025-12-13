@@ -1,23 +1,23 @@
-// src/components/auth/SignupFlowView.tsx
+// src/container/SignupFlowContainer.tsx
 import React, { type ChangeEvent } from 'react'
 import {
   SignupPageWrapper,
   SignupCard,
 } from '../components/auth/SignupFlow.styles'
-import {
-  type CampusKey,
-  type CampusOption,
-  type RoleState,
-  type SignupRole,
-  type SignupStep,
-} from '../components/auth/signupTypes'
 import { SignupStepIntro } from '../components/auth/SignupStepIntro'
 import { SignupStepRole } from '../components/auth/SignupStepRole'
 import { SignupStepForm } from '../components/auth/SignupStepForm'
 import { SignupStepCode } from '../components/auth/SignupStepCode'
 import { SignupStepSuccess } from '../components/auth/SignupStepSuccess'
+import type {
+  CampusKey,
+  CampusOption,
+  RoleState,
+  SignupRole,
+  SignupStep,
+} from '../components/auth/signupTypes'
 
-export interface SignupFlowViewProps {
+interface SignupFlowContainerProps {
   step: SignupStep
   role: RoleState
   isStudent: boolean
@@ -33,6 +33,7 @@ export interface SignupFlowViewProps {
   canClickVerifyCode: boolean
   onNextFromIntro: () => void
   onNextFromRole: () => void
+  onBackFromForm: () => void
   onChangeCampus: (event: ChangeEvent<HTMLSelectElement>) => void
   onChangeClass: (event: ChangeEvent<HTMLSelectElement>) => void
   onChangeName: (event: ChangeEvent<HTMLInputElement>) => void
@@ -45,33 +46,38 @@ export interface SignupFlowViewProps {
   onClickGoToCookie: () => void
 }
 
-export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
-  step,
-  role,
-  isStudent,
-  campus,
-  classNumber,
-  name,
-  mmId,
-  code,
-  campusOptions,
-  classOptions,
-  canGoFromRoleStep,
-  canClickRequestCode,
-  canClickVerifyCode,
-  onNextFromIntro,
-  onNextFromRole,
-  onChangeCampus,
-  onChangeClass,
-  onChangeName,
-  onChangeMmId,
-  onChangeCode,
-  onChangeRole,
-  onClickRequestCode,
-  onClickResendCode,
-  onClickVerifyCode,
-  onClickGoToCookie,
-}) => {
+export const SignupFlowContainer: React.FC<
+  SignupFlowContainerProps
+> = (props) => {
+  const {
+    step,
+    role,
+    isStudent,
+    campus,
+    classNumber,
+    name,
+    mmId,
+    code,
+    campusOptions,
+    classOptions,
+    canGoFromRoleStep,
+    canClickRequestCode,
+    canClickVerifyCode,
+    onNextFromIntro,
+    onNextFromRole,
+    onBackFromForm,
+    onChangeCampus,
+    onChangeClass,
+    onChangeName,
+    onChangeMmId,
+    onChangeCode,
+    onChangeRole,
+    onClickRequestCode,
+    onClickResendCode,
+    onClickVerifyCode,
+    onClickGoToCookie,
+  } = props
+
   return (
     <SignupPageWrapper>
       <SignupCard>
@@ -103,6 +109,7 @@ export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
             onChangeName={onChangeName}
             onChangeMmId={onChangeMmId}
             onClickRequestCode={onClickRequestCode}
+            onClickBack={onBackFromForm}
           />
         )}
 
@@ -117,9 +124,13 @@ export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
         )}
 
         {step === 'success' && (
-          <SignupStepSuccess onClickGoToCookie={onClickGoToCookie} />
+          <SignupStepSuccess
+            onClickGoToCookie={onClickGoToCookie}
+          />
         )}
       </SignupCard>
     </SignupPageWrapper>
   )
 }
+
+export default SignupFlowContainer
