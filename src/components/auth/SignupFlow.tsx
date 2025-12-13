@@ -240,6 +240,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
       canClickVerifyCode={canClickVerifyCode}
       onNextFromIntro={goToNextFromIntro}
       onNextFromRole={goToFormStep}
+      onBackFromForm={goBackFromForm}
       onChangeCampus={handleCampusChange}
       onChangeClass={handleClassChange}
       onChangeName={handleNameChange}

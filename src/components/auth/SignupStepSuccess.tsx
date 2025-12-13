@@ -1,3 +1,4 @@
+// src/components/auth/SignupStepSuccess.tsx
 import React from 'react'
 import { Button } from '@chakra-ui/react'
 import {
@@ -12,9 +13,9 @@ interface SignupStepSuccessProps {
   onClickGoToCookie: () => void
 }
 
-export const SignupStepSuccess: React.FC<SignupStepSuccessProps> = ({
-  onClickGoToCookie,
-}) => {
+export const SignupStepSuccess: React.FC<
+  SignupStepSuccessProps
+> = ({ onClickGoToCookie }) => {
   return (
     <>
       <SuccessContent>
@@ -38,6 +39,8 @@ export const SignupStepSuccess: React.FC<SignupStepSuccessProps> = ({
           backgroundColor="#2BAEFF"
           color="#FFFFFF"
           _hover={{ backgroundColor: '#1693dd' }}
+          fontFamily="'MoneygraphyPixel', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+          fontSize="16px"
           onClick={onClickGoToCookie}
         >
           쿠키 만들기

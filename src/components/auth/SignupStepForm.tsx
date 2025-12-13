@@ -118,7 +118,9 @@ export const SignupStepForm: React.FC<SignupStepFormProps> = ({
           />
         </FieldGroup>
 
-        <NoticeText>입력하신 정보로 Mattermost DM을 전송합니다</NoticeText>
+        <NoticeText>
+          입력하신 정보로 Mattermost DM을 전송합니다
+        </NoticeText>
       </FormContainer>
 
       <BottomButtonContainer>
