@@ -8,7 +8,7 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
  * - Vite 환경변수로 덮어쓰고 싶으면 .env에 VITE_API_BASE_URL 추가
  */
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? 'https://e67165de-662b-4cde-8559-02a60c381c2c.mock.pstmn.io/api/v1'
+  import.meta.env.VITE_API_BASE_URL ?? 'https://backend-production-acf4.up.railway.app/api/v1'
 
 /**
  * localStorage 에서 액세스 토큰을 가져오는 헬퍼
