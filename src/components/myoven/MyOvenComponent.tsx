@@ -136,7 +136,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
         <ContentContainer $backgroundImage={backgroundImage}>
           <CenterBody>
             <ErrorCard>
-              <ErrorTitle>오븐 연결에 실패했어요 🥲</ErrorTitle>
+              <ErrorTitle>오븐 연결에 실패했어요</ErrorTitle>
               <ErrorMessage>{errorMessage}</ErrorMessage>
               {onRetry && (
                 <RetryButton type="button" onClick={onRetry}>
