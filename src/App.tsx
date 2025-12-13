@@ -3,6 +3,8 @@ import Router from './routes/Router'
 import GlobalStyle from './styles/GlobalStyle'
 import Dialog from './components/common/Dialog'
 import { dialogAtom } from './store/dialog'
+import './styles/fonts.css'
+
 
 function App() {
   const [dialogState, setDialogState] = useAtom(dialogAtom)
