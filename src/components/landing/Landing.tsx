@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
+import '../../styles/fonts.css'
 
 const CookieFontStyle = createGlobalStyle`
   @font-face {
