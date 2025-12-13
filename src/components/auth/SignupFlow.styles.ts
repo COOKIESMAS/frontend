@@ -396,3 +396,30 @@ export const BackButton = styled.button`
   font-size: 24px;
   cursor: pointer;
 `
+
+
+export const StepFormHeader = styled.header`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+`
+
+export const StepFormBackButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  color: #21112c;
+
+  svg {
+    font-size: 18px;
+  }
+`

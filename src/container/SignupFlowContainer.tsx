@@ -43,6 +43,7 @@ export interface SignupFlowViewProps {
   onClickResendCode: () => void
   onClickVerifyCode: () => void
   onClickGoToCookie: () => void
+  onBackFromForm: () => void
 }
 
 export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
@@ -71,6 +72,7 @@ export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
   onClickResendCode,
   onClickVerifyCode,
   onClickGoToCookie,
+  onBackFromForm,
 }) => {
   return (
     <SignupPageWrapper>
@@ -103,6 +105,7 @@ export const SignupFlowContainer: React.FC<SignupFlowViewProps> = ({
             onChangeName={onChangeName}
             onChangeMmId={onChangeMmId}
             onClickRequestCode={onClickRequestCode}
+            onClickBack={onBackFromForm}
           />
         )}
 
