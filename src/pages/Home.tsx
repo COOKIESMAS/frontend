@@ -10,6 +10,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import SideMenu from '@/components/SideMenu'
+import tutorialCookieImg1 from '@/assets/image/tutorial/tutorial_img_1.png'
+import tutorialCookieImg2 from '@/assets/image/tutorial/tutorial_img_2.png'
+import tutorialCookieImg3 from '@/assets/image/tutorial/tutorial_img_3.png'
+import tutorialCookieImg4 from '@/assets/image/tutorial/tutorial_img_4.png'
+import TutorialOverlay from '@/components/TutorialOverlay'
+import { useUser } from '@/hooks/queries/useUser'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -107,8 +113,33 @@ const ButtonText = styled.span`
   margin: 0;
 `
 
+const tutorialSteps = [
+  {
+    id: 's1',
+    image: tutorialCookieImg1,
+    bubbleImage: '',
+    text: `매일 밤 늦게까지 함께 코딩하던 친구들,\n묵묵히 도와주시던 프로님...`,
+    durationMs: 3500,
+  },
+  {
+    id: 's2',
+    image: tutorialCookieImg2,
+    bubbleImage: 'bubbleImg',
+    text: `고마운 마음은 가득한데,\n쑥스러워서 전하지 못한 말이 있지 않나요?`,
+    durationMs: 3500,
+  },
+  {
+    id: 's3',
+    image: tutorialCookieImg3,
+    bubbleImage: 'bubbleImg',
+    text: `서로의 오븐을 따뜻하게 데워볼까요?`,
+    durationMs: 4500,
+  },
+]
+
 export default function Home() {
   const navigate = useNavigate()
+  const { data: user, isLoading } = useUser()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const openMenu = () => setIsMenuOpen(true)
   const closeMenu = () => setIsMenuOpen(false)
@@ -116,6 +147,10 @@ export default function Home() {
   const handleNavigate = (dst: string) => {
     navigate(dst)
   }
+
+  if (isLoading) return null
+
+  const shouldShowTutorial = !!user && !user.isTutorialCompleted
 
   return (
     <AppContainer>
@@ -175,6 +210,18 @@ export default function Home() {
             </FlexWrapper>
           </FlexWrapper>
         </FlexWrapper>
+        {shouldShowTutorial && (
+          <TutorialOverlay
+            steps={tutorialSteps}
+            open={shouldShowTutorial}
+            enableAutoAdvance={false}
+            autoAdvanceMs={0}
+            onFinish={() => {
+              console.log('tutorial finished')
+            }}
+          />
+        )}
+
         <SideMenu open={isMenuOpen} onClose={closeMenu} />
       </PageWrapper>
 
