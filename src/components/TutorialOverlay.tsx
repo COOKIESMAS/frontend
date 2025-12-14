@@ -45,29 +45,6 @@ const CenterImage = styled.img`
   pointer-events: none;
 `
 
-const BubbleWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-`
-
-const Bubble = styled.div<{ bubbleImage?: string }>`
-  max-width: 320px;
-  min-height: 64px;
-  padding: 14px 18px;
-  background: ${({ bubbleImage }) =>
-    bubbleImage ? `url(${bubbleImage}) center/contain no-repeat` : '#ffffff'};
-  background-color: ${({ bubbleImage }) =>
-    bubbleImage ? 'transparent' : '#ffffff'};
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  color: #222;
-  font-size: 15px;
-  line-height: 1.45;
-  text-align: left;
-  white-space: pre-wrap;
-`
-
 const Controls = styled.div`
   display: flex;
   gap: 8px;
