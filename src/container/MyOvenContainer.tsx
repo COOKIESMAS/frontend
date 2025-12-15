@@ -20,31 +20,37 @@ const MyOvenContainer: React.FC = () => {
     return now < xmas
   })()
 
-  const fetchCookies = async () => {
-    try {
-      setIsLoading(true)
-      setErrorMessage(null)
+  
+const fetchCookies = async () => {
+  try {
+    setIsLoading(true)
+    setErrorMessage(null)
 
-      // GET /cookies/
-      const response = await useApi.get<CookieItem[]>('/cookies/')
-      setCookies(response.data ?? [])
-    } catch (error: unknown) {
-      const apiError = error as ApiError
-      const message =
-        apiError.response?.data?.message ??
-        apiError.response?.data?.detail ??
-        '오븐 정보를 불러오는 중 오류가 발생했습니다.'
+    // ✅ 쿼리 파라미터로 type=received 명시
+    const response = await useApi.get<CookieItem[]>('/cookies/', {
+      params: {
+        type: 'received',
+      },
+    })
 
-      setErrorMessage(message)
+    setCookies(response.data ?? [])
+  } catch (error: unknown) {
+    const apiError = error as ApiError
+    const message =
+      apiError.response?.data?.message ??
+      apiError.response?.data?.detail ??
+      '오븐 정보를 불러오는 중 오류가 발생했습니다.'
 
-      // 401이면 로그인 다시
-      if (apiError.response?.status === 401) {
-        navigate('/', { replace: true })
-      }
-    } finally {
-      setIsLoading(false)
+    setErrorMessage(message)
+
+    if (apiError.response?.status === 401) {
+      navigate('/', { replace: true })
     }
+  } finally {
+    setIsLoading(false)
   }
+}
+
 
   useEffect(() => {
     void fetchCookies()
