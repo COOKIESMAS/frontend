@@ -1,10 +1,16 @@
-import { useState } from 'react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { dialogAtom } from '@/store/dialog'
+import { selectedItemsAtom } from '@/store/atoms/cookieAtoms'
+import { receiverAtom } from '@/store/atoms/receiverAtoms'
+import { letterAtom } from '@/store/atoms/letterAtoms'
+import { useBakeCookie } from '@/hooks/mutations/useBakeCookie'
+import type { SendCookieRequest } from '@/types/cookie'
+import { compactDesignData } from '@/constant/items'
+import { resetAllCookieMakeAtom } from '@/store/effects/resetAllCookieMakeAtom'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -145,10 +151,43 @@ const SubmitButton = styled.button`
 function Step3WriteLetter() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
-  const [letterContent, setLetterContent] = useState('')
+
+  const selectedItems = useAtomValue(selectedItemsAtom)
+  const receiver = useAtomValue(receiverAtom)
+  const [letter, setLetter] = useAtom(letterAtom)
+  const resetAll = useSetAtom(resetAllCookieMakeAtom)
+
+  const { mutate } = useBakeCookie()
 
   const handleGoBack = () => {
     navigate(-1)
+  }
+
+  const handleConfirm = async () => {
+    const body: SendCookieRequest = {
+      content: letter,
+      design_data: compactDesignData(selectedItems),
+      receiver_info: {
+        campus: receiver.campus?.label as string,
+        class_number: receiver.classNumber as number,
+        mm_id: receiver.mmId as string,
+        name: receiver.name as string,
+        role: receiver.role,
+      },
+    }
+    mutate(body, {
+      onSuccess: () => {
+        resetAll()
+        navigate('/cookie/finish', {
+          state: {
+            name: receiver.name as string,
+          },
+        })
+      },
+      onError: () => {
+        alert('알 수 없는 에러 발생')
+      },
+    })
   }
 
   const handleSubmit = () => {
@@ -157,7 +196,7 @@ function Step3WriteLetter() {
       title: '이대로 편지를 보낼까요?',
       cancelText: '아니오',
       confirmText: '네!',
-      onConfirm: () => navigate('/cookie/finish'),
+      onConfirm: handleConfirm,
       onCancel: () => {},
     })
   }
@@ -187,11 +226,11 @@ function Step3WriteLetter() {
         <FormSection>
           <TextareaWrapper>
             <LetterTextarea
-              value={letterContent}
-              onChange={(e) => setLetterContent(e.target.value)}
+              value={letter}
+              onChange={(e) => setLetter(e.target.value)}
               maxLength={300}
             />
-            <CharacterCounter>{letterContent.length}/300</CharacterCounter>
+            <CharacterCounter>{letter.length}/300</CharacterCounter>
           </TextareaWrapper>
         </FormSection>
 

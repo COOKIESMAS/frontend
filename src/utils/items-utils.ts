@@ -6,7 +6,6 @@ import {
   type ItemsData,
   type Item,
   type SelectedItems,
-  itemsData,
 } from '@/constant/items'
 
 /**
@@ -71,15 +70,15 @@ export function getAssetsForSub(
 // makeDefaultSelected: 초기 SelectedItems 생성 함수 (face 기본값 보장)
 export function makeDefaultSelected(): SelectedItems {
   return {
-    body: itemsData.face.body.data[0].asset,
-    eyes: itemsData.face.eyes.data[0].asset,
-    mouth: itemsData.face.mouth.data[0].asset,
-    hair: null,
+    accessory: null,
     blush: null,
+    body: 0, // 필수는 기본값
+    eyes: 0,
+    mouth: 0,
+    hair: null,
     hat: null,
+    onePiece: null,
     top: null,
     pants: null,
-    onePiece: null,
-    accessory: null,
   }
 }

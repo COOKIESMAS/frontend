@@ -12,11 +12,10 @@ import {
   classAtom,
   nameAtom,
   mattermostAtom,
+  receiverRoleAtom,
 } from '@/store/atoms/receiverAtoms'
 import {
-  CAMPUS,
-  CAMPUS_LABELS,
-  type CampusKey,
+  CAMPUS_ENTRIES,
   getClassesForCampus,
   // getStudentsForClass, // 학생 목록은 이제 사용하지 않음
   isDuplicatedUser,
@@ -285,12 +284,12 @@ const TooltipInner = styled.div`
 function Step2ChooseReceiver() {
   const navigate = useNavigate()
 
-  const [activeToggle, setActiveToggle] = useState<'student' | 'pro'>('student')
   const [tooltipPosition, setTooltipPosition] = useState<'top' | 'bottom'>(
     'top',
   )
 
   // jotai atoms
+  const [role, setRole] = useAtom(receiverRoleAtom)
   const [campus, setCampus] = useAtom(campusAtom)
   const [classNum, setClassNum] = useAtom(classAtom)
   const [name, setName] = useAtom(nameAtom) // 이제 Input 값으로 사용
@@ -299,8 +298,6 @@ function Step2ChooseReceiver() {
   const labelWrapRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
-
-  const campusOptions = Object.values(CAMPUS) as CampusKey[]
 
   const computePosition = () => {
     if (!labelWrapRef.current) return
@@ -335,7 +332,7 @@ function Step2ChooseReceiver() {
       window.removeEventListener('resize', onResize)
       window.removeEventListener('scroll', onResize, true)
     }
-  }, [isOpen, activeToggle])
+  }, [isOpen, role])
 
   const openTooltip = () => setIsOpen(true)
   const closeTooltip = () => setIsOpen(false)
@@ -363,9 +360,10 @@ function Step2ChooseReceiver() {
    * 3. 해당 조합이 user.ts의 duplicatedUserData에 있을 경우
    */
   const shouldShowMattermost =
-    activeToggle === 'student' &&
+    role === 'STUDENT' &&
     Boolean(campus && classNum && name && name.trim()) &&
-    isDuplicatedUser(campus!, classNum as number, name!.trim() as string)
+    campus &&
+    isDuplicatedUser(campus.key!, classNum as number, name!.trim() as string)
 
   // clear dependent fields if parent changes
   useEffect(() => {
@@ -390,7 +388,7 @@ function Step2ChooseReceiver() {
     setName(null)
     setMattermostId(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeToggle])
+  }, [role])
 
   return (
     <AppContainer>
@@ -413,14 +411,15 @@ function Step2ChooseReceiver() {
 
         <ToggleWrapper>
           <ToggleButton
-            active={activeToggle === 'student'}
-            onClick={() => setActiveToggle('student')}
+            active={role === 'STUDENT'}
+            onClick={() => setRole('STUDENT')}
           >
             교육생
           </ToggleButton>
+
           <ToggleButton
-            active={activeToggle === 'pro'}
-            onClick={() => setActiveToggle('pro')}
+            active={role === 'TEACHER'}
+            onClick={() => setRole('TEACHER')}
           >
             프로님 / 강사님
           </ToggleButton>
@@ -428,20 +427,23 @@ function Step2ChooseReceiver() {
 
         <FormSection>
           {/* 교육생 선택 시 캠퍼스 및 반 선택 */}
-          {activeToggle === 'student' && (
+          {role === 'STUDENT' && (
             <>
               <div>
                 <Label>캠퍼스</Label>
                 <Select
-                  value={campus ?? ''}
-                  onChange={(e) =>
-                    setCampus((e.target.value as CampusKey) || null)
-                  }
+                  value={campus?.key ?? ''}
+                  onChange={(e) => {
+                    const selected = CAMPUS_ENTRIES.find(
+                      (c) => c.key === e.target.value,
+                    )
+                    setCampus(selected ?? null)
+                  }}
                 >
-                  <option value="">선택</option> {/* '선택' 옵션 추가 */}
-                  {campusOptions.map((c) => (
-                    <option key={c} value={c}>
-                      {CAMPUS_LABELS[c]}
+                  <option value="">선택</option>
+                  {CAMPUS_ENTRIES.map(({ key, label }) => (
+                    <option key={key} value={key}>
+                      {label}
                     </option>
                   ))}
                 </Select>
@@ -459,7 +461,7 @@ function Step2ChooseReceiver() {
                   <option value="">선택</option>
                   {/* campus가 null이 아닐 때만 반 목록을 가져옴 */}
                   {campus &&
-                    getClassesForCampus(campus).map((num) => (
+                    getClassesForCampus(campus.key).map((num) => (
                       <option key={num} value={num}>
                         {num}반
                       </option>

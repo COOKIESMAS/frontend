@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import celebrate from '@/assets/image/celebrate.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -95,6 +95,7 @@ const IconWrapper = styled.span`
 /* ===== tooltip 관련 스타일 (Label을 hover 또는 focus-within 했을 때 프로필 카드 노출) ===== */
 
 function Finish() {
+  const location = useLocation()
   const navigate = useNavigate()
 
   const handleNavigate = (url: string) => {
@@ -108,7 +109,7 @@ function Finish() {
         <MainWrapper direction="column" align="center" justify="center">
           <CelebrateImg src={celebrate} />
           <Title>쿠키 배달 완료!</Title>
-          <Text>{`이싸피 님의 오븐에서 
+          <Text>{`${location.state.name ?? '김싸피'} 님의 오븐에서 
           따뜻하게 구우지고 있어요`}</Text>
         </MainWrapper>
         <BottomButtonWrapper direction="column" gap="16px">
