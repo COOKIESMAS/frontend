@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -8,6 +7,8 @@ import {
   faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { useUser } from '@/hooks/queries/useUser'
+import { useEditUser } from '@/hooks/mutations/useEditUser'
 
 /* ------------------ 스타일 ------------------ */
 
@@ -217,15 +218,10 @@ const SmallIcon = styled(FontAwesomeIcon)`
 export default function MyPage() {
   const navigate = useNavigate()
 
-  // 임시 데이터 — 실제앱은 API / jotai 등에서 가져오기
-  const [isPublic, setIsPublic] = useState(true)
-  const user = {
-    campus: '구미 6반',
-    name: '김싸피',
-    email: 'ssafykim@gmail.com',
-    baked: 5,
-    received: 8,
-  }
+  const { data } = useUser()
+  const { mutate, isPending } = useEditUser()
+
+  if (!data) return null
 
   return (
     <Container>
@@ -241,14 +237,18 @@ export default function MyPage() {
           <AvatarPlaceholder aria-hidden>KS</AvatarPlaceholder>
 
           <ProfileInfo>
-            <CampusText>{user.campus}</CampusText>
-            <NameText>{user.name}</NameText>
+            <CampusText>
+              <span>{data?.campus} </span>
+              <span>{data?.classNumber}</span>
+              <span>반</span>
+            </CampusText>
+            <NameText>{data?.name ?? '김싸피'}</NameText>
             <EmailRow>
               <FontAwesomeIcon
                 icon={faGoogle}
                 style={{ color: '#DB4437', fontSize: 16 }}
               />
-              <span>{user.email}</span>
+              <span>{data?.googleEmail}</span>
             </EmailRow>
           </ProfileInfo>
         </ProfileTop>
@@ -267,12 +267,12 @@ export default function MyPage() {
           </SettingLeft>
 
           <SwitchTrack
-            on={isPublic}
-            aria-pressed={isPublic}
-            aria-label="오븐 공개 설정"
-            onClick={() => setIsPublic((v) => !v)}
+            on={!!data?.isOvenOpen}
+            disabled={isPending}
+            aria-disabled={isPending}
+            onClick={() => mutate({ isOvenOpen: !data?.isOvenOpen })}
           >
-            <SwitchKnob on={isPublic} />
+            <SwitchKnob on={!!data?.isOvenOpen} />
           </SwitchTrack>
         </SettingRow>
       </ProfileBox>
@@ -282,12 +282,12 @@ export default function MyPage() {
       <StatsRow>
         <StatCol>
           <StatLabel>구운 쿠키</StatLabel>
-          <StatValue>{user.baked}</StatValue>
+          <StatValue>{data?.sentCookiesCount}</StatValue>
         </StatCol>
 
         <StatCol>
           <StatLabel>받은 쿠키</StatLabel>
-          <StatValue>{user.received}</StatValue>
+          <StatValue>{data?.receivedCookiesCount}</StatValue>
         </StatCol>
       </StatsRow>
 
