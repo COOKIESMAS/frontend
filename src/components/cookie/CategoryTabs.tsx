@@ -1,5 +1,11 @@
 import styled from 'styled-components'
-import { type ItemsData, type MainCategoryKey } from '@/constant/items'
+import { useAtom } from 'jotai'
+import {
+  MAIN_CATEGORY_LABEL,
+  MAIN_CATEGORY_SUBS,
+  type MainCategoryKey,
+} from '@/constant/items'
+import { mainCategoryAtom, subCategoryAtom } from '@/store/atoms/cookieAtoms'
 
 const TabsContainer = styled.div`
   display: flex;
@@ -8,6 +14,7 @@ const TabsContainer = styled.div`
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 `
+
 const TabBtn = styled.button<{ active?: boolean }>`
   width: 100%;
   border: none;
@@ -24,24 +31,29 @@ const TabBtn = styled.button<{ active?: boolean }>`
   }
 `
 
-export default function CategoryTabs({
-  mainCategory,
-  setMainCategory,
-  itemsData,
-}: {
-  mainCategory: MainCategoryKey
-  setMainCategory: (c: MainCategoryKey) => void
-  itemsData: ItemsData
-}) {
+export default function CategoryTabs() {
+  const [mainCategory, setMainCategory] = useAtom(mainCategoryAtom)
+  const [, setSubCategory] = useAtom(subCategoryAtom)
+
+  const handleClick = (cat: MainCategoryKey) => {
+    if (cat === mainCategory) return
+
+    setMainCategory(cat)
+
+    // 메인 카테고리 변경 시 첫 서브카테고리로 초기화
+    const firstSub = MAIN_CATEGORY_SUBS[cat][0]
+    setSubCategory(firstSub)
+  }
+
   return (
     <TabsContainer>
-      {(Object.keys(itemsData) as MainCategoryKey[]).map((cat) => (
+      {(Object.keys(MAIN_CATEGORY_SUBS) as MainCategoryKey[]).map((cat) => (
         <TabBtn
           key={cat}
           active={mainCategory === cat}
-          onClick={() => setMainCategory(cat)}
+          onClick={() => handleClick(cat)}
         >
-          {itemsData[cat].type}
+          {MAIN_CATEGORY_LABEL[cat]}
         </TabBtn>
       ))}
     </TabsContainer>
