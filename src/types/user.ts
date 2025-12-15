@@ -10,6 +10,8 @@ export interface User {
   isOvenOpen: boolean
   isTutorialCompleted: boolean
   description: string
+  sentCookiesCount: number
+  receivedCookiesCount: number
 }
 
 export type UserRole = 'USER' | 'ADMIN' | 'MASTER'
@@ -26,4 +28,6 @@ export interface UserResponse {
   is_oven_open: boolean
   is_tutorial_completed: boolean
   description: string
+  sent_cookies_count: number
+  received_cookies_count: number
 }
