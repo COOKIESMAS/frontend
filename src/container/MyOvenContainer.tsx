@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/containers/MyOvenContainer.tsx
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApi, type ApiError } from '../utils/useApi'
 import type { CookieItem } from '../types/cookie'
 import { MyOvenComponent } from '../components/myoven/MyOvenComponent'
+import BottomNavigation from '@/components/BottomNavigation'
 
 const MyOvenContainer: React.FC = () => {
   const [cookies, setCookies] = useState<CookieItem[]>([])
@@ -20,37 +22,35 @@ const MyOvenContainer: React.FC = () => {
     return now < xmas
   })()
 
-  
-const fetchCookies = async () => {
-  try {
-    setIsLoading(true)
-    setErrorMessage(null)
+  const fetchCookies = async () => {
+    try {
+      setIsLoading(true)
+      setErrorMessage(null)
 
-    // ✅ 쿼리 파라미터로 type=received 명시
-    const response = await useApi.get<CookieItem[]>('/cookies/', {
-      params: {
-        type: 'received',
-      },
-    })
+      // ✅ 쿼리 파라미터로 type=received 명시
+      const response = await useApi.get<CookieItem[]>('/cookies/', {
+        params: {
+          type: 'received',
+        },
+      })
 
-    setCookies(response.data ?? [])
-  } catch (error: unknown) {
-    const apiError = error as ApiError
-    const message =
-      apiError.response?.data?.message ??
-      apiError.response?.data?.detail ??
-      '오븐 정보를 불러오는 중 오류가 발생했습니다.'
+      setCookies(response.data ?? [])
+    } catch (error: unknown) {
+      const apiError = error as ApiError
+      const message =
+        (apiError.response?.data as any)?.message ??
+        (apiError.response?.data as any)?.detail ??
+        '오븐 정보를 불러오는 중 오류가 발생했습니다.'
 
-    setErrorMessage(message)
+      setErrorMessage(message)
 
-    if (apiError.response?.status === 401) {
-      navigate('/', { replace: true })
+      if (apiError.response?.status === 401) {
+        navigate('/', { replace: true })
+      }
+    } finally {
+      setIsLoading(false)
     }
-  } finally {
-    setIsLoading(false)
   }
-}
-
 
   useEffect(() => {
     void fetchCookies()
@@ -86,16 +86,41 @@ const fetchCookies = async () => {
     }
   }
 
+  /** 쿠키 클릭 시: 안 읽은 쿠키만 읽음 처리 */
+  const handleClickCookie = async (cookie: CookieItem) => {
+    // ✅ 이미 읽은 쿠키면 요청 안 보냄
+    if (cookie.is_read) {
+      return
+    }
+
+    try {
+      await useApi.patch(`/cookies/${cookie.cookie_pk}/read`)
+
+      // 로컬 상태 갱신 (해당 쿠키만 is_read: true)
+      setCookies((prev) =>
+        prev.map((c) =>
+          c.cookie_pk === cookie.cookie_pk ? { ...c, is_read: true } : c,
+        ),
+      )
+    } catch (error) {
+      console.error('쿠키 읽음 처리 실패', error)
+    }
+  }
+
   return (
-    <MyOvenComponent
-      cookies={cookies}
-      loading={isLoading}
-      errorMessage={errorMessage}
-      isBeforeXmas={isBeforeXmas}
-      onRetry={fetchCookies}
-      onClickBack={handleClickBack}
-      onClickShareLink={handleClickShareLink}
-    />
+    <>
+      <MyOvenComponent
+        cookies={cookies}
+        loading={isLoading}
+        errorMessage={errorMessage}
+        isBeforeXmas={isBeforeXmas}
+        onRetry={fetchCookies}
+        onClickBack={handleClickBack}
+        onClickShareLink={handleClickShareLink}
+        onClickCookie={handleClickCookie}
+      />
+      <BottomNavigation />
+    </>
   )
 }
 

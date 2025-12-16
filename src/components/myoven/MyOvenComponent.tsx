@@ -5,12 +5,13 @@ import React, {
   type TouchEvent,
 } from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import type { CookieItem, CookieDesignData } from '../../types/cookie'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faAngleLeft,
   faAngleRight,
 } from '@fortawesome/free-solid-svg-icons'
+import OvenCookieImageRenderer from './OvenCookieImageRenderer'
+import type { CookieItem } from '@/types/cookie'
 
 const PAN_SIZE = 4
 type SlideDirection = 'left' | 'right' | null
@@ -27,6 +28,8 @@ interface MyOvenComponentProps {
   onClickShareLink: () => void
   /** 에러 시 재시도 버튼 클릭 핸들러 (선택) */
   onRetry?: () => void
+  /** 쿠키 클릭 시 (읽음 처리 + 상세 보기 등) */
+  onClickCookie: (cookie: CookieItem) => void
 }
 
 export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
@@ -37,6 +40,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   onClickBack,
   onClickShareLink,
   onRetry,
+  onClickCookie,
 }) => {
   const hasCookies = cookies.length > 0
   const [currentPanIndex, setCurrentPanIndex] = useState(0)
@@ -203,9 +207,11 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
               {/* 쿠키 배치 영역 */}
               <CookiesGrid>
                 {cookiesInCurrentPan.map((cookie) => (
-                  <CookiePlaceholder
+                  <OvenCookieImageRenderer
                     key={cookie.cookie_pk}
                     designData={cookie.design_data}
+                    isRead={cookie.is_read}
+                    onClick={() => onClickCookie(cookie)}
                   />
                 ))}
 
@@ -246,32 +252,6 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
 }
 
 //region CSS
-
-/* ───────────── 쿠키 Placeholder ───────────── */
-
-const CookiePlaceholderBox = styled.div`
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
-  background-color: rgba(0, 0, 0, 0.9);
-`
-
-interface CookiePlaceholderProps {
-  designData: CookieDesignData
-}
-
-/**
- * 실제 쿠키 컴포넌트로 교체될 자리.
- * 지금은 designData 를 받아서 검은 네모만 표시.
- */
-const CookiePlaceholder: React.FC<CookiePlaceholderProps> = ({
-  designData,
-}) => {
-  // TODO: 공통 쿠키 컴포넌트와 연결 시 designData 사용
-  console.log('cookie design parts:', designData)
-  return <CookiePlaceholderBox />
-}
-
 const CookiePlaceholderEmpty = styled.div`
   width: 72px;
   height: 72px;
