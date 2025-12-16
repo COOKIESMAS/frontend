@@ -28,6 +28,8 @@ interface MyOvenComponentProps {
   onClickShareLink: () => void
   /** 에러 시 재시도 버튼 클릭 핸들러 (선택) */
   onRetry?: () => void
+  /** 쿠키 클릭 시 (읽음 처리 + 상세 보기 등) */
+  onClickCookie: (cookie: CookieItem) => void
 }
 
 export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
@@ -38,6 +40,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   onClickBack,
   onClickShareLink,
   onRetry,
+  onClickCookie,
 }) => {
   const hasCookies = cookies.length > 0
   const [currentPanIndex, setCurrentPanIndex] = useState(0)
@@ -207,6 +210,8 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
                   <OvenCookieImageRenderer
                     key={cookie.cookie_pk}
                     designData={cookie.design_data}
+                    isRead={cookie.is_read}
+                    onClick={() => onClickCookie(cookie)}
                   />
                 ))}
 
