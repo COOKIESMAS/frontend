@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useApi, type ApiError } from '../utils/useApi'
 import type { CookieItem } from '../types/cookie'
 import { MyOvenComponent } from '../components/myoven/MyOvenComponent'
+import BottomNavigation from '@/components/BottomNavigation'
 
 const MyOvenContainer: React.FC = () => {
   const [cookies, setCookies] = useState<CookieItem[]>([])
@@ -87,15 +88,19 @@ const fetchCookies = async () => {
   }
 
   return (
-    <MyOvenComponent
-      cookies={cookies}
-      loading={isLoading}
-      errorMessage={errorMessage}
-      isBeforeXmas={isBeforeXmas}
-      onRetry={fetchCookies}
-      onClickBack={handleClickBack}
-      onClickShareLink={handleClickShareLink}
-    />
+    <>
+      <MyOvenComponent
+        cookies={cookies}
+        loading={isLoading}
+        errorMessage={errorMessage}
+        isBeforeXmas={isBeforeXmas}
+        onRetry={fetchCookies}
+        onClickBack={handleClickBack}
+        onClickShareLink={handleClickShareLink}
+      />
+      <BottomNavigation />
+    </>
+
   )
 }
 

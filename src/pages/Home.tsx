@@ -194,7 +194,7 @@ export default function Home() {
                 titleColor="black"
                 textColor="#555555"
               >
-                <ButtonTitle>내 오븐</ButtonTitle>
+                <ButtonTitle onClick={()=> handleNavigate('/myoven')}>내 오븐</ButtonTitle>
                 <ButtonText>받은 쿠키 구경하기</ButtonText>
               </ActionButton>
 
