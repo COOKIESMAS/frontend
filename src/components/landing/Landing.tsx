@@ -49,6 +49,8 @@ export const Landing: React.FC = () => {
               <ButtonText>Google 계정으로 로그인</ButtonText>
             </GoogleButtonInner>
           </GoogleButton>
+          <Agreement>가입함으로써 쿠키스마스팀의 개인정보 처리방침과 서비스 이용약관에 동의합니다</Agreement>
+
         </ContentContainer>
       </PageWrapper>
     </>
@@ -244,6 +246,16 @@ const ButtonText = styled.span`
     BlinkMacSystemFont, sans-serif;
   font-size: 16px;
   color: #ffffff;
+`
+
+const Agreement = styled.text`
+  font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Light.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    color: #5D5D5D;
+    font-size: 14px;
+    margin-top: -20px;
 `
 
 //#endregion
