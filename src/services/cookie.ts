@@ -6,3 +6,15 @@ export async function bakeCookieApi(body: SendCookieRequest) {
 
   return response.data
 }
+
+export async function getSendCookieListApi() {
+  const response = await useApi.get('/cookies/?type=sent')
+
+  return response.data
+}
+
+export async function getSendCookieDetailApi(targetId: string) {
+  const response = await useApi.get(`cookies?type=sent&target_id=${targetId}`)
+
+  return response.data
+}

@@ -34,3 +34,59 @@ export interface ReceiverInfo {
   name: string
   role: ReceiverRole
 }
+
+// 보낸 쿠키 관련
+
+export interface CookieDesignImgData {
+  accessory?: string
+  blush?: string
+  body?: string
+  eyes?: string
+  hair?: string
+  hat?: string
+  mouth?: string
+  onePiece?: string
+  pants?: string
+  top?: string
+}
+
+export interface SendCookieItem {
+  cookie_pk: number
+  content: string
+  created_at: string
+  design_data: CookieDesignImgData
+  is_read: boolean
+  receiver_id: number
+  receiver_name: string
+  sender_id: number
+  sender_name: string
+}
+
+export type SendCookieListResponse = SendCookieItem[]
+
+export interface CookieDesignImgDataCamel {
+  accessory?: string
+  blush?: string
+  body?: string
+  eyes?: string
+  hair?: string
+  hat?: string
+  mouth?: string
+  onePiece?: string
+  pants?: string
+  top?: string
+}
+
+export interface SendCookieItemCamel {
+  cookiePk: number
+  content: string
+  createdAt: string
+  designData: CookieDesignImgDataCamel
+  isRead: boolean
+  receiverId: number
+  receiverName: string
+  senderId: number
+  senderName: string
+}
+
+export type SendCookieListResponseCamel = SendCookieItemCamel[]
