@@ -40,18 +40,30 @@ const LetterWrapper = styled.div`
 `
 
 const ToPill = styled.div`
-  background: white;
+  background: #ffffff;
   min-width: 240px;
   padding: 10px 20px;
   border-radius: 20px;
-  font-size: 20px;
-  font-weight: bold;
   display: flex;
-  justify-content: center; /* 가운데 정렬 */
+  justify-content: center;
   align-items: center;
   gap: 8px;
   width: fit-content;
-  margin: 0 auto; /* 전체적으로도 가운데 정렬 */
+  margin: 0 auto;
+
+  font-family: 'DNFBitBitv2', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+`
+
+const ToLabel = styled.span`
+  color: #868686;
+  margin-right: 8px;
+`
+
+const ToNameText = styled.span`
+  color: #000000;
 `
 
 const LetterBox = styled.div`
@@ -66,6 +78,9 @@ const LetterBox = styled.div`
   line-height: 1.6;
   white-space: pre-wrap;
   width: 100%;
+
+  font-family: 'Galmuri14', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
 
   /* 스크롤바 스타일 (웹kit) */
   &::-webkit-scrollbar {
@@ -121,11 +136,11 @@ export default function CookieDetail() {
         </BackButton>
       </HeaderRow>
       <LetterWrapper>
-        <ToPill aria-label={`받는사람: ${data.toName}`}>
-          <span style={{ color: '#777', marginRight: 8 }}>To.</span>
-          <span>
+       <ToPill aria-label={`받는사람: ${data.toName}`}>
+          <ToLabel>To.</ToLabel>
+          <ToNameText>
             {data.toMeta ? `${data.toMeta} ${data.toName}` : data.toName}
-          </span>
+          </ToNameText>
         </ToPill>
         <LetterBox id="letter-heading" aria-label="편지 내용">
           {data.message}

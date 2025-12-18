@@ -23,7 +23,7 @@ const Overlay = styled.div<{ visible: boolean }>`
   display: ${({ visible }) => (visible ? 'flex' : 'none')};
   align-items: center;
   justify-content: center;
-  z-index: 2000; /* 충분히 위에 */
+  z-index: 2000;
   padding: 20px;
   box-sizing: border-box;
 `
@@ -35,6 +35,10 @@ const Card = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 14px;
+
+  /* 전체 튜토리얼 카드에 장미체 적용 */
+  font-family: 'NanumJangMiCe', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
 `
 
 const CenterImageWrapper = styled.div`
@@ -46,6 +50,7 @@ const CenterImage = styled.img`
   user-select: none;
   pointer-events: none;
 `
+
 const TextImage = styled.img`
   position: absolute;
   top: 0;
@@ -65,10 +70,15 @@ const Button = styled.button<{ primary?: boolean }>`
   border-radius: 999px;
   border: none;
   cursor: pointer;
-  background: ${({ primary }) => (primary ? '#111' : 'rgba(255,255,255,0.95)')};
+  background: ${({ primary }) =>
+    primary ? '#111' : 'rgba(255,255,255,0.95)'};
   color: ${({ primary }) => (primary ? '#fff' : '#111')};
   font-weight: 600;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
+
+  /* 버튼도 장미체로 고정 */
+  font-family: 'NanumJangMiCe', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
 `
 
 const Dots = styled.div`
@@ -101,7 +111,6 @@ export default function TutorialOverlay({
   autoAdvanceMs?: number
   /** 튜토리얼 끝났을 때 호출 */
   onFinish?: () => void
-  /** 로컬 스토리지 키(한 번만 보여주기 등) */
 }) {
   const [visible, setVisible] = useState<boolean>(open)
   const [index, setIndex] = useState(0)
@@ -153,6 +162,7 @@ export default function TutorialOverlay({
       finish()
     }
   }
+
   const goPrev = () => setIndex((i) => Math.max(0, i - 1))
 
   if (!visible) return null
@@ -196,7 +206,7 @@ export default function TutorialOverlay({
 
         <div
           style={{ display: 'flex', justifyContent: 'center', marginTop: 6 }}
-        ></div>
+        />
       </Card>
     </Overlay>
   )
