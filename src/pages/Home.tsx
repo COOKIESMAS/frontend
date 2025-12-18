@@ -187,6 +187,7 @@ export default function Home() {
   const navigate = useNavigate()
   const { isLoading } = useUser()
   const { mutate } = useEditUser()
+  const { data: user } = useUser()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const openMenu = () => setIsMenuOpen(true)
   const closeMenu = () => setIsMenuOpen(false)
@@ -206,8 +207,8 @@ export default function Home() {
 
   if (isLoading) return null
 
-  // const shouldShowTutorial = !!user && !user.isTutorialCompleted
-  const shouldShowTutorial = true
+  const shouldShowTutorial = !!user && !user.isTutorialCompleted
+  // const shouldShowTutorial = true
 
   return (
     <AppContainer>
