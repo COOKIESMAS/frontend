@@ -33,6 +33,15 @@ const Card = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 14px;
+
+  /* 전체 튜토리얼 카드에 장미체 적용 */
+  font-family:
+    'NanumJangMiCe',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 `
 
 const CenterImageWrapper = styled.div`
@@ -103,6 +112,15 @@ const Button = styled.button<{ primary?: boolean }>`
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  /* 버튼도 장미체로 고정 */
+  font-family:
+    'NanumJangMiCe',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 `
 const Dots = styled.div`
   display: flex;
@@ -215,6 +233,10 @@ export default function TutorialOverlay({
             {index === steps.length - 1 ? '완료' : '다음'}
           </Button>
         </Controls>
+
+        <div
+          style={{ display: 'flex', justifyContent: 'center', marginTop: 6 }}
+        />
       </Card>
     </Overlay>
   )

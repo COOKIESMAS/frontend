@@ -252,7 +252,7 @@ export default function SendList() {
         <BadgeWrapper>
           <CountBadge>
             <CountLabel style={{ fontSize: 12 }}>보낸 쿠키</CountLabel>
-            <CountValue style={{ fontSize: 20, lineHeight: 1 }}>
+            <CountValue style={{ fontSize: 20, lineHeight: 1.4 }}>
               {totalCount}개
             </CountValue>
           </CountBadge>
