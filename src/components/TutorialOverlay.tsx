@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
-/**
- * Tutorial step 형태
- * - image: 중앙에 보여줄 이미지 (쿠키 등)
- * - bubbleImage?: 말풍선 배경 이미지(선택)
- * - text?: 말풍선에 들어갈 텍스트 (HTML 아님, 단순 텍스트/줄바꿈 허용)
- * - durationMs?: 이 스텝을 자동으로 넘길 시간(밀리초). undefined면 자동 진행 안 함.
- */
 export type TutorialStep = {
   id?: string
   image?: string
   textImg?: string
-  text?: string
+  textImgTranslate?: {
+    x: number | string
+    y: number | string
+  }
   durationMs?: number
 }
+
+// --- Styled Components (애니메이션 수정) ---
 
 const Overlay = styled.div<{ visible: boolean }>`
   position: absolute;
@@ -23,7 +21,7 @@ const Overlay = styled.div<{ visible: boolean }>`
   display: ${({ visible }) => (visible ? 'flex' : 'none')};
   align-items: center;
   justify-content: center;
-  z-index: 2000; /* 충분히 위에 */
+  z-index: 2000;
   padding: 20px;
   box-sizing: border-box;
 `
@@ -41,25 +39,57 @@ const CenterImageWrapper = styled.div`
   position: relative;
 `
 
+// 위치(tx, ty)를 고정한 상태에서 등장하는 애니메이션
+const fadeSlideIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--tx), var(--ty)) translateY(0) scale(1);
+  }
+`
+
 const CenterImage = styled.img`
   object-fit: contain;
   user-select: none;
   pointer-events: none;
-`
-const TextImage = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-10%, -60%);
+  --tx: 0px;
+  --ty: 0px;
+  animation: ${fadeSlideIn} 240ms ease-out backwards;
 `
 
+const TextImage = styled.img<{
+  $translateX?: number | string
+  $translateY?: number | string
+}>`
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+
+  /* 위치 좌표를 먼저 정의 */
+  --tx: ${({ $translateX }) =>
+    typeof $translateX === 'number'
+      ? `${$translateX}px`
+      : $translateX || '-70%'};
+  --ty: ${({ $translateY }) =>
+    typeof $translateY === 'number'
+      ? `${$translateY}px`
+      : $translateY || '-60%'};
+
+  /* 위치 고정 및 애니메이션 적용 */
+  transform: translate(var(--tx), var(--ty));
+  animation: ${fadeSlideIn} 240ms ease-out backwards;
+`
+
+// --- UI Components ---
 const Controls = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
   margin-top: 6px;
 `
-
 const Button = styled.button<{ primary?: boolean }>`
   padding: 8px 12px;
   border-radius: 999px;
@@ -69,14 +99,16 @@ const Button = styled.button<{ primary?: boolean }>`
   color: ${({ primary }) => (primary ? '#fff' : '#111')};
   font-weight: 600;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `
-
 const Dots = styled.div`
   display: flex;
   gap: 6px;
   align-items: center;
 `
-
 const Dot = styled.div<{ active?: boolean }>`
   width: ${({ active }) => (active ? '12px' : '8px')};
   height: 8px;
@@ -93,54 +125,17 @@ export default function TutorialOverlay({
   onFinish,
 }: {
   steps: TutorialStep[]
-  /** 열림 여부 */
   open: boolean
-  /** 자동 진행 여부 */
   enableAutoAdvance?: boolean
-  /** 기본 자동 진행 시간 (각 step의 durationMs가 없을 때 사용) */
   autoAdvanceMs?: number
-  /** 튜토리얼 끝났을 때 호출 */
   onFinish?: () => void
-  /** 로컬 스토리지 키(한 번만 보여주기 등) */
 }) {
   const [visible, setVisible] = useState<boolean>(open)
   const [index, setIndex] = useState(0)
   const timerRef = useRef<number | null>(null)
   const mountedRef = useRef(true)
 
-  useEffect(() => {
-    mountedRef.current = true
-    return () => {
-      mountedRef.current = false
-      if (timerRef.current) window.clearTimeout(timerRef.current)
-    }
-  }, [])
-
-  // 자동 진행: 현재 스텝의 duration 설정을 우선 사용, 없으면 autoAdvanceMs, 없으면 비활성
-  useEffect(() => {
-    if (!visible) return
-    if (!enableAutoAdvance) return
-    const step = steps[index]
-    const dur = step?.durationMs ?? autoAdvanceMs
-    if (!dur || dur <= 0) return
-    if (timerRef.current) window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => {
-      if (!mountedRef.current) return
-      if (index < steps.length - 1) {
-        setIndex((i) => i + 1)
-      } else {
-        finish()
-      }
-    }, dur)
-    return () => {
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current)
-        timerRef.current = null
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, visible])
-
+  // 1. 에러 해결 핵심: finish와 핸들러들을 useEffect보다 위로 올립니다.
   const finish = () => {
     setVisible(false)
     onFinish?.()
@@ -153,50 +148,73 @@ export default function TutorialOverlay({
       finish()
     }
   }
+
   const goPrev = () => setIndex((i) => Math.max(0, i - 1))
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  // 2. 이제 finish가 위에 선언되어 있으므로 여기서 에러가 나지 않습니다.
+  useEffect(() => {
+    if (!visible) return
+    if (!enableAutoAdvance) return
+    const step = steps[index]
+    const dur = step?.durationMs ?? autoAdvanceMs
+    if (!dur || dur <= 0) return
+
+    if (timerRef.current) window.clearTimeout(timerRef.current)
+
+    timerRef.current = window.setTimeout(() => {
+      if (!mountedRef.current) return
+      goNext() // finish를 직접 부르는 대신 goNext를 사용하면 로직이 더 깔끔합니다.
+    }, dur)
+
+    return () => {
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+    }
+  }, [index, visible])
 
   if (!visible) return null
 
   const cur = steps[index] ?? {}
 
   return (
-    <Overlay
-      visible={visible}
-      role="dialog"
-      aria-modal="true"
-      aria-label="홈 튜토리얼"
-    >
+    <Overlay visible={visible} role="dialog" aria-modal="true">
       <Card>
-        <CenterImageWrapper>
+        <CenterImageWrapper key={index}>
           {cur.image && (
             <CenterImage src={cur.image} alt={`step-${index + 1}`} />
           )}
-          {cur.textImg && <TextImage src={cur.textImg} />}
+          {cur.textImg && (
+            <TextImage
+              src={cur.textImg}
+              $translateX={cur.textImgTranslate?.x}
+              $translateY={cur.textImgTranslate?.y}
+            />
+          )}
         </CenterImageWrapper>
 
         <Controls>
-          <Button
-            onClick={goPrev}
-            disabled={index === 0}
-            aria-disabled={index === 0}
-          >
+          <Button onClick={goPrev} disabled={index === 0}>
             이전
           </Button>
-
           <Dots aria-hidden>
             {steps.map((_, i) => (
               <Dot key={i} active={i === index} />
             ))}
           </Dots>
-
           <Button primary onClick={goNext}>
             {index === steps.length - 1 ? '완료' : '다음'}
           </Button>
         </Controls>
-
-        <div
-          style={{ display: 'flex', justifyContent: 'center', marginTop: 6 }}
-        ></div>
       </Card>
     </Overlay>
   )
