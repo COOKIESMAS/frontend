@@ -11,7 +11,7 @@ import styled from 'styled-components'
 export type TutorialStep = {
   id?: string
   image?: string
-  bubbleImage?: string
+  textImg?: string
   text?: string
   durationMs?: number
 }
@@ -37,12 +37,20 @@ const Card = styled.div`
   gap: 14px;
 `
 
+const CenterImageWrapper = styled.div`
+  position: relative;
+`
+
 const CenterImage = styled.img`
-  width: 160px;
-  height: 160px;
   object-fit: contain;
   user-select: none;
   pointer-events: none;
+`
+const TextImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-10%, -60%);
 `
 
 const Controls = styled.div`
@@ -159,7 +167,12 @@ export default function TutorialOverlay({
       aria-label="홈 튜토리얼"
     >
       <Card>
-        {cur.image && <CenterImage src={cur.image} alt={`step-${index + 1}`} />}
+        <CenterImageWrapper>
+          {cur.image && (
+            <CenterImage src={cur.image} alt={`step-${index + 1}`} />
+          )}
+          {cur.textImg && <TextImage src={cur.textImg} />}
+        </CenterImageWrapper>
 
         <Controls>
           <Button

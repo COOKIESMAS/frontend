@@ -8,14 +8,24 @@ import Text1 from '@/assets/image/text_1.svg'
 import HomeTitleImg from '@/assets/image/home_title.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SideMenu from '@/components/SideMenu'
 import tutorialCookieImg1 from '@/assets/image/tutorial/tutorial_img_1.png'
 import tutorialCookieImg2 from '@/assets/image/tutorial/tutorial_img_2.png'
 import tutorialCookieImg3 from '@/assets/image/tutorial/tutorial_img_3.png'
 import tutorialCookieImg4 from '@/assets/image/tutorial/tutorial_img_4.png'
+import tutorialCookieImg5 from '@/assets/image/tutorial/tutorial_img_5.png'
+import tutorialCookieImg6 from '@/assets/image/tutorial/tutorial_img_6.png'
+import tutorialTextImg1 from '@/assets/image/tutorial/tutorial_text_1.png'
+import tutorialTextImg2 from '@/assets/image/tutorial/tutorial_text_2.png'
+import tutorialTextImg3 from '@/assets/image/tutorial/tutorial_text_3.png'
+import tutorialTextImg4 from '@/assets/image/tutorial/tutorial_text_4.png'
+import tutorialTextImg5 from '@/assets/image/tutorial/tutorial_text_5.png'
+import tutorialTextImg6 from '@/assets/image/tutorial/tutorial_text_6.png'
 import TutorialOverlay from '@/components/TutorialOverlay'
 import { useUser } from '@/hooks/queries/useUser'
+import ActionHighlightOverlay from '@/components/ActionHighlightOverlay'
+import { useEditUser } from '@/hooks/mutations/useEditUser'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -86,6 +96,10 @@ const MenuButton = styled.button`
   }
 `
 
+const MakeButtonWrapper = styled.div`
+  width: 100%;
+`
+
 const MenuIcon = styled(FontAwesomeIcon)`
   font-size: 32px;
 `
@@ -117,32 +131,58 @@ const tutorialSteps = [
   {
     id: 's1',
     image: tutorialCookieImg1,
-    bubbleImage: '',
-    text: `매일 밤 늦게까지 함께 코딩하던 친구들,\n묵묵히 도와주시던 프로님...`,
+    textImg: tutorialTextImg1,
     durationMs: 3500,
   },
   {
     id: 's2',
     image: tutorialCookieImg2,
-    bubbleImage: 'bubbleImg',
-    text: `고마운 마음은 가득한데,\n쑥스러워서 전하지 못한 말이 있지 않나요?`,
+    textImg: tutorialTextImg2,
     durationMs: 3500,
   },
   {
     id: 's3',
     image: tutorialCookieImg3,
-    bubbleImage: 'bubbleImg',
-    text: `서로의 오븐을 따뜻하게 데워볼까요?`,
-    durationMs: 4500,
+    textImg: tutorialTextImg3,
+    durationMs: 3500,
+  },
+  {
+    id: 's4',
+    image: tutorialCookieImg4,
+    textImg: tutorialTextImg4,
+    durationMs: 3500,
+  },
+  {
+    id: 's5',
+    image: tutorialCookieImg5,
+    textImg: tutorialTextImg5,
+    durationMs: 3500,
+  },
+  {
+    id: 's6',
+    image: tutorialCookieImg6,
+    textImg: tutorialTextImg6,
+    durationMs: 3500,
   },
 ]
 
 export default function Home() {
+  const makeCookieRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
   const { data: user, isLoading } = useUser()
+  const { mutate } = useEditUser()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const openMenu = () => setIsMenuOpen(true)
   const closeMenu = () => setIsMenuOpen(false)
+  const [showActionGuide, setShowActionGuide] = useState(false)
+
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
+
+  useEffect(() => {
+    if (showActionGuide && makeCookieRef.current) {
+      setButtonRect(makeCookieRef.current.getBoundingClientRect())
+    }
+  }, [showActionGuide])
 
   const handleNavigate = (dst: string) => {
     navigate(dst)
@@ -151,6 +191,7 @@ export default function Home() {
   if (isLoading) return null
 
   const shouldShowTutorial = !!user && !user.isTutorialCompleted
+  // const shouldShowTutorial = false
 
   return (
     <AppContainer>
@@ -179,22 +220,27 @@ export default function Home() {
             width="100%"
             style={{ padding: '24px' }}
           >
-            <ActionButton
-              backgroundColor="#E2AE71"
-              titleColor="black"
-              textColor="black"
-              onClick={() => handleNavigate('/cookie/step1')}
-            >
-              <ButtonTitle>쿠키 만들기</ButtonTitle>
-              <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
-            </ActionButton>
+            <MakeButtonWrapper ref={makeCookieRef}>
+              <ActionButton
+                backgroundColor="#E2AE71"
+                titleColor="black"
+                textColor="black"
+                onClick={() => handleNavigate('/cookie/step1')}
+              >
+                <ButtonTitle>쿠키 만들기</ButtonTitle>
+                <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
+              </ActionButton>
+            </MakeButtonWrapper>
+
             <FlexWrapper gap="8px" width="100%" align="stretch">
               <ActionButton
                 backgroundColor="white"
                 titleColor="black"
                 textColor="#555555"
               >
-                <ButtonTitle onClick={()=> handleNavigate('/myoven')}>내 오븐</ButtonTitle>
+                <ButtonTitle onClick={() => handleNavigate('/myoven')}>
+                  내 오븐
+                </ButtonTitle>
                 <ButtonText>받은 쿠키 구경하기</ButtonText>
               </ActionButton>
 
@@ -217,7 +263,23 @@ export default function Home() {
             enableAutoAdvance={false}
             autoAdvanceMs={0}
             onFinish={() => {
-              console.log('tutorial finished')
+              setShowActionGuide(true)
+            }}
+          />
+        )}
+        {showActionGuide && buttonRect && (
+          <ActionHighlightOverlay
+            targetRect={buttonRect}
+            onClick={() => {
+              setShowActionGuide(false)
+              mutate(
+                { isTutorialCompleted: true },
+                {
+                  onSuccess: () => {
+                    navigate('/cookie/step1')
+                  },
+                },
+              )
             }}
           />
         )}

@@ -1,11 +1,11 @@
-import React from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { Link, useNavigate } from 'react-router-dom'
-
-// 예시 asset (프로젝트에 있는 실제 이미지로 바꿔주세요)
-import defaultCookieThumb from '@/assets/image/home_cookie.svg' // 대체 이미지 경로
+import { useSendCookieList } from '@/hooks/queries/useSendCookieList'
+import { mapSendCookieToSendItem } from '@/utils/sendListMapper'
+import type { CookieDesignImgDataCamel } from '@/types/cookie'
+import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
 
 /* --------------------- 스타일 --------------------- */
 
@@ -110,7 +110,7 @@ const Card = styled(Link)`
   }
 `
 
-const Thumb = styled.img`
+const Thumb = styled.div`
   width: 72px;
   height: 72px;
   border-radius: 8px;
@@ -173,11 +173,11 @@ const EmptyStateWrapper = styled.div`
 type SendItem = {
   id: string
   toName: string
+  designData: CookieDesignImgDataCamel
   toMeta?: string // (캠퍼스/반)
   messagePreview: string
   date: string
   status: 'done' | 'sending' | 'failed'
-  thumb?: string
 }
 
 /* --------------------- 하위 컴포넌트 --------------------- */
@@ -185,7 +185,9 @@ type SendItem = {
 function CookieCard({ item }: { item: SendItem }) {
   return (
     <Card to={`/cookie/${item.id}`}>
-      <Thumb src={item.thumb ?? defaultCookieThumb} alt="cookie thumb" />
+      <Thumb>
+        <CookieImageRenderer2 designData={item.designData} />
+      </Thumb>
       <CardBody>
         <ToText>
           To. {item.toName}
@@ -213,43 +215,14 @@ function CookieCard({ item }: { item: SendItem }) {
 export default function SendList() {
   const navigate = useNavigate()
 
-  // 예시 데이터 — 실제로는 props 또는 API 호출로 교체
-  const items: SendItem[] = [
-    {
-      id: '1',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '2',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '3',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '4',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-  ]
+  const { data, isLoading } = useSendCookieList()
 
+  const items = data ? data.map(mapSendCookieToSendItem) : []
   const totalCount = items.length
+
+  if (isLoading) {
+    return <Container>로딩중...</Container>
+  }
 
   return (
     <Container>
@@ -269,7 +242,7 @@ export default function SendList() {
       </HeaderRow>
 
       <ListArea>
-        {items.length === 0 ? (
+        {data?.length === 0 ? (
           <EmptyStateWrapper>
             아직 보낸 쿠키가 없습니다.
             <div style={{ marginTop: 8, fontSize: 13 }}>
@@ -277,7 +250,19 @@ export default function SendList() {
             </div>
           </EmptyStateWrapper>
         ) : (
-          items.map((it) => <CookieCard key={it.id} item={it} />)
+          data?.map((item) => {
+            const cardProps: SendItem = {
+              id: String(item.cookiePk),
+              toName: item.receiverName,
+              toMeta: undefined, // 필요하면 여기서 조합
+              designData: item.designData,
+              messagePreview: item.content,
+              date: item.createdAt.slice(0, 10),
+              status: item.isRead ? 'done' : 'sending',
+            }
+
+            return <CookieCard key={cardProps.id} item={cardProps} />
+          })
         )}
       </ListArea>
     </Container>
