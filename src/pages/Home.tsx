@@ -142,36 +142,42 @@ const tutorialSteps = [
     id: 's1',
     image: tutorialCookieImg1,
     textImg: tutorialTextImg1,
+    textImgTranslate: { x: '-80%', y: '-60%' },
     durationMs: 3500,
   },
   {
     id: 's2',
     image: tutorialCookieImg2,
     textImg: tutorialTextImg2,
+    textImgTranslate: { x: '-65%', y: '-90%' },
     durationMs: 3500,
   },
   {
     id: 's3',
     image: tutorialCookieImg3,
     textImg: tutorialTextImg3,
+    textImgTranslate: { x: '-70%', y: '-90%' },
     durationMs: 3500,
   },
   {
     id: 's4',
     image: tutorialCookieImg4,
     textImg: tutorialTextImg4,
+    textImgTranslate: { x: '-70%', y: '-90%' },
     durationMs: 3500,
   },
   {
     id: 's5',
     image: tutorialCookieImg5,
     textImg: tutorialTextImg5,
+    textImgTranslate: { x: '-80%', y: '-90%' },
     durationMs: 3500,
   },
   {
     id: 's6',
     image: tutorialCookieImg6,
     textImg: tutorialTextImg6,
+    textImgTranslate: { x: '-70%', y: '-90%' },
     durationMs: 3500,
   },
 ]
@@ -179,7 +185,7 @@ const tutorialSteps = [
 export default function Home() {
   const makeCookieRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
-  const { data: user, isLoading } = useUser()
+  const { isLoading } = useUser()
   const { mutate } = useEditUser()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const openMenu = () => setIsMenuOpen(true)
@@ -200,8 +206,8 @@ export default function Home() {
 
   if (isLoading) return null
 
-  const shouldShowTutorial = !!user && !user.isTutorialCompleted
-  // const shouldShowTutorial = false
+  // const shouldShowTutorial = !!user && !user.isTutorialCompleted
+  const shouldShowTutorial = true
 
   return (
     <AppContainer>
