@@ -1,5 +1,8 @@
 import styled from 'styled-components'
-import { type Item } from '@/constant/items'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useCookieParts } from '@/hooks/queries/useCookieParts'
+import { selectedItemsAtom, subCategoryAtom } from '@/store/atoms/cookieAtoms'
+import { selectCookiePartAtom } from '@/store/effects/selectCookiePartAtom'
 
 const GridContainer = styled.div`
   display: grid;
@@ -12,6 +15,7 @@ const GridContainer = styled.div`
   align-content: start;
   grid-auto-rows: 120px;
 `
+
 const SelectItem = styled.div<{ isSelected?: boolean }>`
   width: 100%;
   position: relative;
@@ -19,41 +23,51 @@ const SelectItem = styled.div<{ isSelected?: boolean }>`
   cursor: pointer;
   background: #aea7a7;
   overflow: hidden;
-  border: 4px solid ${(p) => (p.isSelected ? '#009DFF' : 'transparent')};
+  border: 4px solid ${(p) => (p.isSelected ? '#009dff' : 'transparent')};
 
   ${(p) =>
     p.isSelected &&
     `
       box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
     `}
+
   & > img {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    user-select: none;
+    pointer-events: none;
   }
 `
 
-export default function ItemsGrid({
-  items,
-  selectedAsset,
-  onSelect,
-}: {
-  items: Item[]
-  selectedAsset: string | null
-  onSelect: (asset: string | null) => void
-}) {
+export default function ItemsGrid() {
+  const { data } = useCookieParts()
+  const selectedItems = useAtomValue(selectedItemsAtom)
+  const [subCategory] = useAtom(subCategoryAtom)
+  const selectPart = useSetAtom(selectCookiePartAtom)
+
+  if (!data) return null
+
+  const items = data[subCategory]
+  if (!items || !items.length) return null
+
+  const selectedIndex = selectedItems[subCategory]
+
+  const handleSelect = (index: number) => {
+    selectPart({ subCategory, index })
+  }
+
   return (
     <GridContainer>
-      {items.map((item) => (
+      {items.map((src, index) => (
         <SelectItem
-          key={item.name}
-          isSelected={selectedAsset === item.asset}
-          onClick={() => onSelect(item.asset)}
+          key={`${subCategory}-${index}`}
+          isSelected={selectedIndex === index}
+          onClick={() => handleSelect(index)}
         >
-          <img src={item.asset} alt={item.name} draggable={false} />
+          <img src={src} alt={`item-${index}`} draggable={false} />
         </SelectItem>
       ))}
     </GridContainer>

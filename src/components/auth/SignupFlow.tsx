@@ -1,9 +1,5 @@
 // src/components/auth/SignupFlow.tsx
-import React, {
-  useMemo,
-  useState,
-  type ChangeEvent,
-} from 'react'
+import React, { useMemo, useState, type ChangeEvent } from 'react'
 import {
   CAMPUS_OPTIONS,
   type CampusKey,
@@ -12,11 +8,7 @@ import {
   type SignupRole,
   type SignupStep,
 } from './signupTypes'
-import {
-  useApi,
-  type ApiError,
-  setAccessToken,
-} from '../../utils/useApi'
+import { useApi, type ApiError, setAccessToken } from '../../utils/useApi'
 import { SignupFlowContainer } from '../../container/SignupFlowContainer'
 
 interface SignupFlowProps {
@@ -104,6 +96,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     setStep('form')
   }
 
+  /** 🔙 폼에서 역할 선택 화면으로 돌아가기 */
   const goBackFromForm = () => {
     setStep('selectRole')
   }
@@ -184,8 +177,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
         code: code.trim(),
         mm_id: mmId.trim(),
         campus: campusLabel,
-        class_number:
-          campusLabel && classNumber ? Number(classNumber) : null,
+        class_number: campusLabel && classNumber ? Number(classNumber) : null,
         name: name.trim(),
         role: backendRole,
       }

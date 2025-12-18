@@ -1,15 +1,20 @@
+// src/components/myoven/MyOvenComponent.tsx
 import React, {
   useMemo,
   useState,
   type TouchEvent,
 } from 'react'
-import styled from 'styled-components'
-import type {
-  CookieItem,
-  CookieDesignData,
-} from '../../types/cookie'
+import styled, { css, keyframes } from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faAngleLeft,
+  faAngleRight,
+} from '@fortawesome/free-solid-svg-icons'
+import OvenCookieImageRenderer from './OvenCookieImageRenderer'
+import type { CookieItem } from '@/types/cookie'
 
 const PAN_SIZE = 4
+type SlideDirection = 'left' | 'right' | null
 
 interface MyOvenComponentProps {
   loading: boolean
@@ -23,6 +28,8 @@ interface MyOvenComponentProps {
   onClickShareLink: () => void
   /** 에러 시 재시도 버튼 클릭 핸들러 (선택) */
   onRetry?: () => void
+  /** 쿠키 클릭 시 (읽음 처리 + 상세 보기 등) */
+  onClickCookie: (cookie: CookieItem) => void
 }
 
 export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
@@ -33,12 +40,13 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   onClickBack,
   onClickShareLink,
   onRetry,
+  onClickCookie,
 }) => {
   const hasCookies = cookies.length > 0
   const [currentPanIndex, setCurrentPanIndex] = useState(0)
-  const [touchStartX, setTouchStartX] = useState<number | null>(
-    null,
-  )
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [slideDirection, setSlideDirection] =
+    useState<SlideDirection>(null)
 
   const backgroundImage = hasCookies
     ? '/ovenbackgroundfire.png'
@@ -55,26 +63,37 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   }, [cookies, hasCookies])
 
   const totalPans = cookiePans.length || 1
-  const safePanIndex =
-    totalPans === 0 ? 0 : currentPanIndex % totalPans
-  const cookiesInCurrentPan =
-    cookiePans[safePanIndex] ?? []
+  const safePanIndex = totalPans === 0 ? 0 : currentPanIndex % totalPans
+  const cookiesInCurrentPan = cookiePans[safePanIndex] ?? []
 
-  const handlePrevPan = () => {
-    if (!hasCookies) return
-    setCurrentPanIndex((prev) =>
-      (prev - 1 + totalPans) % totalPans,
-    )
-  }
-
-  const handleNextPan = () => {
-    if (!hasCookies) return
-    setCurrentPanIndex((prev) => (prev + 1) % totalPans)
-  }
-
-  const handleTouchStart = (
-    e: TouchEvent<HTMLDivElement>,
+  /** 같은 방향으로 여러 번 넘겨도 매번 애니메이션이 재생되도록 하는 헬퍼 */
+  const triggerSlide = (
+    dir: Exclude<SlideDirection, null>,
+    updateIndex: () => void,
   ) => {
+    setSlideDirection(null) // 애니메이션 초기화
+    updateIndex()
+    setTimeout(() => {
+      // 다음 렌더 사이클에서 다시 방향을 넣어 애니메이션 재시작
+      setSlideDirection(dir)
+    }, 0)
+  }
+
+  const goPrevPan = () => {
+    if (!hasCookies) return
+    triggerSlide('right', () => {
+      setCurrentPanIndex((prev) => (prev - 1 + totalPans) % totalPans)
+    })
+  }
+
+  const goNextPan = () => {
+    if (!hasCookies) return
+    triggerSlide('left', () => {
+      setCurrentPanIndex((prev) => (prev + 1) % totalPans)
+    })
+  }
+
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     if (!hasCookies) return
     setTouchStartX(e.touches[0].clientX)
   }
@@ -84,58 +103,66 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
 
     const endX = e.changedTouches[0].clientX
     const diff = endX - touchStartX
-
     const THRESHOLD = 40 // 스와이프 최소 거리
+
     if (Math.abs(diff) > THRESHOLD) {
       if (diff > 0) {
         // 오른쪽으로 스와이프 => 이전 팬
-        handlePrevPan()
+        goPrevPan()
       } else {
         // 왼쪽으로 스와이프 => 다음 팬
-        handleNextPan()
+        goNextPan()
       }
     }
 
     setTouchStartX(null)
   }
 
-  if (loading) {
-    return (
-      <FullScreenCenter
-        $backgroundImage={backgroundImage}
-      >
-        <LoadingText>내 오븐을 데우는 중...</LoadingText>
-      </FullScreenCenter>
-    )
-  }
-
-  if (errorMessage) {
-    return (
-      <FullScreenCenter
-        $backgroundImage={backgroundImage}
-      >
-        <ErrorCard>
-          <ErrorTitle>오븐 연결에 실패했어요 🥲</ErrorTitle>
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-          {onRetry && (
-            <RetryButton type="button" onClick={onRetry}>
-              다시 시도하기
-            </RetryButton>
-          )}
-        </ErrorCard>
-      </FullScreenCenter>
-    )
-  }
-
   const receivedCount = cookies.length
 
+  // ───────────── 로딩 화면 ─────────────
+  if (loading) {
+    return (
+      <PageWrapper>
+        <ContentContainer $backgroundImage={backgroundImage}>
+          <CenterBody>
+            <LoadingText>내 오븐을 데우는 중...</LoadingText>
+          </CenterBody>
+        </ContentContainer>
+      </PageWrapper>
+    )
+  }
+
+  // ───────────── 에러 화면 ─────────────
+  if (errorMessage) {
+    return (
+      <PageWrapper>
+        <ContentContainer $backgroundImage={backgroundImage}>
+          <CenterBody>
+            <ErrorCard>
+              <ErrorTitle>오븐 연결에 실패했어요</ErrorTitle>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              {onRetry && (
+                <RetryButton type="button" onClick={onRetry}>
+                  다시 시도하기
+                </RetryButton>
+              )}
+            </ErrorCard>
+          </CenterBody>
+        </ContentContainer>
+      </PageWrapper>
+    )
+  }
+
+  // ───────────── 일반 화면 ─────────────
   return (
-    <PageWrapper $backgroundImage={backgroundImage}>
-      <ContentContainer>
+    <PageWrapper>
+      <ContentContainer $backgroundImage={backgroundImage}>
         {/* 헤더 영역 */}
         <HeaderRow>
           <BackButton type="button" onClick={onClickBack}>
-            &lt; 내 오븐
+            <FontAwesomeIcon icon={faAngleLeft} />
+            <span>내 오븐</span>
           </BackButton>
 
           <ReceivedCountBadge>
@@ -147,9 +174,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
         {/* 메인 컨텐츠 */}
         {!hasCookies ? (
           <EmptyOvenCard>
-            <EmptyTitle>
-              오븐이 아직 차가워요 ❄️
-            </EmptyTitle>
+            <EmptyTitle>오븐이 아직 차가워요 ❄️</EmptyTitle>
 
             <WorryCookieImage
               src="/WorryCookie.png"
@@ -162,14 +187,9 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
               마음이 담긴 쿠키를 받아보세요!
             </EmptyDescription>
 
-            <ShareButton
-              type="button"
-              onClick={onClickShareLink}
-            >
+            <ShareButton type="button" onClick={onClickShareLink}>
               <ShareIcon>🔗</ShareIcon>
-              <ShareButtonText>
-                내 오븐 링크 공유하기
-              </ShareButtonText>
+              <ShareButtonText>내 오븐 링크 공유하기</ShareButtonText>
             </ShareButton>
           </EmptyOvenCard>
         ) : (
@@ -178,51 +198,39 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
             onTouchEnd={handleTouchEnd}
           >
             {isBeforeXmas && (
-              <PanCaption>
-                맛있게 구워지는 중...♥
-              </PanCaption>
+              <PanCaption>맛있게 구워지는 중...♥</PanCaption>
             )}
 
-            <PanWrapper>
-              <OvenPanImage
-                src="/ovenpan.png"
-                alt="오븐 팬"
-              />
+            <PanWrapper $direction={slideDirection}>
+              <OvenPanImage src="/ovenpan.png" alt="오븐 팬" />
 
               {/* 쿠키 배치 영역 */}
               <CookiesGrid>
                 {cookiesInCurrentPan.map((cookie) => (
-                  <CookiePlaceholder
+                  <OvenCookieImageRenderer
                     key={cookie.cookie_pk}
                     designData={cookie.design_data}
+                    isRead={cookie.is_read}
+                    onClick={() => onClickCookie(cookie)}
                   />
                 ))}
 
                 {/* 4개 미만이면 빈칸 채우기 */}
                 {Array.from({
-                  length:
-                    PAN_SIZE - cookiesInCurrentPan.length,
+                  length: PAN_SIZE - cookiesInCurrentPan.length,
                 }).map((_, idx) => (
-                  <CookiePlaceholderEmpty
-                    key={`empty-${idx}`}
-                  />
+                  <CookiePlaceholderEmpty key={`empty-${idx}`} />
                 ))}
               </CookiesGrid>
 
               {/* 좌우 이동 버튼 */}
               {totalPans > 1 && (
                 <>
-                  <ArrowButtonLeft
-                    type="button"
-                    onClick={handlePrevPan}
-                  >
-                    &lt;
+                  <ArrowButtonLeft type="button" onClick={goPrevPan}>
+                    <FontAwesomeIcon icon={faAngleLeft} />
                   </ArrowButtonLeft>
-                  <ArrowButtonRight
-                    type="button"
-                    onClick={handleNextPan}
-                  >
-                    &gt;
+                  <ArrowButtonRight type="button" onClick={goNextPan}>
+                    <FontAwesomeIcon icon={faAngleRight} />
                   </ArrowButtonRight>
                 </>
               )}
@@ -244,31 +252,6 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
 }
 
 //region CSS
-/* ───────────── 쿠키 Placeholder ───────────── */
-
-const CookiePlaceholderBox = styled.div`
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
-  background-color: rgba(0, 0, 0, 0.9);
-`
-
-interface CookiePlaceholderProps {
-  designData: CookieDesignData
-}
-
-/**
- * 실제 쿠키 컴포넌트로 교체될 자리.
- * 지금은 designData 를 받아서 검은 네모만 표시.
- */
-const CookiePlaceholder: React.FC<CookiePlaceholderProps> = ({
-  designData,
-}) => {
-  // TODO: 공통 쿠키 컴포넌트와 연결 시 designData 사용
-  console.log('cookie design parts:', designData)
-  return <CookiePlaceholderBox />
-}
-
 const CookiePlaceholderEmpty = styled.div`
   width: 72px;
   height: 72px;
@@ -276,32 +259,50 @@ const CookiePlaceholderEmpty = styled.div`
   background-color: transparent;
 `
 
-/* ───────────── styled-components ───────────── */
+/* ───────────── 공통 레이아웃 ───────────── */
 
-const PageWrapper = styled.div<{ $backgroundImage: string }>`
+/** 전체 뷰포트 담당: 가운데에 375px짜리 화면을 배치 */
+const PageWrapper = styled.div`
+  width: 100%;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 가로 중앙 */
+  align-items: stretch;
+  background-color: #E8C696; /* 바깥 여백 배경색 */
+`
+
+/**
+ * 실제 화면 박스:
+ * - width: 100%, max-width: 375px
+ * - min-height: 100vh
+ * - background-image 가 여기만 적용됨
+ */
+const ContentContainer = styled.div<{ $backgroundImage: string }>`
+  width: 100%;
+  max-width: 375px;   /* ✅ 폭 제한 */
+  min-height: 100vh;  /* ✅ 세로 100vh */
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+
   background-image: url(${(p) => p.$backgroundImage});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 `
 
-const FullScreenCenter = styled(PageWrapper)`
+/** 로딩/에러에서 가운데 정렬용 */
+const CenterBody = styled.div`
+  flex: 1;
+  display: flex;
   align-items: center;
+  justify-content: center;
 `
 
-const ContentContainer = styled.div`
-  width: 100%;
-  max-width: 413px;
-  min-height: 904px;
-  padding: 24px 16px 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  color: #ffffff;
-`
+/* ───────────── 헤더 ───────────── */
 
 const HeaderRow = styled.header`
   display: flex;
@@ -311,36 +312,51 @@ const HeaderRow = styled.header`
 `
 
 const BackButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 16px;
-  padding: 4px 0;
   cursor: pointer;
+  padding: 4px 0;
+
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+
+  svg {
+    font-size: 18px;
+  }
 `
 
 const ReceivedCountBadge = styled.div`
   min-width: 80px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 12px;
   background-color: rgba(91, 58, 0, 0.9);
   text-align: center;
-  font-size: 11px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
 
   span {
-    opacity: 0.9;
+    font-family: 'Galmuri14', system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: #ffffff;
   }
 
   strong {
-    font-size: 16px;
+    font-family: 'DNFBitBitv2', system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 24px;
+    color: #ffffff;
   }
 `
 
-/* 비어 있는 오븐 카드 */
+/* ───────────── 비어 있는 오븐 카드 ───────────── */
 
 const EmptyOvenCard = styled.div`
   margin-top: 48px;
@@ -355,7 +371,10 @@ const EmptyOvenCard = styled.div`
 `
 
 const EmptyTitle = styled.h2`
-  font-size: 20px;
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 24px;
+  color: #ffffff;
   margin-bottom: 16px;
 `
 
@@ -366,10 +385,13 @@ const WorryCookieImage = styled.img`
 `
 
 const EmptyDescription = styled.p`
-  font-size: 13px;
+  font-family: 'Pretendard-Medium', 'Pretendard', system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
   line-height: 1.6;
   margin-bottom: 20px;
   white-space: pre-line;
+  color: #ffffff;
 `
 
 const ShareButton = styled.button`
@@ -380,7 +402,6 @@ const ShareButton = styled.button`
   background-color: #f1b56a;
   color: #5b3a00;
   font-size: 14px;
-  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -397,9 +418,13 @@ const ShareIcon = styled.span`
   font-size: 16px;
 `
 
-const ShareButtonText = styled.span``
+const ShareButtonText = styled.span`
+  font-family: 'IM_Hyemin-Bold', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 17px;
+`
 
-/* 쿠키가 있는 경우의 팬 영역 */
+/* ───────────── 쿠키가 있는 경우의 팬 영역 ───────────── */
 
 const PanArea = styled.section`
   margin-top: 32px;
@@ -410,21 +435,60 @@ const PanArea = styled.section`
 `
 
 const PanCaption = styled.div`
-  font-size: 14px;
+  font-family: 'Galmuri14', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 17px;
+  color: #ffffff;
   padding: 6px 14px;
   border-radius: 14px;
   background-color: rgba(91, 58, 0, 0.9);
   margin-bottom: 16px;
 `
 
-const PanWrapper = styled.div`
+// 슬라이드 애니메이션
+const slideFromRight = keyframes`
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`
+
+const slideFromLeft = keyframes`
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`
+
+const PanWrapper = styled.div<{ $direction: SlideDirection }>`
   position: relative;
-  width: 100%;
+  width: 90%;
   max-width: 360px;
   aspect-ratio: 3 / 4;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
+
+  ${({ $direction }) =>
+    $direction === 'left' &&
+    css`
+      animation: ${slideFromRight} 0.3s ease-out;
+    `}
+
+  ${({ $direction }) =>
+    $direction === 'right' &&
+    css`
+      animation: ${slideFromLeft} 0.3s ease-out;
+    `}
 `
 
 const OvenPanImage = styled.img`
@@ -449,39 +513,44 @@ const CookiesGrid = styled.div`
 `
 
 const ArrowButtonBase = styled.button`
-  position: absolute;
+position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
+  background: transparent;
   border: none;
-  background-color: rgba(0, 0, 0, 0.45);
-  color: #ffffff;
+  padding: 0;
+  cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  svg {
+    font-size: 38px; /* 원하면 28~36px 사이로 조절 */
+    color: #ffffff;
+  }
 `
 
+// 팬의 양 옆, 바깥쪽에 위치
 const ArrowButtonLeft = styled(ArrowButtonBase)`
-  left: 8px;
+  left: -32px;
 `
 
 const ArrowButtonRight = styled(ArrowButtonBase)`
-  right: 8px;
+  right: -32px;
 `
 
 const PanPageIndicator = styled.div`
   margin-top: 12px;
-  font-size: 13px;
+  font-family: 'DNFBitBitv2', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  color: #ffffff;
 `
 
-/* 로딩 / 에러 */
+/* ───────────── 로딩 / 에러 텍스트 ───────────── */
 
 const LoadingText = styled.div`
   width: 100%;
-  max-width: 413px;
   text-align: center;
   color: #ffffff;
   font-size: 15px;
@@ -518,3 +587,5 @@ const RetryButton = styled.button`
   font-weight: 600;
   cursor: pointer;
 `
+
+//endregion

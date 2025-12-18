@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
@@ -39,18 +39,35 @@ const LetterWrapper = styled.div`
 `
 
 const ToPill = styled.div`
-  background: white;
+  background: #ffffff;
   min-width: 240px;
   padding: 10px 20px;
   border-radius: 20px;
-  font-size: 20px;
-  font-weight: bold;
   display: flex;
-  justify-content: center; /* 가운데 정렬 */
+  justify-content: center;
   align-items: center;
   gap: 8px;
   width: fit-content;
-  margin: 0 auto; /* 전체적으로도 가운데 정렬 */
+  margin: 0 auto;
+
+  font-family:
+    'DNFBitBitv2',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+`
+
+const ToLabel = styled.span`
+  color: #868686;
+  margin-right: 8px;
+`
+
+const ToNameText = styled.span`
+  color: #000000;
 `
 
 const LetterBox = styled.div`
@@ -65,6 +82,14 @@ const LetterBox = styled.div`
   line-height: 1.6;
   white-space: pre-wrap;
   width: 100%;
+
+  font-family:
+    'Galmuri14',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 
   /* 스크롤바 스타일 (웹kit) */
   &::-webkit-scrollbar {
@@ -87,39 +112,21 @@ type CookieDetailData = {
 }
 
 /* 간단한 예시 데이터 — 실제로는 API로 받아오세요 */
-const MOCK_DATA: CookieDetailData[] = [
-  {
-    id: '1',
-    toName: '이싸피',
-    toMeta: '구미 6반',
-    message:
-      '안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️\n안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️',
-    date: '2025.12.15',
-  },
-  {
-    id: '2',
-    toName: '김민재',
-    toMeta: '구미 3반',
-    message: '짧은 메시지 테스트입니다.',
-    date: '2025.12.14',
-  },
-]
+const MOCK_DATA: CookieDetailData = {
+  id: '1',
+  toName: '이싸피',
+  toMeta: '구미 6반',
+  message:
+    '안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️\n안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️',
+  date: '2025.12.15',
+}
 
 /* ------------------ 컴포넌트 ------------------ */
 
 export default function CookieDetail() {
   const navigate = useNavigate()
-  const { id } = useParams<{ id: string }>()
-
-  // 간단 mock lookup
-  const data = MOCK_DATA.find((d) => d.id === id) ?? {
-    id: id ?? 'unknown',
-    toName: '알수없음',
-    toMeta: '',
-    message: '해당 편지를 찾을 수 없습니다.',
-    date: '',
-    status: 'done' as const,
-  }
+  // const { id } = useParams<{ id: string }>()
+  const data = MOCK_DATA
 
   return (
     <Container>
@@ -130,10 +137,10 @@ export default function CookieDetail() {
       </HeaderRow>
       <LetterWrapper>
         <ToPill aria-label={`받는사람: ${data.toName}`}>
-          <span style={{ color: '#777', marginRight: 8 }}>To.</span>
-          <span>
+          <ToLabel>To.</ToLabel>
+          <ToNameText>
             {data.toMeta ? `${data.toMeta} ${data.toName}` : data.toName}
-          </span>
+          </ToNameText>
         </ToPill>
         <LetterBox id="letter-heading" aria-label="편지 내용">
           {data.message}

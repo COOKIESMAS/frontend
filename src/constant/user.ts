@@ -1,4 +1,3 @@
-// src/constants/user.ts
 export const CAMPUS = {
   SEOUL: 'seoul',
   DAEJEON: 'daejeon',
@@ -16,6 +15,11 @@ export const CAMPUS_LABELS: Record<CampusKey, string> = {
 }
 
 export type CampusKey = (typeof CAMPUS)[keyof typeof CAMPUS]
+export type CampusLabel = (typeof CAMPUS_LABELS)[CampusKey]
+export type CampusValue = {
+  key: CampusKey
+  label: string
+}
 
 // 반 수: 서울 1~18반, 나머지 1~6반
 export const CLASS_COUNTS: Record<CampusKey, number> = {
@@ -25,6 +29,13 @@ export const CLASS_COUNTS: Record<CampusKey, number> = {
   gumi: 6,
   busan: 6,
 }
+
+export const CAMPUS_ENTRIES = Object.entries(CAMPUS_LABELS).map(
+  ([key, label]) => ({
+    key: key as CampusKey,
+    label,
+  }),
+)
 
 /**
  * duplicatedUserData: "특정(이미 등록된) 수신자" 예시 데이터

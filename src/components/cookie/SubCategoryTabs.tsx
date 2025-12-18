@@ -1,8 +1,11 @@
 import styled from 'styled-components'
+import { useAtom } from 'jotai'
 import {
   type SelectableSubCategoryKey,
-  type SubCategory,
+  MAIN_CATEGORY_SUBS,
+  SUB_CATEGORY_LABEL,
 } from '@/constant/items'
+import { mainCategoryAtom, subCategoryAtom } from '@/store/atoms/cookieAtoms'
 import useDragScroll from '@/hooks/useDragScroll'
 
 const SubTabsContainer = styled.div`
@@ -15,6 +18,7 @@ const SubTabsContainer = styled.div`
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -40,23 +44,19 @@ const SubTab = styled.button<{ isActive?: boolean }>`
   }
 `
 
-export default function SubCategoryTabs({
-  currentSubCategoryKeys,
-  subCategory,
-  setSubCategory,
-  currentCategoryContent,
-}: {
-  currentSubCategoryKeys: readonly SelectableSubCategoryKey[]
-  subCategory: SelectableSubCategoryKey
-  setSubCategory: (s: SelectableSubCategoryKey) => void
-  currentCategoryContent: { [k: string]: SubCategory | string }
-}) {
+export default function SubCategoryTabs() {
+  const [mainCategory] = useAtom(mainCategoryAtom)
+  const [subCategory, setSubCategory] = useAtom(subCategoryAtom)
+
   const { targetEl, onMouseDown, isDraggingRef } =
     useDragScroll<HTMLDivElement>()
 
+  const subCategoryKeys = MAIN_CATEGORY_SUBS[
+    mainCategory
+  ] as readonly SelectableSubCategoryKey[]
+
   const handleClick =
     (key: SelectableSubCategoryKey) => (e: React.MouseEvent) => {
-      // 드래그 상태면 click 무효
       if (isDraggingRef.current) {
         e.preventDefault()
         return
@@ -66,13 +66,13 @@ export default function SubCategoryTabs({
 
   return (
     <SubTabsContainer ref={targetEl} onMouseDown={onMouseDown}>
-      {currentSubCategoryKeys.map((sub) => (
+      {subCategoryKeys.map((key) => (
         <SubTab
-          key={sub}
-          isActive={subCategory === sub}
-          onClick={handleClick(sub)}
+          key={key}
+          isActive={subCategory === key}
+          onClick={handleClick(key)}
         >
-          {(currentCategoryContent[sub] as SubCategory).type}
+          {SUB_CATEGORY_LABEL[key]}
         </SubTab>
       ))}
     </SubTabsContainer>

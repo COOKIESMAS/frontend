@@ -10,6 +10,7 @@ import {
   IntroLine,
   BottomButtonContainer,
 } from './SignupFlow.styles'
+import styled from 'styled-components'
 
 interface SignupStepIntroProps {
   onNext: () => void
@@ -19,7 +20,7 @@ export const SignupStepIntro: React.FC<SignupStepIntroProps> = ({
   onNext,
 }) => {
   return (
-    <>
+    <SignupStepIntroBlock>
       <TopGraphic>
         <CloudImageTop src="/Cloud.png" alt="구름 장식" />
         <SignupMainImage src="/signup01.png" alt="쿠키 이미지" />
@@ -46,6 +47,16 @@ export const SignupStepIntro: React.FC<SignupStepIntroProps> = ({
           다음
         </Button>
       </BottomButtonContainer>
-    </>
+    </SignupStepIntroBlock>
   )
 }
+
+const SignupStepIntroBlock = styled.div`
+  width: 100%;
+  height: 100%;           
+  display: flex;
+  flex-direction: column;
+  align-items: center;    
+  justify-content: center;
+  position: relative;     
+`

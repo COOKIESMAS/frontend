@@ -1,26 +1,15 @@
 import styled from 'styled-components'
-import { useAtom, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import {
-  itemsData,
-  type SelectedItems,
-  type SelectableSubCategoryKey,
-  MAIN_CATEGORY_SUBS,
-} from '@/constant/items'
 import { dialogAtom } from '@/store/dialog'
 import CookieImageRenderer from '@/components/cookie/CookieImageRenderer'
 import CategoryTabs from '@/components/cookie/CategoryTabs'
 import SubCategoryTabs from '@/components/cookie/SubCategoryTabs'
 import ItemsGrid from '@/components/cookie/ItemsGrid'
-import { getItemsFor } from '@/utils/items-utils'
-import {
-  mainCategoryAtom,
-  selectedItemsAtom,
-  subCategoryAtom,
-} from '@/store/atoms/cookieAtoms'
 import { randomizeSelectedItemsAtom } from '@/store/effects/cookieRandomEffects'
+import { useCookieParts } from '@/hooks/queries/useCookieParts'
 
 const AppContainer = styled.div`
   display: flex;
@@ -112,72 +101,32 @@ const BottomSheetContainer = styled.div`
   min-height: 0;
 `
 
-// 필수로 항상 선택되어 있어야 하는 서브카테고리
-const REQUIRED_SUBCATEGORIES: SelectableSubCategoryKey[] = [
-  'body',
-  'eyes',
-  'mouth',
-]
-
 export default function Step1MakeCookie() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
+  const { data } = useCookieParts()
 
-  const [mainCategory, setMainCategory] = useAtom(mainCategoryAtom)
-  const [subCategory, setSubCategory] = useAtom(subCategoryAtom)
-  const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom)
   const triggerRandomize = useSetAtom(randomizeSelectedItemsAtom)
-
-  // 기존 exclusive logic 포함, plus toggle + required 방지
-  const handleItemSelect = (
-    keyToUpdate: SelectableSubCategoryKey,
-    asset: string | null,
-  ) => {
-    setSelectedItems((prev) => {
-      const currently = prev[keyToUpdate]
-      // toggle behavior: 같은 asset 클릭하면 null로 (단, required는 금지)
-      const wantToSet = currently === asset ? null : asset
-
-      if (wantToSet === null && REQUIRED_SUBCATEGORIES.includes(keyToUpdate)) {
-        return prev
-      }
-
-      const newItems: SelectedItems = { ...prev, [keyToUpdate]: wantToSet }
-
-      if (keyToUpdate === 'onePiece' && wantToSet !== null) {
-        newItems.top = null
-        newItems.pants = null
-      } else if (
-        (keyToUpdate === 'top' || keyToUpdate === 'pants') &&
-        wantToSet !== null
-      ) {
-        newItems.onePiece = null
-      }
-
-      return newItems
-    })
-  }
 
   const handleGoBack = () => {
     setDialogState({
       isOpen: true,
       title: '나가시겠습니까?',
       message: '만들던 쿠키가 사라져요!',
-      onConfirm: () => navigate(-1),
+      onConfirm: () => navigate('/home'),
       onCancel: () => {},
     })
   }
 
   const handleGoNext = () => navigate('/cookie/step2')
 
-  const currentCategoryContent = itemsData[mainCategory]
-  const currentSubCategoryKeys = MAIN_CATEGORY_SUBS[
-    mainCategory
-  ] as readonly SelectableSubCategoryKey[]
-  const currentItems = getItemsFor(mainCategory, subCategory, itemsData)
-
   const randomizeAllParts = () => {
-    triggerRandomize({ required: REQUIRED_SUBCATEGORIES, keepProbability: 0.5 })
+    if (!data) return
+
+    triggerRandomize({
+      partsData: data,
+      keepProbability: 0.5,
+    })
   }
 
   return (
@@ -197,28 +146,11 @@ export default function Step1MakeCookie() {
             <CompleteButton onClick={handleGoNext}>완성 !</CompleteButton>
           </ButtonGroup>
         </HeaderWrapper>
-        <CookieImageRenderer selectedItems={selectedItems} />
+        <CookieImageRenderer />
         <BottomSheetContainer>
-          <CategoryTabs
-            mainCategory={mainCategory}
-            setMainCategory={(c) => {
-              setMainCategory(c)
-              const first = MAIN_CATEGORY_SUBS[c][0]
-              setSubCategory(first)
-            }}
-            itemsData={itemsData}
-          />
-          <SubCategoryTabs
-            currentSubCategoryKeys={currentSubCategoryKeys}
-            subCategory={subCategory}
-            setSubCategory={setSubCategory}
-            currentCategoryContent={currentCategoryContent}
-          />
-          <ItemsGrid
-            items={currentItems}
-            selectedAsset={selectedItems[subCategory]}
-            onSelect={(asset) => handleItemSelect(subCategory, asset)}
-          />
+          <CategoryTabs />
+          <SubCategoryTabs />
+          <ItemsGrid />
         </BottomSheetContainer>
       </PageWrapper>
     </AppContainer>

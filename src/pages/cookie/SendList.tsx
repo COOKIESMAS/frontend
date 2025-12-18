@@ -1,11 +1,11 @@
-import React from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { Link, useNavigate } from 'react-router-dom'
-
-// 예시 asset (프로젝트에 있는 실제 이미지로 바꿔주세요)
-import defaultCookieThumb from '@/assets/image/home_cookie.svg' // 대체 이미지 경로
+import { useSendCookieList } from '@/hooks/queries/useSendCookieList'
+import { mapSendCookieToSendItem } from '@/utils/sendListMapper'
+import type { CookieDesignImgDataCamel } from '@/types/cookie'
+import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
 
 /* --------------------- 스타일 --------------------- */
 
@@ -34,8 +34,9 @@ const BackButton = styled.button`
 `
 
 const PageTitle = styled.h2`
+  font-family: 'Galmuri14';
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
 `
 
@@ -58,9 +59,20 @@ const CountBadge = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 8px 6px;
+  padding: 10px 12px;
   box-shadow: 0 6px 12px rgba(138, 75, 35, 0.25);
   font-weight: 700;
+`
+
+const CountLabel = styled.div`
+  font-family: 'Galmuri14';
+  font-size: 13px;
+`
+
+const CountValue = styled.div`
+  font-family: 'DNFBitBitv2';
+  font-size: 24px;
+  line-height: 24px;
 `
 
 // 리스트 영역 (스크롤)
@@ -110,7 +122,7 @@ const Card = styled(Link)`
   }
 `
 
-const Thumb = styled.img`
+const Thumb = styled.div`
   width: 72px;
   height: 72px;
   border-radius: 8px;
@@ -126,17 +138,18 @@ const CardBody = styled.div`
 `
 
 const ToText = styled.div`
-  font-weight: 800;
+  font-family: 'DNFBitBitv2';
   font-size: 16px;
+  font-weight: 500;
   color: #2b2b2b;
 `
 
 const MessagePreview = styled.div`
-  font-size: 13px;
+  font-family: 'IM_Hyemin';
+  font-size: 12px;
   color: #666;
-  margin-top: 6px;
   line-height: 1.2;
-  max-height: 2.4em;
+  height: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -150,13 +163,14 @@ const CardFooter = styled.div`
 `
 
 const DateText = styled.div`
+  font-family: 'IM_Hyemin';
   font-size: 12px;
   color: #9b9b9b;
 `
 
 const Status = styled.div<{ success?: boolean }>`
-  font-size: 13px;
-  font-weight: 700;
+  font-family: 'DNFBitBitv2';
+  font-size: 12px;
   color: ${({ success }) => (success ? '#2aa84f' : '#c07a3f')};
 `
 
@@ -173,11 +187,11 @@ const EmptyStateWrapper = styled.div`
 type SendItem = {
   id: string
   toName: string
+  designData: CookieDesignImgDataCamel
   toMeta?: string // (캠퍼스/반)
   messagePreview: string
   date: string
   status: 'done' | 'sending' | 'failed'
-  thumb?: string
 }
 
 /* --------------------- 하위 컴포넌트 --------------------- */
@@ -185,11 +199,15 @@ type SendItem = {
 function CookieCard({ item }: { item: SendItem }) {
   return (
     <Card to={`/cookie/${item.id}`}>
-      <Thumb src={item.thumb ?? defaultCookieThumb} alt="cookie thumb" />
+      <Thumb>
+        <CookieImageRenderer2 designData={item.designData} />
+      </Thumb>
       <CardBody>
         <ToText>
-          To. {item.toName}
-          {item.toMeta ? ` (${item.toMeta})` : ''}
+          <span style={{ color: '#9D6A37' }}>To. </span>
+          <span>
+            {item.toName} {item.toMeta ? ` (${item.toMeta})` : ''}
+          </span>
         </ToText>
         <MessagePreview>{item.messagePreview}</MessagePreview>
 
@@ -213,43 +231,14 @@ function CookieCard({ item }: { item: SendItem }) {
 export default function SendList() {
   const navigate = useNavigate()
 
-  // 예시 데이터 — 실제로는 props 또는 API 호출로 교체
-  const items: SendItem[] = [
-    {
-      id: '1',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '2',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '3',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-    {
-      id: '4',
-      toName: '이싸피',
-      toMeta: '구미 6반',
-      messagePreview: '알고리즘 마스터 김싸피야! 잘했어~',
-      date: '2025.12.15',
-      status: 'done',
-    },
-  ]
+  const { data, isLoading } = useSendCookieList()
 
+  const items = data ? data.map(mapSendCookieToSendItem) : []
   const totalCount = items.length
+
+  if (isLoading) {
+    return <Container>로딩중...</Container>
+  }
 
   return (
     <Container>
@@ -262,14 +251,16 @@ export default function SendList() {
 
         <BadgeWrapper>
           <CountBadge>
-            <div style={{ fontSize: 12 }}>보낸 쿠키</div>
-            <div style={{ fontSize: 20, lineHeight: 1 }}>{totalCount}개</div>
+            <CountLabel style={{ fontSize: 12 }}>보낸 쿠키</CountLabel>
+            <CountValue style={{ fontSize: 20, lineHeight: 1.4 }}>
+              {totalCount}개
+            </CountValue>
           </CountBadge>
         </BadgeWrapper>
       </HeaderRow>
 
       <ListArea>
-        {items.length === 0 ? (
+        {data?.length === 0 ? (
           <EmptyStateWrapper>
             아직 보낸 쿠키가 없습니다.
             <div style={{ marginTop: 8, fontSize: 13 }}>
@@ -277,7 +268,20 @@ export default function SendList() {
             </div>
           </EmptyStateWrapper>
         ) : (
-          items.map((it) => <CookieCard key={it.id} item={it} />)
+          data?.map((item) => {
+            console.log(item)
+            const cardProps: SendItem = {
+              id: String(item.cookiePk),
+              toName: item.receiverName,
+              toMeta: undefined, // 필요하면 여기서 조합
+              designData: item.designData,
+              messagePreview: item.content,
+              date: item.createdAt.slice(0, 10),
+              status: item.isRead ? 'done' : 'sending',
+            }
+
+            return <CookieCard key={cardProps.id} item={cardProps} />
+          })
         )}
       </ListArea>
     </Container>

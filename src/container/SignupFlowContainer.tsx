@@ -33,7 +33,6 @@ interface SignupFlowContainerProps {
   canClickVerifyCode: boolean
   onNextFromIntro: () => void
   onNextFromRole: () => void
-  onBackFromForm: () => void
   onChangeCampus: (event: ChangeEvent<HTMLSelectElement>) => void
   onChangeClass: (event: ChangeEvent<HTMLSelectElement>) => void
   onChangeName: (event: ChangeEvent<HTMLInputElement>) => void
@@ -44,40 +43,37 @@ interface SignupFlowContainerProps {
   onClickResendCode: () => void
   onClickVerifyCode: () => void
   onClickGoToCookie: () => void
+  onBackFromForm: () => void
 }
 
-export const SignupFlowContainer: React.FC<
-  SignupFlowContainerProps
-> = (props) => {
-  const {
-    step,
-    role,
-    isStudent,
-    campus,
-    classNumber,
-    name,
-    mmId,
-    code,
-    campusOptions,
-    classOptions,
-    canGoFromRoleStep,
-    canClickRequestCode,
-    canClickVerifyCode,
-    onNextFromIntro,
-    onNextFromRole,
-    onBackFromForm,
-    onChangeCampus,
-    onChangeClass,
-    onChangeName,
-    onChangeMmId,
-    onChangeCode,
-    onChangeRole,
-    onClickRequestCode,
-    onClickResendCode,
-    onClickVerifyCode,
-    onClickGoToCookie,
-  } = props
-
+export const SignupFlowContainer: React.FC<SignupFlowContainerProps> = ({
+  step,
+  role,
+  isStudent,
+  campus,
+  classNumber,
+  name,
+  mmId,
+  code,
+  campusOptions,
+  classOptions,
+  canGoFromRoleStep,
+  canClickRequestCode,
+  canClickVerifyCode,
+  onNextFromIntro,
+  onNextFromRole,
+  onChangeCampus,
+  onChangeClass,
+  onChangeName,
+  onChangeMmId,
+  onChangeCode,
+  onChangeRole,
+  onClickRequestCode,
+  onClickResendCode,
+  onClickVerifyCode,
+  onClickGoToCookie,
+  onBackFromForm,
+}) => {
   return (
     <SignupPageWrapper>
       <SignupCard>
