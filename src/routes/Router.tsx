@@ -1,5 +1,5 @@
 // Router.tsx
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute } from './RouteGuard' // 경로 확인 필요
 
 import LandingPage from '../pages/LandingPage'
@@ -19,7 +19,7 @@ import NoticePage from '@/pages/NoticePage'
 
 const Router = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* 🔒 로그인하지 않은 사용자만 접근 가능 구역 */}
         <Route element={<PublicRoute />}>
@@ -54,7 +54,7 @@ const Router = () => {
         {/* 잘못된 경로 처리 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
