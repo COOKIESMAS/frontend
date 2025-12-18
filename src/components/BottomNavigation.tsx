@@ -40,7 +40,7 @@ const NavItem = styled(Link)<NavItemProps>`
   color: white;
   font-size: 16px;
   font-weight: bold;
-  // font will IM_Hyemin
+  font-family: 'IM_Hyemin';
   display: flex;
   flex-direction: column;
   gap: 4px;
