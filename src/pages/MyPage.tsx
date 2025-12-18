@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,8 +10,6 @@ import {
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { useUser } from '@/hooks/queries/useUser'
 import { useEditUser } from '@/hooks/mutations/useEditUser'
-
-/* ------------------ 스타일 ------------------ */
 
 const Container = styled.div`
   display: flex;
@@ -52,7 +51,6 @@ const Divider = styled.hr`
   margin: 4px 0;
 `
 
-/* Profile */
 const ProfileBox = styled.section`
   display: flex;
   flex-direction: column;
@@ -105,7 +103,6 @@ const EmailRow = styled.div`
   color: #666;
 `
 
-/* Settings item */
 const SettingRow = styled.div`
   display: flex;
   align-items: center;
@@ -126,7 +123,6 @@ const SettingLabel = styled.div`
   font-weight: 600;
 `
 
-/* Toggle switch */
 const SwitchTrack = styled.button<{ on: boolean }>`
   width: 52px;
   height: 28px;
@@ -151,7 +147,6 @@ const SwitchKnob = styled.span<{ on: boolean }>`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 `
 
-/* Stats */
 const StatsRow = styled.div`
   display: flex;
   gap: 16px;
@@ -179,7 +174,6 @@ const StatValue = styled.div`
   margin-top: 6px;
 `
 
-/* footer logout */
 const Spacer = styled.div`
   flex: 1;
 `
@@ -193,33 +187,33 @@ const LogoutBtn = styled.button`
   background: #f2f3f2;
   color: #525644;
   font-weight: 700;
-
   display: flex;
   align-items: center;
-  justify-content: center; /* 텍스트 정확히 중앙 */
-
+  justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
 
   svg {
     position: absolute;
-    left: 16px; /* 좌측 여백 */
+    left: 16px;
     font-size: 18px;
   }
 `
 
-/* small icon */
 const SmallIcon = styled(FontAwesomeIcon)`
   font-size: 18px;
 `
-
-/* ------------------ 컴포넌트 ------------------ */
 
 export default function MyPage() {
   const navigate = useNavigate()
 
   const { data } = useUser()
   const { mutate, isPending } = useEditUser()
+
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('accessToken')
+    navigate('/landing', { replace: true })
+  }, [navigate])
 
   if (!data) return null
 
@@ -234,7 +228,9 @@ export default function MyPage() {
 
       <ProfileBox>
         <ProfileTop>
-          <AvatarPlaceholder aria-hidden>KS</AvatarPlaceholder>
+          <AvatarPlaceholder aria-hidden>
+            {data?.name?.substring(0, 2) || 'KS'}
+          </AvatarPlaceholder>
 
           <ProfileInfo>
             <CampusText>
@@ -293,11 +289,7 @@ export default function MyPage() {
 
       <Spacer />
 
-      <LogoutBtn
-        onClick={() =>
-          alert('로그아웃 처리(여기서 API 호출/상태 초기화 등 하세요)')
-        }
-      >
+      <LogoutBtn onClick={handleLogout}>
         <FontAwesomeIcon icon={faSignOutAlt} />
         로그아웃 하기
       </LogoutBtn>

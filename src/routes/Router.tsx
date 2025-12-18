@@ -1,4 +1,7 @@
+// Router.tsx
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { ProtectedRoute, PublicRoute } from './RouteGuard' // 경로 확인 필요
+
 import LandingPage from '../pages/LandingPage'
 import GoogleConnectingPage from '../pages/GoogleConnectingPage'
 import SignupPage from '../pages/SignupPage'
@@ -18,37 +21,38 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/landing" element={<LandingPage />} />
-        {/* 구글 로그인 진입 로딩 */}
-        <Route
-          path="/auth/google/login"
-          element={<GoogleConnectingPage />}
-        />
-        {/* ✅ 백엔드에서 리다이렉트해 주는 콜백 URL */}
-        <Route path="/auth/callback" element={<GoogleConnectingPage />} />
-        {/* SSAFY 인증 페이지 */}
-        <Route path="/api/v1/auth/ssafy" element={<SignupPage />} />
-        {/* 내 오븐 페이지 */}
-        <Route path="/myoven" element={<MyOvenPage />} />
+        {/* 🔒 로그인하지 않은 사용자만 접근 가능 구역 */}
+        <Route element={<PublicRoute />}>
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/auth/google/login" element={<GoogleConnectingPage />} />
+          <Route path="/auth/callback" element={<GoogleConnectingPage />} />
+        </Route>
 
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/myoven" element={<MyOvenPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/notice" element={<NoticePage />} />
+        {/* 🛡️ 로그인한 사용자만 접근 가능 구역 */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/api/v1/auth/ssafy" element={<SignupPage />} />
 
-          {/* cookie 관련은 Layout 내부에 중첩 */}
-          <Route path="/cookie">
-            <Route index element={<Navigate to="step1" replace />} />
-            <Route path="step1" element={<Step1MakeCookie />} />
-            <Route path="step2" element={<Step2ChooseReceiver />} />
-            <Route path="step3" element={<Step3WriteLetter />} />
-            <Route path="finish" element={<Finish />} />
-            <Route path="send" element={<SendList />} />
-            <Route path=":id" element={<CookieDetail />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/myoven" element={<MyOvenPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/notice" element={<NoticePage />} />
+
+            <Route path="/cookie">
+              <Route index element={<Navigate to="step1" replace />} />
+              <Route path="step1" element={<Step1MakeCookie />} />
+              <Route path="step2" element={<Step2ChooseReceiver />} />
+              <Route path="step3" element={<Step3WriteLetter />} />
+              <Route path="finish" element={<Finish />} />
+              <Route path="send" element={<SendList />} />
+              <Route path=":id" element={<CookieDetail />} />
+            </Route>
           </Route>
         </Route>
+
+        {/* 잘못된 경로 처리 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )
