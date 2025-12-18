@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useSendCookieDetail } from '@/hooks/queries/useSendCookieDetail'
 
 /* ------------------ 스타일 ------------------ */
 
@@ -110,16 +111,7 @@ const MOCK_DATA: CookieDetailData[] = [
 export default function CookieDetail() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-
-  // 간단 mock lookup
-  const data = MOCK_DATA.find((d) => d.id === id) ?? {
-    id: id ?? 'unknown',
-    toName: '알수없음',
-    toMeta: '',
-    message: '해당 편지를 찾을 수 없습니다.',
-    date: '',
-    status: 'done' as const,
-  }
+  const { data } = useSendCookieDetail(id)
 
   return (
     <Container>
