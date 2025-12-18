@@ -114,7 +114,17 @@ const TextBoxImage = styled.img`
 const ButtonTitle = styled.h3`
   font-size: 24px;
   font-weight: bold;
-  // font will IM_Hyemin
+  font-family: 'IM_Hyemin';
+  line-height: 24px;
+  margin: 0;
+  margin-bottom: 4px;
+`
+
+const ButtonTitle2 = styled.h3`
+  font-size: 20px;
+  font-weight: bold;
+
+  font-family: 'IM_Hyemin';
   line-height: 24px;
   margin: 0;
   margin-bottom: 4px;
@@ -123,7 +133,7 @@ const ButtonTitle = styled.h3`
 const ButtonText = styled.span`
   font-size: 14px;
   line-height: 24px;
-  // font will Galmuri14
+  font-family: 'Galmuri14';
   margin: 0;
 `
 
@@ -237,10 +247,11 @@ export default function Home() {
                 backgroundColor="white"
                 titleColor="black"
                 textColor="#555555"
+                style={{ flex: 1.5 }}
               >
-                <ButtonTitle onClick={() => handleNavigate('/myoven')}>
+                <ButtonTitle2 onClick={() => handleNavigate('/myoven')}>
                   내 오븐
-                </ButtonTitle>
+                </ButtonTitle2>
                 <ButtonText>받은 쿠키 구경하기</ButtonText>
               </ActionButton>
 
@@ -249,9 +260,10 @@ export default function Home() {
                 backgroundColor="#cfcfcf" // 회색 배경
                 textColor="black"
                 disabled={true} // 비활성화
+                style={{ flex: 1 }}
               >
-                <span style={{ whiteSpace: 'pre-line' }}>{`comming
-              soon`}</span>
+                <ButtonText style={{ whiteSpace: 'pre-line' }}>{`comming
+              soon`}</ButtonText>
               </ActionButton>
             </FlexWrapper>
           </FlexWrapper>
@@ -277,6 +289,9 @@ export default function Home() {
                 {
                   onSuccess: () => {
                     navigate('/cookie/step1')
+                  },
+                  onError: () => {
+                    alert('에러 발생')
                   },
                 },
               )

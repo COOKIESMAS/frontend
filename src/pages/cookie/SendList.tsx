@@ -34,8 +34,9 @@ const BackButton = styled.button`
 `
 
 const PageTitle = styled.h2`
+  font-family: 'Galmuri14';
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
 `
 
@@ -58,9 +59,20 @@ const CountBadge = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 8px 6px;
+  padding: 10px 12px;
   box-shadow: 0 6px 12px rgba(138, 75, 35, 0.25);
   font-weight: 700;
+`
+
+const CountLabel = styled.div`
+  font-family: 'Galmuri14';
+  font-size: 13px;
+`
+
+const CountValue = styled.div`
+  font-family: 'DNFBitBitv2';
+  font-size: 24px;
+  line-height: 24px;
 `
 
 // 리스트 영역 (스크롤)
@@ -126,17 +138,18 @@ const CardBody = styled.div`
 `
 
 const ToText = styled.div`
-  font-weight: 800;
+  font-family: 'DNFBitBitv2';
   font-size: 16px;
+  font-weight: 500;
   color: #2b2b2b;
 `
 
 const MessagePreview = styled.div`
-  font-size: 13px;
+  font-family: 'IM_Hyemin';
+  font-size: 12px;
   color: #666;
-  margin-top: 6px;
   line-height: 1.2;
-  max-height: 2.4em;
+  height: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -150,13 +163,14 @@ const CardFooter = styled.div`
 `
 
 const DateText = styled.div`
+  font-family: 'IM_Hyemin';
   font-size: 12px;
   color: #9b9b9b;
 `
 
 const Status = styled.div<{ success?: boolean }>`
-  font-size: 13px;
-  font-weight: 700;
+  font-family: 'DNFBitBitv2';
+  font-size: 12px;
   color: ${({ success }) => (success ? '#2aa84f' : '#c07a3f')};
 `
 
@@ -190,8 +204,10 @@ function CookieCard({ item }: { item: SendItem }) {
       </Thumb>
       <CardBody>
         <ToText>
-          To. {item.toName}
-          {item.toMeta ? ` (${item.toMeta})` : ''}
+          <span style={{ color: '#9D6A37' }}>To. </span>
+          <span>
+            {item.toName} {item.toMeta ? ` (${item.toMeta})` : ''}
+          </span>
         </ToText>
         <MessagePreview>{item.messagePreview}</MessagePreview>
 
@@ -235,8 +251,10 @@ export default function SendList() {
 
         <BadgeWrapper>
           <CountBadge>
-            <div style={{ fontSize: 12 }}>보낸 쿠키</div>
-            <div style={{ fontSize: 20, lineHeight: 1 }}>{totalCount}개</div>
+            <CountLabel style={{ fontSize: 12 }}>보낸 쿠키</CountLabel>
+            <CountValue style={{ fontSize: 20, lineHeight: 1 }}>
+              {totalCount}개
+            </CountValue>
           </CountBadge>
         </BadgeWrapper>
       </HeaderRow>
@@ -251,6 +269,7 @@ export default function SendList() {
           </EmptyStateWrapper>
         ) : (
           data?.map((item) => {
+            console.log(item)
             const cardProps: SendItem = {
               id: String(item.cookiePk),
               toName: item.receiverName,
