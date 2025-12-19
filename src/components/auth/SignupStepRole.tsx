@@ -31,7 +31,7 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
 
   return (
     <SignupStepRoleBlock>
-      <StepTitle>어떤 SSAFY이신가요?</StepTitle>
+      <StepTitle>역할을 골라주세요</StepTitle>
 
       <RoleButtonsContainer>
         <RoleButton

@@ -52,7 +52,10 @@ export const SignupStepCode: React.FC<SignupStepCodeProps> = ({
               onChange={onChangeCode}
               placeholder="입력"
             />
-            <CodeInputHint>코드는 10분 동안 유효해요</CodeInputHint>
+
+            <CodeInputHint $hidden={Boolean(code?.trim())}>
+              코드는 10분 동안 유효해요
+            </CodeInputHint>
           </CodeInputRow>
         </FieldGroup>
                 <Button

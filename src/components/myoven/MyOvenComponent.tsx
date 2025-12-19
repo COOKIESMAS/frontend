@@ -692,6 +692,7 @@ const DdayText = styled.div`
   font-family: 'DNFBitBitv2', system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 40px;
+  -webkit-text-stroke: 1px black;
   line-height: 1.1;
 
   background-image: repeating-linear-gradient(
