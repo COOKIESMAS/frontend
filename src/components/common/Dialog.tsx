@@ -52,6 +52,7 @@ const CloseButton = styled.button`
 `
 
 const DialogTitle = styled.h2`
+  font-family: 'IM_Hyemin';
   font-size: 20px;
   margin: 8px;
 `
@@ -67,6 +68,7 @@ const ButtonGroup = styled.div`
 `
 
 const StyledButton = styled.button`
+  font-family: 'Pretendard';
   border-radius: 8px;
   padding: 10px 20px;
   cursor: pointer;

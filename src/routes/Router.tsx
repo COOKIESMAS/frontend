@@ -16,6 +16,7 @@ import SendList from '@/pages/cookie/SendList'
 import CookieDetail from '@/pages/cookie/CookieDetail'
 import MyPage from '@/pages/MyPage'
 import NoticePage from '@/pages/NoticePage'
+import CookieStepGuard from './CookieStepGuard'
 
 const Router = () => {
   return (
@@ -42,9 +43,17 @@ const Router = () => {
             <Route path="/cookie">
               <Route index element={<Navigate to="step1" replace />} />
               <Route path="step1" element={<Step1MakeCookie />} />
-              <Route path="step2" element={<Step2ChooseReceiver />} />
-              <Route path="step3" element={<Step3WriteLetter />} />
-              <Route path="finish" element={<Finish />} />
+              {/*  접근 제한 */}
+              <Route
+                element={
+                  <CookieStepGuard allow={['step2', 'step3', 'finish']} />
+                }
+              >
+                <Route path="step2" element={<Step2ChooseReceiver />} />
+                <Route path="step3" element={<Step3WriteLetter />} />
+                <Route path="finish" element={<Finish />} />
+              </Route>
+
               <Route path="send" element={<SendList />} />
               <Route path=":id" element={<CookieDetail />} />
             </Route>
