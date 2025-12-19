@@ -14,9 +14,10 @@ import Home from '@/pages/Home'
 import Layout from '@/components/Layout'
 import SendList from '@/pages/cookie/SendList'
 import CookieDetail from '@/pages/cookie/CookieDetail'
-import MyPage from '@/pages/MyPage'
+import MyPage from '@/pages/mypage/MyPage'
 import NoticePage from '@/pages/NoticePage'
 import CookieStepGuard from './CookieStepGuard'
+import EditCookiePage from '@/pages/mypage/edit/EditCookiePage'
 
 const Router = () => {
   return (
@@ -38,6 +39,8 @@ const Router = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/myoven" element={<MyOvenPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/edit/cookie" element={<EditCookiePage />} />
+
             <Route path="/notice" element={<NoticePage />} />
 
             <Route path="/cookie">

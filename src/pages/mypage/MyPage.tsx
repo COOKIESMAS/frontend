@@ -2,14 +2,13 @@ import { useCallback } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faChevronLeft,
-  faIdCard,
-  faSignOutAlt,
-} from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import IconPencil from '@/assets/icon/icon_pencil.svg'
+import IconIdcard from '@/assets/icon/icon_idcard.svg'
 import { useUser } from '@/hooks/queries/useUser'
 import { useEditUser } from '@/hooks/mutations/useEditUser'
+import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
 
 const Container = styled.div`
   display: flex;
@@ -45,10 +44,17 @@ const Title = styled.h1`
   font-weight: 700;
 `
 
-const Divider = styled.hr`
+const RowDivider = styled.hr`
   border: none;
   border-top: 1px solid #eee;
-  margin: 4px 0;
+  margin: 12px 0;
+`
+
+const ColDivider = styled.hr`
+  border: none;
+  border-left: 1px solid #d1d1d1;
+  height: 100%;
+  margin: 0px 4px;
 `
 
 const ProfileBox = styled.section`
@@ -59,48 +65,45 @@ const ProfileBox = styled.section`
 
 const ProfileTop = styled.div`
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
 `
 
-const AvatarPlaceholder = styled.div`
-  width: 56px;
-  height: 56px;
+const AvatarWrapper = styled.div`
+  width: 200px;
+  height: 200px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #f6f6f6, #eaeaea);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b5a59b;
-  font-weight: 700;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
-  flex-shrink: 0;
+  background-color: #717171;
 `
 
 const ProfileInfo = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 6px;
 `
 
-const CampusText = styled.div`
-  font-size: 12px;
-  color: #666;
-`
-
-const NameText = styled.div`
-  font-size: 22px;
-  font-weight: 800;
-  color: #111;
-  line-height: 1;
+const InfoRow = styled.div`
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-size: 24px;
+  color: #181725;
 `
 
 const EmailRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #666;
+  gap: 4px;
+  color: #181725;
+`
+
+const EmailSpan = styled.span`
+  font-family: 'Pretendard';
+  font-weight: 200;
+  font-size: 16px;
+  color: #181725;
 `
 
 const SettingRow = styled.div`
@@ -118,9 +121,10 @@ const SettingLeft = styled.div`
 `
 
 const SettingLabel = styled.div`
-  font-size: 16px;
-  color: #222;
-  font-weight: 600;
+  font-family: 'Pretendard';
+  font-size: 18px;
+  color: #181725;
+  font-weight: 500;
 `
 
 const SwitchTrack = styled.button<{ on: boolean }>`
@@ -150,8 +154,9 @@ const SwitchKnob = styled.span<{ on: boolean }>`
 const StatsRow = styled.div`
   display: flex;
   gap: 16px;
-  padding: 12px 4px;
-  background: transparent;
+  padding: 16px 24px;
+  background-color: #f2f3f2;
+  border-radius: 30px;
   justify-content: space-around;
   align-items: center;
 `
@@ -160,22 +165,40 @@ const StatCol = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 12px;
 `
 
 const StatLabel = styled.div`
-  font-size: 14px;
-  color: #666;
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-size: 18px;
+  color: #181725;
 `
 
 const StatValue = styled.div`
-  font-size: 28px;
-  font-weight: 800;
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-size: 16px;
   color: #111;
-  margin-top: 6px;
 `
 
 const Spacer = styled.div`
   flex: 1;
+`
+
+const ThumbEditButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background-color: #f2f3f2;
+  border: none;
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-size: 17px;
+  padding: 16px 32px;
+  border-radius: 30px;
+  cursor: pointer;
 `
 
 const LogoutBtn = styled.button`
@@ -198,10 +221,6 @@ const LogoutBtn = styled.button`
     left: 16px;
     font-size: 18px;
   }
-`
-
-const SmallIcon = styled(FontAwesomeIcon)`
-  font-size: 18px;
 `
 
 export default function MyPage() {
@@ -228,40 +247,41 @@ export default function MyPage() {
 
       <ProfileBox>
         <ProfileTop>
-          <AvatarPlaceholder aria-hidden>
-            {data?.name?.substring(0, 2) || 'KS'}
-          </AvatarPlaceholder>
+          <AvatarWrapper>
+            <CookieImageRenderer2
+              designData={data?.designData}
+              isPen={false}
+              isRound={true}
+            />
+          </AvatarWrapper>
 
           <ProfileInfo>
-            <CampusText>
-              <span>{data?.campus} </span>
-              <span>{data?.classNumber}</span>
-              <span>반</span>
-            </CampusText>
-            <NameText>{data?.name ?? '김싸피'}</NameText>
+            <InfoRow>
+              {data?.campus} {data?.classNumber} 반 {data?.name}
+            </InfoRow>
             <EmailRow>
+              <EmailSpan>{data?.googleEmail}</EmailSpan>
               <FontAwesomeIcon
                 icon={faGoogle}
                 style={{ color: '#DB4437', fontSize: 16 }}
               />
-              <span>{data?.googleEmail}</span>
             </EmailRow>
           </ProfileInfo>
+          <ThumbEditButton onClick={() => navigate('/mypage/edit/cookie')}>
+            <img src={IconPencil} />
+            대표 쿠키 수정
+          </ThumbEditButton>
         </ProfileTop>
 
-        <Divider />
+        <RowDivider />
 
         <SettingRow>
           <SettingLeft>
-            <SmallIcon icon={faIdCard} />
+            <img src={IconIdcard} />
             <div>
               <SettingLabel>오븐 공개 설정</SettingLabel>
-              <div style={{ fontSize: 13, color: '#777' }}>
-                오븐(프로필)을 공개하시겠어요?
-              </div>
             </div>
           </SettingLeft>
-
           <SwitchTrack
             on={!!data?.isOvenOpen}
             disabled={isPending}
@@ -273,17 +293,22 @@ export default function MyPage() {
         </SettingRow>
       </ProfileBox>
 
-      <Divider />
-
       <StatsRow>
         <StatCol>
-          <StatLabel>구운 쿠키</StatLabel>
-          <StatValue>{data?.sentCookiesCount}</StatValue>
-        </StatCol>
-
-        <StatCol>
           <StatLabel>받은 쿠키</StatLabel>
-          <StatValue>{data?.receivedCookiesCount}</StatValue>
+          <StatValue>{data?.receivedCookiesCount}개</StatValue>
+        </StatCol>
+        <ColDivider />
+        <StatCol>
+          <StatLabel>보낸 쿠키</StatLabel>
+          <StatValue>{data?.sentCookiesCount}개</StatValue>
+        </StatCol>
+        <ColDivider />
+        <StatCol>
+          <StatLabel>쿠키 온도</StatLabel>
+          <StatValue>
+            {data?.receivedCookiesCount + data?.sentCookiesCount}°C
+          </StatValue>
         </StatCol>
       </StatsRow>
 
