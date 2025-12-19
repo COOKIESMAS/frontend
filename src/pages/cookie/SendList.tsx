@@ -19,6 +19,7 @@ const Container = styled.div`
   padding: 16px;
   box-sizing: border-box;
   background-color: #e2ae71;
+  padding-bottom: 80px;
 `
 
 const HeaderRow = styled.div`

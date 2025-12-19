@@ -30,6 +30,7 @@ const BottomNavWrapper = styled.nav`
   display: flex;
   justify-content: space-between;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 999;
 `
 
 const NavItem = styled(Link)<NavItemProps>`
