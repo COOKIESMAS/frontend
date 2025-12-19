@@ -6,6 +6,7 @@ import { useSendCookieList } from '@/hooks/queries/useSendCookieList'
 import { mapSendCookieToSendItem } from '@/utils/sendListMapper'
 import type { CookieDesignImgDataCamel } from '@/types/cookie'
 import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
+import BottomNavigation from '@/components/BottomNavigation'
 
 /* --------------------- 스타일 --------------------- */
 
@@ -17,6 +18,7 @@ const Container = styled.div`
   gap: 12px;
   padding: 16px;
   box-sizing: border-box;
+  background-color: #e2ae71;
 `
 
 const HeaderRow = styled.div`
@@ -284,6 +286,7 @@ export default function SendList() {
           })
         )}
       </ListArea>
+      <BottomNavigation />
     </Container>
   )
 }
