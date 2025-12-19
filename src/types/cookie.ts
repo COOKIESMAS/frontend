@@ -63,6 +63,7 @@ export interface SendCookieItem {
 }
 
 export type SendCookieListResponse = SendCookieItem[]
+export type SendCookieDetailResponse = SendCookieItem[]
 
 export interface CookieDesignImgDataCamel {
   accessory?: string
@@ -90,3 +91,4 @@ export interface SendCookieItemCamel {
 }
 
 export type SendCookieListResponseCamel = SendCookieItemCamel[]
+export type SendCookieDetailResponseCamel = SendCookieItemCamel[]

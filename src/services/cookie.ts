@@ -13,8 +13,10 @@ export async function getSendCookieListApi() {
   return response.data
 }
 
-export async function getSendCookieDetailApi(targetId: string) {
-  const response = await useApi.get(`cookies?type=sent&target_id=${targetId}`)
+export async function getSendCookieDetailApi(cookieId: string) {
+  const response = await useApi.get(`/cookies/?cookie_id=${cookieId}`)
+
+  console.log(response.data)
 
   return response.data
 }
