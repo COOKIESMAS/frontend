@@ -171,7 +171,7 @@ export const RoleButton = styled.button<{ selected: boolean }>`
 `
 
 export const RoleImage = styled.img`
-  height: 56px;
+  height: 80px;
   width: auto;
   flex-shrink: 0;
 `
@@ -235,7 +235,7 @@ export const TextField = styled.input`
   padding: 0 12px;
   font-size: 16px;
   background-color: #ffffff;
-  font-family: 'IM_Hyemin-Bold', system-ui, -apple-system,
+  font-family: 'Galmuri14', system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;
   outline: none;
 
@@ -327,17 +327,21 @@ export const CodeInputField = styled.input`
   }
 `;
 
-// 오른쪽 힌트 텍스트 (코드는 10분 동안 유효해요)
-export const CodeInputHint = styled.span`
+export const CodeInputHint = styled.span<{ $hidden?: boolean }>`
   margin-left: 8px;
-  flex-shrink: 0;       /* 너무 줄어들지 않게 */
-  white-space: nowrap;  /* 한 줄 유지 */
+  flex-shrink: 0;
+  white-space: nowrap;
 
   font-family: 'IM_Hyemin-Bold', system-ui, -apple-system,
     BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   color: #6b6a6a;
-`;
+
+  /* ✅ placeholder처럼: 입력하면 안 보이게 */
+  opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
+  visibility: ${({ $hidden }) => ($hidden ? 'hidden' : 'visible')};
+  transition: opacity 150ms ease;
+`
 
 
 // export const CodeInputHint = styled.span`
