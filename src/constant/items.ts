@@ -45,12 +45,12 @@ export const MAIN_CATEGORY_LABEL: Record<MainCategoryKey, string> = {
 export const SUB_CATEGORY_LABEL: Record<SelectableSubCategoryKey, string> = {
   body: '몸',
   eyes: '눈',
-  hair: '머리',
+  hair: '헤어',
   mouth: '입',
-  blush: '홍조',
+  blush: '볼터치',
 
   hat: '모자',
-  onePiece: '원피스',
+  onePiece: '한벌옷',
   top: '상의',
   pants: '하의',
 

@@ -11,6 +11,14 @@ export const classAtom = atom<number | null>(null)
 export const nameAtom = atom<string | null>(null)
 export const mattermostAtom = atom<string | null>(null)
 
+export type Receiver = {
+  role: ReceiverRole
+  campus: CampusValue | null
+  classNumber: number | null
+  name: string | null
+  mmId: string | null
+}
+
 /**
  * 하나의 객체로 묶어 가져오고 싶을 때 사용 가능한 derived atom
  */
