@@ -49,33 +49,36 @@ export default function OvenCookieImageRenderer({
 // ───────────────── styled-components ─────────────────
 
 /**
- * 팬 안의 한 칸 사이즈에 맞춘 래퍼
+ * 팬 안의 한 칸(그리드 셀) 크기에 맞춘 래퍼
+ * - 래퍼는 셀과 같은 크기(100%)
+ * - 실제 쿠키 이미지는 그 안에서 130% 정도로 키움
  */
 const CookieWrapper = styled.div`
   position: relative;
   width: 150%;
-  height: 15  0%;
+  height: 150%;
   border-radius: 16px;
   overflow: visible;
   cursor: pointer;
+  z-index: 2; /* OvenPanImage 보다 위에 오도록 */
 `
 
 const NewBadge = styled.img`
   position: absolute;
-  top: -4px;
-  left: -4px;
+  top: 30px;
+  left: 30px;
   width: 28px;
   height: auto;
   z-index: 999; /* 쿠키 파츠들보다 항상 위 */
-  pointer-events: none;
+  pointer-events: none; /* 배지 위를 눌러도 아래 onClick 동작 */
 `
 
 const CookiePartImg = styled.img<{ zIndex: number }>`
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100%;
+  width: 130%;     /* <- 여기로 쿠키 크기 조절 (필요하면 120~140 조절) */
   transform: translate(-50%, -50%);
   z-index: ${(p) => p.zIndex};
-  pointer-events: none;
+  pointer-events: none; /* 개별 파츠가 클릭을 가로채지 않게 */
 `

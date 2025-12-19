@@ -26,6 +26,7 @@ import TutorialOverlay from '@/components/TutorialOverlay'
 import { useUser } from '@/hooks/queries/useUser'
 import ActionHighlightOverlay from '@/components/ActionHighlightOverlay'
 import { useEditUser } from '@/hooks/mutations/useEditUser'
+import { useApi } from '@/utils/useApi'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -44,6 +45,32 @@ const FlexWrapper = styled.div<{
   flex-wrap: ${(props) => props.wrap || 'nowrap'};
   width: ${(props) => props.width || 'auto'};
   height: ${(props) => props.height || 'auto'};
+`
+const OvenButtonWrapper = styled.div`
+  position: relative;
+  flex: 1.5;
+`
+
+const UnreadBadge = styled.div`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #ff4d4f;
+  color: #ffffff;
+  font-size: 11px;
+  font-family: 'DNFBitBitv2', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+
+  box-shadow: 0 0 0 2px #ffffff; /* 버튼과 구분되게 흰색 테두리 느낌 */
 `
 
 const AppContainer = styled.div`
@@ -192,6 +219,7 @@ export default function Home() {
   const openMenu = () => setIsMenuOpen(true)
   const closeMenu = () => setIsMenuOpen(false)
   const [showActionGuide, setShowActionGuide] = useState(false)
+  const [unreadCount, setUnreadCount] = useState<number>(0)
 
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
 
@@ -200,6 +228,19 @@ export default function Home() {
       setButtonRect(makeCookieRef.current.getBoundingClientRect())
     }
   }, [showActionGuide])
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await useApi.get<{ count: number }>('/cookies/unread-count')
+        setUnreadCount(res.data?.count ?? 0)
+      } catch {
+        setUnreadCount(0)
+      }
+    }
+
+    void fetchUnreadCount()
+  }, [])
 
   const handleNavigate = (dst: string) => {
     navigate(dst)
@@ -250,17 +291,22 @@ export default function Home() {
             </MakeButtonWrapper>
 
             <FlexWrapper gap="8px" width="100%" align="stretch">
-              <ActionButton
-                backgroundColor="white"
-                titleColor="black"
-                textColor="#555555"
-                style={{ flex: 1.5 }}
-              >
-                <ButtonTitle2 onClick={() => handleNavigate('/myoven')}>
-                  내 오븐
-                </ButtonTitle2>
-                <ButtonText>받은 쿠키 구경하기</ButtonText>
-              </ActionButton>
+              <OvenButtonWrapper>
+                <ActionButton
+                  backgroundColor="white"
+                  titleColor="black"
+                  textColor="#555555"
+                  style={{ width: '100%' }}
+                  onClick={() => handleNavigate('/myoven')}
+                >
+                  <ButtonTitle2>내 오븐</ButtonTitle2>
+                  <ButtonText>받은 쿠키 구경하기</ButtonText>
+                </ActionButton>
+
+                {unreadCount > 0 && (
+                  <UnreadBadge>{unreadCount}</UnreadBadge>
+                )}
+              </OvenButtonWrapper>
 
               {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
               <ActionButton
