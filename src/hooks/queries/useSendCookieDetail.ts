@@ -1,19 +1,21 @@
 import { getSendCookieDetailApi } from '@/services/cookie'
 import type {
-  SendCookieListResponse,
-  SendCookieListResponseCamel,
+  SendCookieDetailResponse,
+  SendCookieDetailResponseCamel,
 } from '@/types/cookie'
+import { mapSendCookieListToCamel } from '@/utils/cookieMapper'
 import { useQuery } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 
 export function useSendCookieDetail(id: string) {
   const userQuery = useQuery<
-    SendCookieListResponse,
+    SendCookieDetailResponse,
     AxiosError,
-    SendCookieListResponseCamel
+    SendCookieDetailResponseCamel
   >({
     queryFn: () => getSendCookieDetailApi(id),
-    queryKey: ['user', 'me', 'cookie', 'send'],
+    queryKey: ['user', 'me', 'cookie', 'send', id],
+    select: mapSendCookieListToCamel,
   })
 
   return userQuery
