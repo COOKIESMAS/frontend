@@ -5,19 +5,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled, { css } from 'styled-components'
 import ProfileCard from '@/components/ProfileCard' // 경로가 다르면 수정하세요
 import { useNavigate } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
   campusAtom,
   classAtom,
   nameAtom,
   mattermostAtom,
   receiverRoleAtom,
+  receiverAtom,
 } from '@/store/atoms/receiverAtoms'
 import {
   CAMPUS_ENTRIES,
   getClassesForCampus,
   isDuplicatedUser,
 } from '@/constant/user'
+import { cookieStepAtom } from '@/store/atoms/cookieStepAtoms'
+import { validateReceiver } from '@/utils/validateReceiver'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -145,7 +148,7 @@ const LabelAnchor = styled.div`
   width: auto;
 `
 
-const Select = styled.select`
+const Select = styled.select<{ $hasValue: boolean }>`
   width: 100%;
   height: 56px;
   padding: 14px;
@@ -155,7 +158,12 @@ const Select = styled.select`
   font-size: 18px;
   line-height: 24px;
   background-color: #ffffff;
-  color: #a3a3a3;
+  color: ${({ $hasValue }) => ($hasValue ? '#000000' : '#a3a3a3')};
+
+  &:focus {
+    outline: none;
+    border-color: #c7d6ff;
+  }
 `
 
 const Input = styled.input`
@@ -299,6 +307,8 @@ function Step2ChooseReceiver() {
   const [classNum, setClassNum] = useAtom(classAtom)
   const [name, setName] = useAtom(nameAtom) // 이제 Input 값으로 사용
   const [mattermostId, setMattermostId] = useAtom(mattermostAtom)
+  const setCookieStep = useSetAtom(cookieStepAtom)
+  const receiver = useAtomValue(receiverAtom)
 
   const labelWrapRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -347,15 +357,14 @@ function Step2ChooseReceiver() {
   }
 
   const handleGoNext = () => {
-    // name이 빈 문자열일 경우 null로 처리
-    const finalName = name?.trim() || null
-    setName(finalName)
-
-    if (finalName) {
-      navigate('/cookie/step3')
-    } else {
-      alert('성명을 입력해주세요.') // 간단한 유효성 검사 예시
+    const receiverError = validateReceiver(receiver)
+    if (receiverError) {
+      alert(receiverError)
+      return
     }
+
+    setCookieStep('step3')
+    navigate('/cookie/step3')
   }
 
   /**
@@ -439,6 +448,7 @@ function Step2ChooseReceiver() {
                 <Label>캠퍼스</Label>
                 <Select
                   value={campus?.key ?? ''}
+                  $hasValue={Boolean(campus)}
                   onChange={(e) => {
                     const selected = CAMPUS_ENTRIES.find(
                       (c) => c.key === e.target.value,
@@ -459,13 +469,13 @@ function Step2ChooseReceiver() {
                 <Label>반</Label>
                 <Select
                   value={classNum ?? ''}
+                  $hasValue={Boolean(classNum)}
                   onChange={(e) =>
                     setClassNum(e.target.value ? Number(e.target.value) : null)
                   }
-                  disabled={!campus} // campus가 선택되지 않으면 disabled
+                  disabled={!campus}
                 >
                   <option value="">선택</option>
-                  {/* campus가 null이 아닐 때만 반 목록을 가져옴 */}
                   {campus &&
                     getClassesForCampus(campus.key).map((num) => (
                       <option key={num} value={num}>

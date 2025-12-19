@@ -15,6 +15,8 @@ import { useBakeCookie } from '@/hooks/mutations/useBakeCookie'
 import type { SendCookieRequest } from '@/types/cookie'
 import { compactDesignData } from '@/constant/items'
 import { resetAllCookieMakeAtom } from '@/store/effects/resetAllCookieMakeAtom'
+import { cookieStepAtom } from '@/store/atoms/cookieStepAtoms'
+import { validateReceiver } from '@/utils/validateReceiver'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -227,6 +229,7 @@ function Step3WriteLetter() {
   const receiver = useAtomValue(receiverAtom)
   const [letter, setLetter] = useAtom(letterAtom)
   const resetAll = useSetAtom(resetAllCookieMakeAtom)
+  const setCookieStep = useSetAtom(cookieStepAtom)
 
   const { mutate } = useBakeCookie()
 
@@ -249,10 +252,12 @@ function Step3WriteLetter() {
     mutate(body, {
       onSuccess: () => {
         resetAll()
+        setCookieStep('finish')
         navigate('/cookie/finish', {
           state: {
             name: receiver.name as string,
           },
+          replace: true,
         })
       },
       onError: () => {
@@ -262,6 +267,16 @@ function Step3WriteLetter() {
   }
 
   const handleSubmit = () => {
+    if (!letter.trim()) {
+      alert('편지를 한 자 이상 채워주세요.')
+      return
+    }
+
+    const receiverError = validateReceiver(receiver)
+    if (receiverError) {
+      alert(receiverError)
+      return
+    }
     setDialogState({
       isOpen: true,
       title: '이대로 편지를 보낼까요?',

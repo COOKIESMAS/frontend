@@ -10,6 +10,7 @@ import SubCategoryTabs from '@/components/cookie/SubCategoryTabs'
 import ItemsGrid from '@/components/cookie/ItemsGrid'
 import { randomizeSelectedItemsAtom } from '@/store/effects/cookieRandomEffects'
 import { useCookieParts } from '@/hooks/queries/useCookieParts'
+import { cookieStepAtom } from '@/store/atoms/cookieStepAtoms'
 
 const AppContainer = styled.div`
   display: flex;
@@ -110,6 +111,7 @@ const BottomSheetContainer = styled.div`
 export default function Step1MakeCookie() {
   const navigate = useNavigate()
   const setDialogState = useSetAtom(dialogAtom)
+  const setCookieStep = useSetAtom(cookieStepAtom)
   const { data } = useCookieParts()
 
   const triggerRandomize = useSetAtom(randomizeSelectedItemsAtom)
@@ -124,7 +126,10 @@ export default function Step1MakeCookie() {
     })
   }
 
-  const handleGoNext = () => navigate('/cookie/step2')
+  const handleGoNext = () => {
+    setCookieStep('step2')
+    navigate('/cookie/step2')
+  }
 
   const randomizeAllParts = () => {
     if (!data) return
