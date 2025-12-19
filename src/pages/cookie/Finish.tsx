@@ -36,7 +36,7 @@ const PageWrapper = styled.main`
   max-width: 375px;
   width: 100%;
   height: 100%;
-  background-color: #e8c7c7;
+  background-color: #e8c696;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -51,15 +51,15 @@ const CelebrateImg = styled.img`
 `
 
 const Title = styled.h1`
-  // font S-Core Dream 적용 예정
+  font-family: 'Pretendard';
   font-size: 28px;
   margin: 0;
   margin-bottom: 10px;
 `
 
 const Text = styled.p`
-  // font IM_Hyemin
-  font-size: 14px;
+  font-family: 'IM_Hyemin';
+  font-size: 15px;
   font-weight: bold;
   margin: 0;
   white-space: pre-line;
@@ -76,15 +76,14 @@ const StyledButton = styled.button<{
   padding: 16px;
   border-radius: 40px;
   border: 1px solid black;
-  font-weight: bold;
   font-size: 16px;
-  // IM_Hyemin 폰트 적용 예정
+  font-family: 'IM_Hyemin';
+  font-weight: 700;
   background: ${(props) =>
     props.backgroundColor == 'primary' ? '#e2ae71' : '#ffffff'};
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 `
-
 const IconWrapper = styled.span`
   position: absolute;
   right: 24px;
@@ -110,7 +109,7 @@ function Finish() {
           <CelebrateImg src={celebrate} />
           <Title>쿠키 배달 완료!</Title>
           <Text>{`${location.state.name ?? '김싸피'} 님의 오븐에서 
-          따뜻하게 구우지고 있어요`}</Text>
+          따뜻하게 구워지고 있어요`}</Text>
         </MainWrapper>
         <BottomButtonWrapper direction="column" gap="16px">
           <StyledButton

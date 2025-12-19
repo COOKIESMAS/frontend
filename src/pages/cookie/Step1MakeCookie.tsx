@@ -25,7 +25,7 @@ const PageWrapper = styled.main`
   width: 100%;
   height: 100%;
   padding-top: 44px;
-  background-color: #e8c7c7;
+  background-color: #e8c696;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -53,7 +53,8 @@ const BackButton = styled.button`
 `
 
 const PageTitle = styled.h1`
-  font-size: 18px;
+  font-family: 'Galmuri14';
+  font-size: 15px;
   margin: 0;
 `
 
@@ -63,6 +64,7 @@ const ButtonGroup = styled.div`
 `
 
 const GradientButton = styled.button`
+  font-family: 'IM_Hyemin';
   border-radius: 8px;
   padding: 10px 20px;
   cursor: pointer;
@@ -77,17 +79,21 @@ const GradientButton = styled.button`
     #0408dd 82%,
     #8000d5 96%
   );
-  border: 1px solid #ffc0cb;
+  border: none;
   color: white;
+  box-shadow: 2px 2px 1px #666;
 `
 
 const CompleteButton = styled.button`
+  font-family: 'IM_Hyemin';
+  border: none;
   border-radius: 8px;
   padding: 10px 20px;
   cursor: pointer;
   font-weight: 700;
   background: black;
   color: white;
+  box-shadow: 2px 2px 1px #666;
 `
 
 const BottomSheetContainer = styled.div`

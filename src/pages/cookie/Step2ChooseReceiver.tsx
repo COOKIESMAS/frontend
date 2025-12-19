@@ -1,6 +1,5 @@
-// src/pages/cookie/Step2ChooseReceiver.tsx
 import { useState, useRef, useLayoutEffect, useEffect } from 'react'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons' // Regular 아이콘 사용 유지
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled, { css } from 'styled-components'
@@ -17,11 +16,9 @@ import {
 import {
   CAMPUS_ENTRIES,
   getClassesForCampus,
-  // getStudentsForClass, // 학생 목록은 이제 사용하지 않음
   isDuplicatedUser,
 } from '@/constant/user'
 
-/* --- styled components (unchanged) --- */
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
   justify?: string
@@ -54,7 +51,7 @@ const PageWrapper = styled.main`
   max-width: 375px;
   width: 100%;
   height: 100%;
-  background-color: #e8c7c7;
+  background-color: #e8c696;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -78,15 +75,16 @@ const BackButton = styled.button`
 `
 
 const PageTitle = styled.h1`
-  font-size: 18px;
+  font-family: 'Galmuri14';
+  font-size: 15px;
   margin: 0;
 `
 
 const Title = styled.h1`
+  font-family: 'Pretendard';
+  font-weight: 700;
   text-align: center;
   font-size: 20px;
-  // font will Pretendard
-  font-weight: bold;
   margin: 20px 0 16px;
 `
 
@@ -101,6 +99,8 @@ const ToggleWrapper = styled.div`
 `
 
 const ToggleButton = styled.button<{ active?: boolean }>`
+  font-family: 'Pretendard';
+  font-weight: 600;
   flex: 1;
   border: none;
   border-radius: 12px;
@@ -111,7 +111,6 @@ const ToggleButton = styled.button<{ active?: boolean }>`
   line-height: 18px;
   background: ${({ active }) => (active ? '#fff' : 'transparent')};
   color: #000;
-  // font will Pretendard
 `
 
 // 폼 영역
@@ -125,9 +124,10 @@ const FormSection = styled.section`
 
 const Label = styled.label`
   font-size: 14px;
-  font-weight: normal;
-  // font will pretendard
+  font-family: 'Pretendard';
+  font-weight: 500;
   line-height: 24px;
+  padding: 0 4px;
   display: inline-block;
 `
 
@@ -151,10 +151,10 @@ const Select = styled.select`
   padding: 14px;
   border-radius: 16px;
   border: 1px solid #eee;
+  font-family: 'Galmuri14';
   font-size: 18px;
-  // font will Galmuri14
   line-height: 24px;
-  background-color: inherit;
+  background-color: #ffffff;
   color: #a3a3a3;
 `
 
@@ -166,8 +166,8 @@ const Input = styled.input`
   border: 1px solid #eee;
   font-size: 14px;
   box-sizing: border-box;
-  background-color: inherit;
-  // font will Galmuri14
+  background-color: #ffffff;
+  font-family: 'Galmuri14';
   font-size: 18px;
   line-height: 24px;
 
@@ -184,21 +184,27 @@ const BottomSection = styled.section`
   padding: 24px 0 8px;
 `
 
-const SubmitButton = styled.button`
+const StyledButton = styled.button<{
+  backgroundColor?: 'primary' | 'secondary'
+}>`
+  position: relative;
   width: 100%;
   padding: 16px;
   border-radius: 40px;
-  border: none;
-  font-weight: bold;
+  border: 1px solid black;
   font-size: 16px;
-  background: #e7b472;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'IM_Hyemin';
+  font-weight: 700;
+  background: ${(props) =>
+    props.backgroundColor == 'primary' ? '#e2ae71' : '#ffffff'};
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.4);
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+`
+const IconWrapper = styled.span`
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
 `
 
 /* Tooltip styles (unchanged) */
@@ -288,7 +294,6 @@ function Step2ChooseReceiver() {
     'top',
   )
 
-  // jotai atoms
   const [role, setRole] = useAtom(receiverRoleAtom)
   const [campus, setCampus] = useAtom(campusAtom)
   const [classNum, setClassNum] = useAtom(classAtom)
@@ -360,10 +365,11 @@ function Step2ChooseReceiver() {
    * 3. 해당 조합이 user.ts의 duplicatedUserData에 있을 경우
    */
   const shouldShowMattermost =
-    role === 'STUDENT' &&
-    Boolean(campus && classNum && name && name.trim()) &&
-    campus &&
-    isDuplicatedUser(campus.key!, classNum as number, name!.trim() as string)
+    role == 'TEACHER' ||
+    (role === 'STUDENT' &&
+      Boolean(campus && classNum && name && name.trim()) &&
+      campus &&
+      isDuplicatedUser(campus.key!, classNum as number, name!.trim() as string))
 
   // clear dependent fields if parent changes
   useEffect(() => {
@@ -550,13 +556,16 @@ function Step2ChooseReceiver() {
           </LabelWrap>
         </FormSection>
         <BottomSection>
-          <SubmitButton
+          <StyledButton
             onClick={handleGoNext}
             aria-disabled={!name || name.trim() === ''}
+            backgroundColor="primary"
           >
             편지 쓰러 가기
-            <span>→</span>
-          </SubmitButton>
+            <IconWrapper>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </IconWrapper>
+          </StyledButton>
         </BottomSection>
       </PageWrapper>
     </AppContainer>
