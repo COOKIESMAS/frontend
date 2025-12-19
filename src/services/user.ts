@@ -1,3 +1,4 @@
+import { compactDesignData, type SelectedItems } from '@/constant/items'
 import type { CookieDesignData } from '@/types/cookie'
 import { useApi } from '@/utils/useApi'
 
@@ -22,17 +23,7 @@ type EditUserApiBody = Partial<{
 }>
 
 export async function editUserApi(body: EditUserBody) {
-  console.log(body)
-  const filteredDesignData: CookieDesignData = Object.fromEntries(
-    Object.entries(body.designData || {})
-      .map(([key, value]) => [
-        key,
-        value === null ? value : value === 0 ? 1 : value, // 0이면 +1을 하고, null이면 그대로 두기
-      ])
-      .filter(([, value]) => value !== null), // null인 값은 마지막에 필터링
-  ) as CookieDesignData
-
-  console.log(filteredDesignData)
+  const filteredDesignData = compactDesignData(body.designData as SelectedItems)
 
   const apiBody: EditUserApiBody = {
     ...(body.isOvenOpen !== undefined && {
