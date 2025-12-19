@@ -11,8 +11,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'IM_Hyemin';
     src:
       url('/fonts/IM_Hyemin-Regular.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
+    font-weight: 400;
     font-display: swap;
   }
   @font-face {
@@ -20,7 +19,6 @@ const GlobalStyle = createGlobalStyle`
     src:
       url('/fonts/IM_Hyemin-Bold.ttf') format('truetype');
     font-weight: 700;
-    font-style: bold;
     font-display: swap;
   }
   @font-face {
@@ -32,7 +30,43 @@ const GlobalStyle = createGlobalStyle`
   }
   @font-face {
   font-family: 'DNFBitBitv2';
-  src: url('/fonts/DNFBitBitv2.otf') format('otf');
+  src: url('/fonts/DNFBitBitv2.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-ExtraBold.otf') format('opentype');
+    font-weight: 800;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-Light.otf') format('opentype');
+    font-weight: 300;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/fonts/Pretendard-ExtraLight.otf') format('opentype');
+    font-weight: 200;
+    font-display: swap;
   }
   
 

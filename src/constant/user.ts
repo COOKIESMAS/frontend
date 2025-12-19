@@ -11,7 +11,7 @@ export const CAMPUS_LABELS: Record<CampusKey, string> = {
   daejeon: '대전',
   gwangju: '광주',
   gumi: '구미',
-  busan: '부산',
+  busan: '부울경',
 }
 
 export type CampusKey = (typeof CAMPUS)[keyof typeof CAMPUS]
@@ -21,13 +21,12 @@ export type CampusValue = {
   label: string
 }
 
-// 반 수: 서울 1~18반, 나머지 1~6반
 export const CLASS_COUNTS: Record<CampusKey, number> = {
-  seoul: 18,
+  seoul: 20,
   daejeon: 6,
-  gwangju: 6,
+  gwangju: 5,
   gumi: 6,
-  busan: 6,
+  busan: 4,
 }
 
 export const CAMPUS_ENTRIES = Object.entries(CAMPUS_LABELS).map(
@@ -46,9 +45,9 @@ export const duplicatedUserData: Array<{
   region: CampusKey
   class: number
 }> = [
-  { name: '이준영', region: 'seoul', class: 18 },
-  { name: '김민재', region: 'gumi', class: 3 },
-  { name: '강지석', region: 'gumi', class: 4 },
+  { name: '이준영', region: CAMPUS.SEOUL, class: 18 },
+  { name: '김민재', region: CAMPUS.GUMI, class: 3 },
+  { name: '강지석', region: CAMPUS.GUMI, class: 4 },
 ]
 
 /**

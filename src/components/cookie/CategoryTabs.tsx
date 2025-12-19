@@ -11,16 +11,18 @@ const TabsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #eee;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 `
 
 const TabBtn = styled.button<{ active?: boolean }>`
+  font-family: 'IM_Hyemin';
+  font-weight: 700;
   width: 100%;
   border: none;
   padding: 16px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   background-color: ${(p) => (p.active ? '#F3F4F5' : '#ffffff')};
   font-weight: ${(p) => (p.active ? 'bold' : 'normal')};
   color: ${(p) => (p.active ? 'black' : '#969696')};

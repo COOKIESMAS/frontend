@@ -28,6 +28,7 @@ const SubTabsContainer = styled.div`
 `
 
 const SubTab = styled.button<{ isActive?: boolean }>`
+  font-family: 'Galmuri14';
   border: none;
   width: 88px;
   border-radius: 16px;

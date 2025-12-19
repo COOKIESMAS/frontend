@@ -12,7 +12,6 @@ export const Landing: React.FC = () => {
   })
 
   const handleGoogleLogin = () => {
-    // ✅ 프론트 라우트로 이동 → 여기서 백엔드 /auth/google/login 으로 redirect
     navigate('/auth/google/login')
   }
 
@@ -49,7 +48,26 @@ export const Landing: React.FC = () => {
               <ButtonText>Google 계정으로 로그인</ButtonText>
             </GoogleButtonInner>
           </GoogleButton>
-          <Agreement>가입함으로써 쿠키스마스팀의 개인정보 처리방침과 서비스 이용약관에 동의합니다</Agreement>
+          <Agreement>
+            가입함으로써 쿠키스마스팀의{' '}
+            <AgreementLink
+              href="https://cookiesmas.notion.site/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              개인정보 처리방침
+            </AgreementLink>
+            과{' '}
+            <AgreementLink
+              href="https://cookiesmas.notion.site/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              서비스 이용약관
+            </AgreementLink>
+            에 동의합니다
+          </Agreement>
+
 
         </ContentContainer>
       </PageWrapper>
@@ -248,14 +266,30 @@ const ButtonText = styled.span`
   color: #ffffff;
 `
 
-const Agreement = styled.text`
-  font-family: 'Pretendard';
-    src: url('/fonts/Pretendard-Light.otf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    color: #5D5D5D;
-    font-size: 14px;
-    margin-top: -20px;
+const Agreement = styled.p`
+  margin-top: -20px;
+  text-align: center;
+  font-family: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  color: #5d5d5d;
+  font-size: 14px;
+  line-height: 1.4;
 `
+
+const AgreementLink = styled.a`
+  color: inherit;               /* 문장 색 유지 */
+  text-decoration: underline;   /* 밑줄 */
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+`
+
 
 //#endregion

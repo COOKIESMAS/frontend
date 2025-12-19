@@ -1,3 +1,5 @@
+import type { CookieDesignImgData, CookieDesignImgDataCamel } from './cookie'
+
 export interface User {
   userPk: number
   googleEmail: string
@@ -10,6 +12,7 @@ export interface User {
   isOvenOpen: boolean
   isTutorialCompleted: boolean
   description: string
+  designData: CookieDesignImgDataCamel
   sentCookiesCount: number
   receivedCookiesCount: number
 }
@@ -28,6 +31,7 @@ export interface UserResponse {
   is_oven_open: boolean
   is_tutorial_completed: boolean
   description: string
+  design_data: CookieDesignImgData
   sent_cookies_count: number
   received_cookies_count: number
 }

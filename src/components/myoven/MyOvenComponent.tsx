@@ -16,6 +16,32 @@ import type { CookieItem } from '@/types/cookie'
 const PAN_SIZE = 4
 type SlideDirection = 'left' | 'right' | null
 
+// 🔴 모달에 사용할 랜덤 문구들
+const OVEN_MESSAGES: string[] = [
+  '크리스마스까지 맛있게 구워지는 중...⏲️',
+  '누가 만들어준 쿠키일까?',
+  '어떤 비밀이 담겨있을지 몰라🙈',
+  '선물같은 마음을 배달하는 중...🎁',
+]
+
+// 🔴 2025-12-25까지 남은 날짜를 D-day 문자열로 계산
+const getDDayLabel = () => {
+  const today = new Date()
+  const target = new Date(2025, 11, 25) // 12월(11) 25일
+
+  // 시·분·초 제거해서 순수 날짜 차이만 계산
+  today.setHours(0, 0, 0, 0)
+  target.setHours(0, 0, 0, 0)
+
+  const diffMs = target.getTime() - today.getTime()
+  const diffDays = Math.max(
+    0,
+    Math.ceil(diffMs / (1000 * 60 * 60 * 24)),
+  )
+  const padded = String(diffDays).padStart(2, '0')
+  return `D - ${padded}`
+}
+
 interface MyOvenComponentProps {
   loading: boolean
   errorMessage?: string | null
@@ -47,6 +73,13 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [slideDirection, setSlideDirection] =
     useState<SlideDirection>(null)
+
+  // 🔴 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState<string>('')
+
+  // D-day는 한 번만 계산해두면 됨
+  const ddayLabel = useMemo(() => getDDayLabel(), [])
 
   const backgroundImage = hasCookies
     ? '/ovenbackgroundfire.png'
@@ -119,6 +152,26 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
   }
 
   const receivedCount = cookies.length
+
+  // 🔴 쿠키 클릭 시: 읽음 처리 + 모달 열기
+  const handleCookieClick = (cookie: CookieItem) => {
+    // 기존 로직 유지 (읽음 처리 API 호출)
+    onClickCookie(cookie)
+
+    // 랜덤 문구 선택
+    const randomIndex = Math.floor(
+      // eslint-disable-next-line react-hooks/purity
+      Math  .random() * OVEN_MESSAGES.length,
+    )
+    setModalMessage(OVEN_MESSAGES[randomIndex])
+
+    // 모달 오픈
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
 
   // ───────────── 로딩 화면 ─────────────
   if (loading) {
@@ -211,7 +264,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
                     key={cookie.cookie_pk}
                     designData={cookie.design_data}
                     isRead={cookie.is_read}
-                    onClick={() => onClickCookie(cookie)}
+                    onClick={() => handleCookieClick(cookie)} // 🔴 변경
                   />
                 ))}
 
@@ -245,7 +298,15 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
           </PanArea>
         )}
 
-        {/* 하단 네비게이션 영역은 다른 팀원이 구현 예정 */}
+        {/* 🔴 쿠키 모달 (OvenRectangle) */}
+        {isModalOpen && (
+          <ModalOverlay onClick={handleCloseModal}>
+            <ModalCard onClick={handleCloseModal}>
+              <ModalMessage>{modalMessage}</ModalMessage>
+              <DdayText>{ddayLabel}</DdayText>
+            </ModalCard>
+          </ModalOverlay>
+        )}
       </ContentContainer>
     </PageWrapper>
   )
@@ -268,7 +329,7 @@ const PageWrapper = styled.div`
   display: flex;
   justify-content: center; /* 가로 중앙 */
   align-items: stretch;
-  background-color: #E8C696; /* 바깥 여백 배경색 */
+  background-color: #e8C696; /* 바깥 여백 배경색 */
 `
 
 /**
@@ -513,7 +574,7 @@ const CookiesGrid = styled.div`
 `
 
 const ArrowButtonBase = styled.button`
-position: absolute;
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -525,7 +586,7 @@ position: absolute;
   align-items: center;
   justify-content: center;
   svg {
-    font-size: 38px; /* 원하면 28~36px 사이로 조절 */
+    font-size: 38px;
     color: #ffffff;
   }
 `
@@ -586,6 +647,67 @@ const RetryButton = styled.button`
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+`
+
+// 🔴 모달 스타일
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+`
+
+const ModalCard = styled.div`
+  width: 280px;
+  height: 210px;
+  background-image: url('/OvenRectangle.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center;
+`
+
+// IM_Hyemin, Bold, 22px
+const ModalMessage = styled.p`
+  font-family: 'IM_Hyemin-Bold', 'IM_Hyemin', system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 22px;
+  margin: 0 0 12px;
+  color: #2c231c;
+  white-space: pre-line;
+`
+
+// DNF Bit Bit v2, 40px + 크리스마스 스트라이프 색상
+const DdayText = styled.div`
+  font-family: 'DNFBitBitv2', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 40px;
+  -webkit-text-stroke: 1px black;
+  line-height: 1.1;
+
+  background-image: repeating-linear-gradient(
+    45deg,
+    #ffffff 0px,
+    #ffffff 16px,
+    #00a84f 16px,
+    #00a84f 32px,
+    #ff2b2b 32px,
+    #ff2b2b 48px
+  );
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 `
 
 //endregion

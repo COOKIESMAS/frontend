@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useSendCookieDetail } from '@/hooks/queries/useSendCookieDetail'
+import { useRequiredParam } from '@/hooks/useRequiredParam'
+import BottomNavigation from '@/components/BottomNavigation'
 
 /* ------------------ 스타일 ------------------ */
 
@@ -12,6 +15,7 @@ const Container = styled.div`
   padding: 16px;
   box-sizing: border-box;
   gap: 18px;
+  background-color: #e2ae71;
 `
 
 const HeaderRow = styled.div`
@@ -27,6 +31,13 @@ const BackButton = styled.button`
   margin: 0;
   cursor: pointer;
   font-size: 22px;
+`
+
+const PageTitle = styled.h2`
+  font-family: 'Galmuri14';
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
 `
 
 const LetterWrapper = styled.div`
@@ -101,51 +112,39 @@ const LetterBox = styled.div`
   }
 `
 
-/* ------------------ mock / types ------------------ */
-
-type CookieDetailData = {
-  id: string
-  toName: string
-  toMeta?: string
-  message: string
-  date: string
-}
-
-/* 간단한 예시 데이터 — 실제로는 API로 받아오세요 */
-const MOCK_DATA: CookieDetailData = {
-  id: '1',
-  toName: '이싸피',
-  toMeta: '구미 6반',
-  message:
-    '안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️\n안녕 이싸피!\n올 한 해도 정말 고생 많았어..\n나랑 같이 알고리즘 공부 해줘서 정말 고마워.\n\n우리 2학기도 같이 열심히 프로젝트 해보자!\n항상 응원해 ❤️',
-  date: '2025.12.15',
-}
-
 /* ------------------ 컴포넌트 ------------------ */
 
 export default function CookieDetail() {
   const navigate = useNavigate()
-  // const { id } = useParams<{ id: string }>()
-  const data = MOCK_DATA
+  const id = useRequiredParam('id')
 
+  const { data } = useSendCookieDetail(id)
+
+  if (!data) return null
+
+  console.log(data)
   return (
     <Container>
       <HeaderRow>
         <BackButton aria-label="뒤로" onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faChevronLeft} />
         </BackButton>
+
+        <PageTitle>보낸 쿠키</PageTitle>
       </HeaderRow>
       <LetterWrapper>
-        <ToPill aria-label={`받는사람: ${data.toName}`}>
+        <ToPill aria-label={`받는사람: ${data[0]?.receiverName}`}>
           <ToLabel>To.</ToLabel>
           <ToNameText>
-            {data.toMeta ? `${data.toMeta} ${data.toName}` : data.toName}
+            {/* {data.toMeta ? `${data.toMeta} ${data.toName}` : data.toName} */}
+            {data[0]?.receiverName}
           </ToNameText>
         </ToPill>
         <LetterBox id="letter-heading" aria-label="편지 내용">
-          {data.message}
+          {data[0]?.content}
         </LetterBox>
       </LetterWrapper>
+      <BottomNavigation />
     </Container>
   )
 }

@@ -20,6 +20,7 @@ export function useUser() {
         isOvenOpen: res.is_oven_open,
         isTutorialCompleted: res.is_tutorial_completed,
         description: res.description,
+        designData: res.design_data,
         sentCookiesCount: res.sent_cookies_count,
         receivedCookiesCount: res.received_cookies_count,
       })

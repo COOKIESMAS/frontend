@@ -4,14 +4,20 @@ import { zIndexMap, styleMap2 } from '@/constant/cookieStyleMap'
 import ovenpan from '/ovenpan.png'
 import type { CookieDesignImgDataCamel } from '@/types/cookie'
 
-const CookieWrapper = styled.div`
+const CookieWrapper = styled.div<{ isRound: boolean }>`
   position: relative;
   width: 100%;
   height: 100%;
   max-height: 380px;
   margin: 0 auto;
   flex-shrink: 0;
-  background-color: white;
+  background-color: inherit;
+
+  /* isRound가 true일 때만 border-radius 적용 */
+  border-radius: ${({ isRound }) => (isRound ? '999px' : '0')};
+
+  /* 만약 둥근 모양을 유지하면서 내용이 넘치지 않게 하려면 아래 속성도 권장합니다 */
+  overflow: ${({ isRound }) => (isRound ? 'hidden' : 'visible')};
 `
 
 const CookiePartImg = styled.img<{ zIndex: number }>`
@@ -26,13 +32,17 @@ const CookiePartImg = styled.img<{ zIndex: number }>`
 
 export default function CookieImageRenderer2({
   designData,
+  isPen = true,
+  isRound = false,
 }: {
   designData: CookieDesignImgDataCamel
+  isPen?: boolean
+  isRound?: boolean
 }) {
   return (
-    <CookieWrapper>
+    <CookieWrapper isRound={isRound}>
       {/* 고정 레이어 */}
-      <CookiePartImg src={ovenpan} alt="pen" zIndex={1} />
+      {isPen && <CookiePartImg src={ovenpan} alt="pen" zIndex={1} />}
 
       {(Object.keys(designData) as SelectableSubCategoryKey[]).map((subKey) => {
         const src = designData[subKey]
