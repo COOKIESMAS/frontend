@@ -16,8 +16,8 @@ export const API_BASE_URL =
  * (리다이렉트로 받은 token을 어디에 저장할지는 이후 로직에서 결정)
  */
 const ACCESS_TOKEN_KEY = 'accessToken'
-const USER_NAME_KEY = 'accessToken'
-const USER_STATUS_KEY = 'accessToken'
+const USER_NAME_KEY = 'userName'
+const USER_STATUS_KEY = 'userStatus'
 
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
