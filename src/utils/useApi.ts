@@ -8,13 +8,16 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
  * - Vite 환경변수로 덮어쓰고 싶으면 .env에 VITE_API_BASE_URL 추가
  */
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? 'https://backend-production-acf4.up.railway.app/api/v1'
+  import.meta.env.VITE_API_BASE_URL ??
+  'https://backend-production-acf4.up.railway.app/api/v1'
 
 /**
  * localStorage 에서 액세스 토큰을 가져오는 헬퍼
  * (리다이렉트로 받은 token을 어디에 저장할지는 이후 로직에서 결정)
  */
 const ACCESS_TOKEN_KEY = 'accessToken'
+const USER_NAME_KEY = 'accessToken'
+const USER_STATUS_KEY = 'accessToken'
 
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
@@ -26,6 +29,8 @@ export const setAccessToken = (token: string) => {
 
 export const clearAccessToken = () => {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
+  localStorage.removeItem(USER_NAME_KEY)
+  localStorage.removeItem(USER_STATUS_KEY)
 }
 
 /**
@@ -34,7 +39,7 @@ export const clearAccessToken = () => {
  * key:value,
  * key2:value2
  * })
- * 
+ *
  * useApi.get('/end-point')
  */
 export const useApi = axios.create({
@@ -83,11 +88,16 @@ export type ApiError = AxiosError<ApiErrorResponse>
 useApi.interceptors.response.use(
   (response) => response,
   (error: ApiError) => {
-    // TODO: 401일 때 로그아웃 처리, 토큰 초기화, 리다이렉트 등 공통 처리 가능
-    // if (error.response?.status === 401) {
-    //   clearAccessToken()
-    //   window.location.href = '/'; // 예시
-    // }
+    const status = error?.response?.status
+    if (status === 401) {
+      clearAccessToken()
+      alert('로그인 만료. 로그인 페이지로 돌아갑니다.')
+      window.location.href = '/landing'
+    }
+    if (status === 403) {
+      alert('허용되지 않은 페이지입니다.')
+      window.location.href = '/home'
+    }
 
     return Promise.reject(error)
   },
