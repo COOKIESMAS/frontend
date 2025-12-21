@@ -27,6 +27,8 @@ import { useUser } from '@/hooks/queries/useUser'
 import ActionHighlightOverlay from '@/components/ActionHighlightOverlay'
 import { useEditUser } from '@/hooks/mutations/useEditUser'
 import { useApi } from '@/utils/useApi'
+import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
+import type { CookieDesignImgDataCamel } from '@/types/cookie'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -45,6 +47,12 @@ const FlexWrapper = styled.div<{
   flex-wrap: ${(props) => props.wrap || 'nowrap'};
   width: ${(props) => props.width || 'auto'};
   height: ${(props) => props.height || 'auto'};
+`
+
+const CookieImageRendererWrapper = styled.div`
+  position: relative;
+  width: 160px;
+  height: 160px;
 `
 const OvenButtonWrapper = styled.div`
   position: relative;
@@ -67,8 +75,13 @@ const UnreadBadge = styled.div`
   background-color: #ff4d4f;
   color: #ffffff;
   font-size: 11px;
-  font-family: 'DNFBitBitv2', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', sans-serif;
+  font-family:
+    'DNFBitBitv2',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 
   box-shadow: 0 0 0 2px #ffffff; /* 버튼과 구분되게 흰색 테두리 느낌 */
 `
@@ -134,8 +147,8 @@ const MenuIcon = styled(FontAwesomeIcon)`
 const TextBoxImage = styled.img`
   position: absolute;
   top: 0;
-  right: 0;
-  transform: translate(-15%, -60%);
+  left: 0;
+  transform: translate(0, -80%);
 `
 
 const ButtonTitle = styled.h3`
@@ -266,12 +279,21 @@ export default function Home() {
           width="100%"
           height="100%"
           justify="flex-end"
+          align="center"
           style={{ marginBottom: '80px' }}
         >
-          <ImageRenderer>
+          <CookieImageRendererWrapper>
             <TextBoxImage src={Text1} />
+            <CookieImageRenderer2
+              designData={user?.designData as CookieDesignImgDataCamel}
+              isPen={false}
+            />
+          </CookieImageRendererWrapper>
+
+          {/* <ImageRenderer>
+            
             <img src={HomeCookie} />
-          </ImageRenderer>
+          </ImageRenderer> */}
           <FlexWrapper
             direction="column"
             gap="18px"
@@ -303,9 +325,7 @@ export default function Home() {
                   <ButtonText>받은 쿠키 구경하기</ButtonText>
                 </ActionButton>
 
-                {unreadCount > 0 && (
-                  <UnreadBadge>{unreadCount}</UnreadBadge>
-                )}
+                {unreadCount > 0 && <UnreadBadge>{unreadCount}</UnreadBadge>}
               </OvenButtonWrapper>
 
               {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
@@ -353,9 +373,8 @@ export default function Home() {
         )}
 
         <SideMenu open={isMenuOpen} onClose={closeMenu} />
+        <BottomNavigation />
       </PageWrapper>
-
-      <BottomNavigation />
     </AppContainer>
   )
 }
