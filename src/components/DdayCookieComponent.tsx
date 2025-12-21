@@ -50,15 +50,18 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
 
   const goPrev = () => {
     if (!total) return
+    const nextIndex = (currentIndex - 1 + total) % total
     triggerSlide('right')
-    onChangeIndex(currentIndex - 1)
+    onChangeIndex(nextIndex)
   }
 
   const goNext = () => {
     if (!total) return
+    const nextIndex = (currentIndex + 1) % total
     triggerSlide('left')
-    onChangeIndex(currentIndex + 1)
+    onChangeIndex(nextIndex)
   }
+
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     if (!hasCookies) return
@@ -85,19 +88,8 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
   const getVisibleCookies = () => {
     if (!total) return []
 
-    if (total <= 5) {
-      // 전체를 원 형태로 배치 (단순)
-      const step = 360 / total
-      return cookies.map((cookie, idx) => ({
-        cookie,
-        angle: -90 + step * idx,
-        isCenter: idx === currentIndex,
-        sourceIndex: idx,
-      }))
-    }
-
-    // total > 5 인 경우: 8등분 중 5개 슬롯(-2,-1,0,1,2)만 사용
-    const ANGLE_STEP = 45
+    // 항상 8등분 기준으로 5슬롯(-2, -1, 0, 1, 2)만 사용
+    const ANGLE_STEP = 45 // 360 / 8
     const BASE_ANGLE = -90
     const offsets = [-2, -1, 0, 1, 2]
 
@@ -111,6 +103,7 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
       return { cookie, angle, isCenter, sourceIndex }
     })
   }
+
 
   const visibleCookies = getVisibleCookies()
 
@@ -170,12 +163,23 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
           <strong>{receivedCount}개</strong>
         </ReceivedCountBadge>
 
+        {/* 좌우 화살표 버튼 */}
+            {hasCookies && (
+              <>
+                <ArrowButtonLeft type="button" onClick={goPrev}>
+                  <FontAwesomeIcon icon={faAngleLeft} />
+                </ArrowButtonLeft>
+                <ArrowButtonRight type="button" onClick={goNext}>
+                  <FontAwesomeIcon icon={faAngleRight} />
+                </ArrowButtonRight>
+              </>
+            )}
+
         {/* 원형 쿠키 캐러셀 영역 */}
         <CarouselArea
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <CarouselCaption>쿠키를 좌우로 넘겨보세요</CarouselCaption>
 
           <WheelWrapper>
             {/* 접시 배경 */}
@@ -225,18 +229,6 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
                 },
               )}
             </WheelInner>
-
-            {/* 좌우 화살표 버튼 */}
-            {hasCookies && (
-              <>
-                <ArrowButtonLeft type="button" onClick={goPrev}>
-                  <FontAwesomeIcon icon={faAngleLeft} />
-                </ArrowButtonLeft>
-                <ArrowButtonRight type="button" onClick={goNext}>
-                  <FontAwesomeIcon icon={faAngleRight} />
-                </ArrowButtonRight>
-              </>
-            )}
           </WheelWrapper>
         </CarouselArea>
       </ContentContainer>
@@ -342,114 +334,113 @@ const ReceivedCountBadge = styled.div`
 `
 
 const CarouselArea = styled.section`
-  margin-top: 8px;
+  position: relative;
+  width: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* overflow: hidden; 화면 밖으로 나가는 거대 원을 숨김 */
 `
 
-const CarouselCaption = styled.div`
-  font-family: 'Galmuri14', system-ui, -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-align: center;
-`
-
-/** 원형 영역 (양옆 쿠키는 살짝 잘리도록 overflow hidden) */
 const WheelWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  max-width: 340px;
-  aspect-ratio: 1 / 1;
-  margin: 0 auto;
-  overflow: hidden;
+  position: absolute;
+  bottom: -280px; /* 원의 중심을 화면 아래로 푹 내림 (조절 필요) */
+  width: 600px;   /* 가상의 큰 원 지름 */
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 `
 
 const PlateImage = styled.img`
   position: absolute;
-  top: 50%;
+  top: 0; /* 원의 꼭대기 근처에 접시 배치 */
   left: 50%;
-  width: 120%;
-  transform: translate(-50%, -50%);
+  width: 500px; /* 접시 크기를 키워 화면을 꽉 채우게 */
+  transform: translate(-50%, -10%); 
   z-index: 0;
+  pointer-events: none;
 `
 
 const WheelInner = styled.div<{ $direction: SlideDirection }>`
   position: absolute;
   inset: 0;
-  pointer-events: auto;
-
-  ${() => css`
-    transition:
-      transform 0.35s ease-out,
-      opacity 0.35s ease-out;
-  `}
-
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  
+  /* 인덱스 변경 시 부드러운 회전 효과를 위해 (선택 사항) */
   ${({ $direction }) =>
-    $direction === 'left' &&
-    css`
-      transform: translateX(-4%);
-    `}
-
+    $direction === 'left' && css`animation: rotateLeft 0.4s ease-out;`}
   ${({ $direction }) =>
-    $direction === 'right' &&
-    css`
-      transform: translateX(4%);
-    `}
+    $direction === 'right' && css`animation: rotateRight 0.4s ease-out;`}
 `
 
-/** 원 위의 각 쿠키+말풍선 한 세트 */
 const CookieOrbitItem = styled.div<{
-  $angle: number
-  $isCenter: boolean
+  $angle: number;
+  $isCenter: boolean;
 }>`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform-origin: center center;
+  width: 120px;
+  height: 120px;
+  pointer-events: auto;
+  cursor: pointer;
 
   ${({ $angle, $isCenter }) => {
-    const radius = 58 // 원 반지름 (%)
-    const rad = (($angle - 90) * Math.PI) / 180
-    const x = 50 + radius * Math.cos(rad)
-    const y = 50 + radius * Math.sin(rad)
+    // R: 원의 반지름
+    const R = 320; 
+    // 각도 변환 (0도가 정중앙 상단이 되도록 계산)
+    // 현재 코드의 offsets [-2, -1, 0, 1, 2]에 맞춘 간격 조정
+    const adjustedAngle = $angle + 90; // -90도가 0(상단)이 되도록
+    const rad = (adjustedAngle * Math.PI) / 180;
 
-    const scale = $isCenter ? 1 : 0.85
-    const opacity = $isCenter ? 1 : 0.85
+    const x = R * Math.sin(rad);
+    const y = -R * Math.cos(rad); // 위쪽으로 배치
+
+    const scale = $isCenter ? 1.1 : 0.7;
+    const opacity = $isCenter ? 1 : 0.4; // 양옆 쿠키는 흐릿하게
+    const blur = $isCenter ? 0 : 2;
 
     return css`
-      top: ${y}%;
-      left: ${x}%;
-      transform: translate(-50%, -50%) scale(${scale});
+      transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale});
       opacity: ${opacity};
-      transition:
-        transform 0.35s ease-out,
-        opacity 0.35s ease-out;
-      z-index: ${$isCenter ? 3 : 2};
-    `
+      filter: blur(${blur}px);
+      z-index: ${$isCenter ? 10 : 5};
+      transition: all 0.4s ease-out;
+    `;
   }}
 `
 
+const SpeechBubble = styled.div`
+  position: absolute;
+  bottom: 110%; /* 쿠키 위로 띄움 */
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 140px;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  white-space: nowrap;
+
+  &::after { /* 말풍선 꼬리 */
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+`
 const CookieCircle = styled.div`
   width: 120px;
   height: 120px;
   border-radius: 999px;
   background-color: transparent;
-`
-
-const SpeechBubble = styled.div`
-  position: absolute;
-  bottom: 100%;
-  transform: translateY(-8px);
-  padding: 8px 14px;
-  border-radius: 18px;
-  background-color: #ffffff;
-  color: #000000;
-  text-align: center;
-  white-space: pre-line;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
 `
 
 const SpeechLine1 = styled.div`

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { useApi, type ApiError } from '@/utils/useApi'
 import type { CookieItem } from '@/types/cookie'
 import { useAtom } from 'jotai'
-import BottomNavigation from '@/components/BottomNavigation'
 import { dDayCookieListAtom, dDayCurrentIndexAtom } from '@/store/dDayCookieAtoms'
 import { DdayCookieComponent } from '@/components/DdayCookieComponent'
 
@@ -104,7 +103,6 @@ const DdayCookieContainer: React.FC = () => {
         onChangeIndex={handleChangeIndex}
         onClickCookie={handleClickCookie}
       />
-      <BottomNavigation />
     </>
   )
 }

@@ -24,10 +24,6 @@ import CookieMessageDetailPage from '@/pages/CookieMessageDetailPage'
 const Router = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/d-day" element={<DdayCookiePage />} />
-        <Route path="/d-day/detail" element={<CookieMessageDetailPage />} />
-      </Routes>
 
       <Routes>
         {/* 🔒 로그인하지 않은 사용자만 접근 가능 구역 */}
@@ -68,6 +64,8 @@ const Router = () => {
               <Route path=":id" element={<CookieDetail />} />
             </Route>
           </Route>
+            <Route path="/d-day" element={<DdayCookiePage />} />
+            <Route path="/d-day/detail" element={<CookieMessageDetailPage />} />
         </Route>
 
         {/* 잘못된 경로 처리 */}
