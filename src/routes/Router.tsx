@@ -18,10 +18,17 @@ import MyPage from '@/pages/mypage/MyPage'
 import NoticePage from '@/pages/NoticePage'
 import CookieStepGuard from './CookieStepGuard'
 import EditCookiePage from '@/pages/mypage/edit/EditCookiePage'
+import DdayCookiePage from '@/pages/DdayCookiePage'
+import CookieMessageDetailPage from '@/pages/CookieMessageDetailPage'
 
 const Router = () => {
   return (
     <BrowserRouter>
+      <Routes>
+        <Route path="/d-day" element={<DdayCookiePage />} />
+        <Route path="/d-day/detail" element={<CookieMessageDetailPage />} />
+      </Routes>
+
       <Routes>
         {/* 🔒 로그인하지 않은 사용자만 접근 가능 구역 */}
         <Route element={<PublicRoute />}>
