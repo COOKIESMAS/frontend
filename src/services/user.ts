@@ -23,7 +23,8 @@ type EditUserApiBody = Partial<{
 }>
 
 export async function editUserApi(body: EditUserBody) {
-  const filteredDesignData = compactDesignData(body.designData as SelectedItems)
+  const filteredDesignData =
+    body.designData && compactDesignData(body.designData as SelectedItems)
 
   const apiBody: EditUserApiBody = {
     ...(body.isOvenOpen !== undefined && {
@@ -35,7 +36,7 @@ export async function editUserApi(body: EditUserBody) {
     ...(body.description !== undefined && {
       description: body.description,
     }),
-    ...(Object.keys(filteredDesignData).length > 0 && {
+    ...(filteredDesignData && {
       design_data: filteredDesignData,
     }),
   }
