@@ -18,6 +18,7 @@ import MyPage from '@/pages/mypage/MyPage'
 import NoticePage from '@/pages/NoticePage'
 import CookieStepGuard from './CookieStepGuard'
 import EditCookiePage from '@/pages/mypage/edit/EditCookiePage'
+import OvenPage from '@/pages/oven/OvenPage'
 
 const Router = () => {
   return (
@@ -38,6 +39,7 @@ const Router = () => {
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/myoven" element={<MyOvenPage />} />
+            <Route path="/oven/:id" element={<OvenPage />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/edit/cookie" element={<EditCookiePage />} />
 
