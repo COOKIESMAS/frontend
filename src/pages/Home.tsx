@@ -4,7 +4,10 @@ import BottomNavigation from '@/components/BottomNavigation'
 import ActionButton from '@/components/ActionButton'
 import { useNavigate } from 'react-router-dom'
 import Text1 from '@/assets/image/text_1.svg'
-import HomeTitleImg from '@/assets/image/home_title.png'
+import mainLogo0 from '@/assets/image/main_logo_d_0.svg'
+import mainLogo1 from '@/assets/image/main_logo_d_1.svg'
+import mainLogo2 from '@/assets/image/main_logo_d_2.svg'
+import mainLogo3 from '@/assets/image/main_logo_d_3.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useRef, useState } from 'react'
@@ -28,6 +31,7 @@ import { useEditUser } from '@/hooks/mutations/useEditUser'
 import { useApi } from '@/utils/useApi'
 import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
 import type { CookieDesignImgDataCamel } from '@/types/cookie'
+import { getDDay } from '@/utils/getDDay'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -221,6 +225,13 @@ const tutorialSteps = [
   },
 ]
 
+const MAIN_LOGO_BY_DDAY: Record<number, string> = {
+  0: mainLogo0, // D-day
+  1: mainLogo1, // D-1
+  2: mainLogo2, // D-2
+  3: mainLogo3, // D-3
+}
+
 export default function Home() {
   const makeCookieRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
@@ -258,6 +269,15 @@ export default function Home() {
     navigate(dst)
   }
 
+  const TARGET_DATE = new Date('2025-12-25') // 🎄 예시
+
+  const dDay = getDDay(TARGET_DATE)
+
+  // 0~3 범위로 clamp
+  const displayDDay = Math.max(0, Math.min(3, dDay))
+
+  const logoSrc = MAIN_LOGO_BY_DDAY[displayDDay]
+
   if (isLoading) return null
 
   const shouldShowTutorial = !!user && !user.isTutorialCompleted
@@ -267,7 +287,7 @@ export default function Home() {
     <AppContainer>
       <PageWrapper>
         <ImageRenderer>
-          <HomeTitle src={HomeTitleImg} />
+          <HomeTitle src={logoSrc} />
         </ImageRenderer>
         <MenuButton onClick={openMenu}>
           <MenuIcon icon={faBars} />
