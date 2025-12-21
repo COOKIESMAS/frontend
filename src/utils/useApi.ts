@@ -88,15 +88,27 @@ export type ApiError = AxiosError<ApiErrorResponse>
 useApi.interceptors.response.use(
   (response) => response,
   (error: ApiError) => {
+    console.log(error)
     const status = error?.response?.status
+    const errorCode = error?.response?.data?.error_code
     if (status === 401) {
       clearAccessToken()
       alert('로그인 만료. 로그인 페이지로 돌아갑니다.')
       window.location.href = '/landing'
     }
     if (status === 403) {
-      alert('허용되지 않은 페이지입니다.')
-      window.location.href = '/home'
+      // alert('허용되지 않은 페이지입니다.')
+      // window.location.href = '/home'
+      if (errorCode === 0) {
+      }
+      if (errorCode === 1) {
+        alert('mm 인증을 먼저 진행해주세요.')
+        window.location.href = '/api/v1/auth/ssafy'
+      }
+      if (errorCode === 2) {
+        alert('잘못된 접근입니다.')
+        window.location.href = '/home'
+      }
     }
 
     return Promise.reject(error)
