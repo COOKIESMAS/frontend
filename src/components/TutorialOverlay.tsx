@@ -17,7 +17,7 @@ export type TutorialStep = {
 const Overlay = styled.div<{ visible: boolean }>`
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.7);
   display: ${({ visible }) => (visible ? 'flex' : 'none')};
   align-items: center;
   justify-content: center;

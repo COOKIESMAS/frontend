@@ -22,6 +22,42 @@ const Container = styled.div`
   padding-bottom: 80px;
 `
 
+const LoadingWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #6b4a2d;
+`
+
+const LoadingCookie = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #d8a15d;
+  box-shadow:
+    inset -6px -6px 0 rgba(0, 0, 0, 0.1),
+    inset 6px 6px 0 rgba(255, 255, 255, 0.4);
+  animation: bounce 1.2s infinite ease-in-out;
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+`
+
+const LoadingText = styled.div`
+  font-family: 'Galmuri14';
+  font-size: 14px;
+`
+
 const HeaderRow = styled.div`
   display: flex;
   align-items: center;
@@ -240,7 +276,15 @@ export default function SendList() {
   const totalCount = items.length
 
   if (isLoading) {
-    return <Container>로딩중...</Container>
+    return (
+      <Container>
+        <LoadingWrapper>
+          <LoadingCookie />
+          <LoadingText>쿠키를 불러오는 중...</LoadingText>
+        </LoadingWrapper>
+        <BottomNavigation />
+      </Container>
+    )
   }
 
   return (

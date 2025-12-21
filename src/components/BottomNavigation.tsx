@@ -1,11 +1,8 @@
 import styled, { css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCookieBite,
-  faHouse,
-  faHeart,
-} from '@fortawesome/free-solid-svg-icons'
+import { faCookieBite, faHouse } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
+import { faHeart } from '@fortawesome/free-regular-svg-icons'
 
 // 색상 정의 (원하는 primary, secondary 색상을 여기에 정의합니다)
 const COLORS = {
@@ -91,11 +88,11 @@ export default function BottomNavigation() {
         홈
       </NavItem>
 
-      <NavItem to="/friends">
+      <NavItem to="/mypage">
         <IconWrapper>
           <FontAwesomeIcon icon={faHeart} />
         </IconWrapper>
-        친구 오븐
+        마이페이지
       </NavItem>
     </BottomNavWrapper>
   )
