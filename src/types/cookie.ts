@@ -13,10 +13,13 @@ export interface CookieDesignData {
 
 export interface CookieItem {
   cookie_pk: number
-  sender_name: string
   is_read: boolean
   created_at: string
   design_data: CookieDesignData
+  receiver_id: number
+  receiver_name: string
+  sender_id: number
+  sender_name: string
 }
 
 export interface SendCookieRequest {
