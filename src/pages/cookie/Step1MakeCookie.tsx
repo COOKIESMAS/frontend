@@ -12,37 +12,18 @@ import { randomizeSelectedItemsAtom } from '@/store/effects/cookieRandomEffects'
 import { useCookieParts } from '@/hooks/queries/useCookieParts'
 import { cookieStepAtom } from '@/store/atoms/cookieStepAtoms'
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
-const PageWrapper = styled.main`
-  position: relative;
-  max-width: 375px;
-  width: 100%;
-  height: 100%;
-  padding-top: 44px;
-  background-color: #e8c696;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-`
-
 const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  height: 40px;
+  padding: 0 22px;
+  margin-top: 28px;
 `
 
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
 `
 
 const BackButton = styled.button`
@@ -141,29 +122,27 @@ export default function Step1MakeCookie() {
   }
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        <HeaderWrapper>
-          <HeaderLeft>
-            <BackButton onClick={handleGoBack}>
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </BackButton>
-            <PageTitle>쿠키만들기</PageTitle>
-          </HeaderLeft>
-          <ButtonGroup>
-            <GradientButton onClick={randomizeAllParts}>
-              랜덤 바꾸기
-            </GradientButton>
-            <CompleteButton onClick={handleGoNext}>완성 !</CompleteButton>
-          </ButtonGroup>
-        </HeaderWrapper>
-        <CookieImageRenderer />
-        <BottomSheetContainer>
-          <CategoryTabs />
-          <SubCategoryTabs />
-          <ItemsGrid />
-        </BottomSheetContainer>
-      </PageWrapper>
-    </AppContainer>
+    <>
+      <HeaderWrapper>
+        <HeaderLeft>
+          <BackButton onClick={handleGoBack}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </BackButton>
+          <PageTitle>쿠키만들기</PageTitle>
+        </HeaderLeft>
+        <ButtonGroup>
+          <GradientButton onClick={randomizeAllParts}>
+            랜덤 바꾸기
+          </GradientButton>
+          <CompleteButton onClick={handleGoNext}>완성 !</CompleteButton>
+        </ButtonGroup>
+      </HeaderWrapper>
+      <CookieImageRenderer />
+      <BottomSheetContainer>
+        <CategoryTabs />
+        <SubCategoryTabs />
+        <ItemsGrid />
+      </BottomSheetContainer>
+    </>
   )
 }

@@ -41,28 +41,10 @@ const FlexWrapper = styled.div<{
   height: ${(props) => props.height || 'auto'};
 `
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
-const PageWrapper = styled.main`
-  position: relative;
-  max-width: 375px;
-  width: 100%;
-  height: 100%;
-  background-color: #e8c696;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 48px 12px;
-`
-
 const HeaderWrapper = styled(FlexWrapper)`
   align-items: end;
+  margin-top: 22px;
+  height: 40px;
 `
 
 const HeaderLeftWrapper = styled(FlexWrapper)`
@@ -94,6 +76,7 @@ const Title = styled.h1`
 // 토글 영역
 const ToggleWrapper = styled.div`
   display: flex;
+  width: 100%;
   background-color: rgba(118, 118, 128, 0.12);
   border: 1px solid #eeeeef;
   border-radius: 18px;
@@ -116,10 +99,17 @@ const ToggleButton = styled.button<{ active?: boolean }>`
   color: #000;
 `
 
+const FormInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+`
+
 // 폼 영역
 const FormSection = styled.section`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 16px;
   flex: 1;
   position: relative;
@@ -132,6 +122,7 @@ const Label = styled.label`
   line-height: 24px;
   padding: 0 4px;
   display: inline-block;
+  text-align: start;
 `
 
 // Label과 아이콘 사이 간격 조정을 위한 styled component
@@ -188,8 +179,9 @@ const Input = styled.input`
 
 // 하단 버튼 영역
 const BottomSection = styled.section`
+  width: 100%;
   margin-top: auto;
-  padding: 24px 0 8px;
+  margin-bottom: 32px;
 `
 
 const StyledButton = styled.button<{
@@ -406,179 +398,182 @@ function Step2ChooseReceiver() {
   }, [role])
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        <HeaderWrapper
-          justify="space-between"
-          align="start"
-          width="100%"
-          style={{ padding: '10px' }}
+    <FlexWrapper
+      direction="column"
+      align="center"
+      height="100%"
+      style={{ padding: '0 12px' }}
+    >
+      <HeaderWrapper
+        justify="space-between"
+        align="start"
+        width="100%"
+        style={{ padding: '0 10px' }}
+      >
+        <HeaderLeftWrapper>
+          <BackButton onClick={handleGoBack}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </BackButton>
+          <PageTitle>보낼 사람 선택</PageTitle>
+        </HeaderLeftWrapper>
+      </HeaderWrapper>
+
+      <Title>누구의 오븐에 넣을까요?</Title>
+
+      <ToggleWrapper>
+        <ToggleButton
+          active={role === 'STUDENT'}
+          onClick={() => setRole('STUDENT')}
         >
-          <HeaderLeftWrapper>
-            <BackButton onClick={handleGoBack}>
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </BackButton>
-            <PageTitle>보낼 사람 선택</PageTitle>
-          </HeaderLeftWrapper>
-        </HeaderWrapper>
+          교육생
+        </ToggleButton>
 
-        <Title>누구의 오븐에 넣을까요?</Title>
+        <ToggleButton
+          active={role === 'TEACHER'}
+          onClick={() => setRole('TEACHER')}
+        >
+          프로님 / 강사님
+        </ToggleButton>
+      </ToggleWrapper>
 
-        <ToggleWrapper>
-          <ToggleButton
-            active={role === 'STUDENT'}
-            onClick={() => setRole('STUDENT')}
-          >
-            교육생
-          </ToggleButton>
+      <FormSection>
+        {/* 교육생 선택 시 캠퍼스 및 반 선택 */}
+        {role === 'STUDENT' && (
+          <>
+            <FormInputContainer>
+              <Label>캠퍼스</Label>
+              <Select
+                value={campus?.key ?? ''}
+                $hasValue={Boolean(campus)}
+                onChange={(e) => {
+                  const selected = CAMPUS_ENTRIES.find(
+                    (c) => c.key === e.target.value,
+                  )
+                  setCampus(selected ?? null)
+                }}
+              >
+                <option value="">선택</option>
+                {CAMPUS_ENTRIES.map(({ key, label }) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </FormInputContainer>
 
-          <ToggleButton
-            active={role === 'TEACHER'}
-            onClick={() => setRole('TEACHER')}
-          >
-            프로님 / 강사님
-          </ToggleButton>
-        </ToggleWrapper>
-
-        <FormSection>
-          {/* 교육생 선택 시 캠퍼스 및 반 선택 */}
-          {role === 'STUDENT' && (
-            <>
-              <div>
-                <Label>캠퍼스</Label>
-                <Select
-                  value={campus?.key ?? ''}
-                  $hasValue={Boolean(campus)}
-                  onChange={(e) => {
-                    const selected = CAMPUS_ENTRIES.find(
-                      (c) => c.key === e.target.value,
-                    )
-                    setCampus(selected ?? null)
-                  }}
-                >
-                  <option value="">선택</option>
-                  {CAMPUS_ENTRIES.map(({ key, label }) => (
-                    <option key={key} value={key}>
-                      {label}
+            <FormInputContainer>
+              <Label>반</Label>
+              <Select
+                value={classNum ?? ''}
+                $hasValue={Boolean(classNum)}
+                onChange={(e) =>
+                  setClassNum(e.target.value ? Number(e.target.value) : null)
+                }
+                disabled={!campus}
+              >
+                <option value="">선택</option>
+                {campus &&
+                  getClassesForCampus(campus.key).map((num) => (
+                    <option key={num} value={num}>
+                      {num}반
                     </option>
                   ))}
-                </Select>
-              </div>
+              </Select>
+            </FormInputContainer>
+          </>
+        )}
 
-              <div>
-                <Label>반</Label>
-                <Select
-                  value={classNum ?? ''}
-                  $hasValue={Boolean(classNum)}
-                  onChange={(e) =>
-                    setClassNum(e.target.value ? Number(e.target.value) : null)
-                  }
-                  disabled={!campus}
-                >
-                  <option value="">선택</option>
-                  {campus &&
-                    getClassesForCampus(campus.key).map((num) => (
-                      <option key={num} value={num}>
-                        {num}반
-                      </option>
-                    ))}
-                </Select>
-              </div>
-            </>
-          )}
+        {/* 성명 입력 (Input) */}
+        <FormInputContainer>
+          <Label htmlFor="receiver-name">성함</Label>
+          <Input
+            id="receiver-name"
+            placeholder="입력"
+            value={name ?? ''}
+            onChange={(e) => setName(e.target.value || null)}
+          />
+        </FormInputContainer>
 
-          {/* 성명 입력 (Input) */}
-          <div>
-            <Label htmlFor="receiver-name">성함</Label>
-            <Input
-              id="receiver-name"
-              placeholder="입력"
-              value={name ?? ''}
-              onChange={(e) => setName(e.target.value || null)}
-            />
-          </div>
+        <LabelWrap ref={labelWrapRef}>
+          {/* Mattermost input: shouldShowMattermost 조건에 따라 표시/숨김 */}
+          {shouldShowMattermost ? (
+            <FormInputContainer>
+              <LabelAnchor
+                // LabelAnchor가 마우스 이벤트 및 포커스 이벤트를 처리하여 툴팁을 띄웁니다.
+                onMouseEnter={openTooltip}
+                onMouseLeave={closeTooltip}
+                onFocus={openTooltip}
+                onBlur={(e) => {
+                  const related = (e as React.FocusEvent)
+                    .relatedTarget as Node | null
+                  if (
+                    tooltipRef.current &&
+                    tooltipRef.current.contains(related)
+                  )
+                    return
+                  closeTooltip()
+                }}
+              >
+                {/* MattermostLabel: 레이블 텍스트와 아이콘을 포함 */}
+                <MattermostLabel htmlFor="mattermost-id">
+                  Mattermost 아이디
+                  <FontAwesomeIcon icon={faCircleQuestion} />
+                </MattermostLabel>
 
-          <LabelWrap ref={labelWrapRef}>
-            {/* Mattermost input: shouldShowMattermost 조건에 따라 표시/숨김 */}
-            {shouldShowMattermost ? (
-              <>
-                <LabelAnchor
-                  // LabelAnchor가 마우스 이벤트 및 포커스 이벤트를 처리하여 툴팁을 띄웁니다.
+                {/* 툴팁 컨테이너 */}
+                <TooltipContainer
+                  ref={tooltipRef}
+                  position={tooltipPosition}
+                  role="dialog"
+                  aria-hidden={!isOpen}
+                  // 툴팁 자체에 마우스를 올렸을 때 툴팁이 닫히지 않도록 이벤트 처리
                   onMouseEnter={openTooltip}
                   onMouseLeave={closeTooltip}
                   onFocus={openTooltip}
-                  onBlur={(e) => {
-                    const related = (e as React.FocusEvent)
-                      .relatedTarget as Node | null
-                    if (
-                      tooltipRef.current &&
-                      tooltipRef.current.contains(related)
-                    )
-                      return
-                    closeTooltip()
-                  }}
+                  onBlur={closeTooltip}
                 >
-                  {/* MattermostLabel: 레이블 텍스트와 아이콘을 포함 */}
-                  <MattermostLabel htmlFor="mattermost-id">
-                    Mattermost 아이디
-                    <FontAwesomeIcon icon={faCircleQuestion} />
-                  </MattermostLabel>
+                  <TooltipInner>
+                    <ProfileCard />
+                  </TooltipInner>
+                  <TooltipArrow position={tooltipPosition} />
+                </TooltipContainer>
+              </LabelAnchor>
 
-                  {/* 툴팁 컨테이너 */}
-                  <TooltipContainer
-                    ref={tooltipRef}
-                    position={tooltipPosition}
-                    role="dialog"
-                    aria-hidden={!isOpen}
-                    // 툴팁 자체에 마우스를 올렸을 때 툴팁이 닫히지 않도록 이벤트 처리
-                    onMouseEnter={openTooltip}
-                    onMouseLeave={closeTooltip}
-                    onFocus={openTooltip}
-                    onBlur={closeTooltip}
-                  >
-                    <TooltipInner>
-                      <ProfileCard />
-                    </TooltipInner>
-                    <TooltipArrow position={tooltipPosition} />
-                  </TooltipContainer>
-                </LabelAnchor>
-
-                {/* 실제 Mattermost Input 필드 */}
-                <Input
-                  id="mattermost-id"
-                  placeholder="@를 제외한 아이디를 입력해주세요"
-                  value={mattermostId ?? ''}
-                  onChange={(e) => setMattermostId(e.target.value || null)}
-                  aria-describedby="mattermost-help"
-                />
-              </>
-            ) : (
-              // shouldShowMattermost가 false일 때의 Input (숨김/비활성화)
+              {/* 실제 Mattermost Input 필드 */}
               <Input
                 id="mattermost-id"
-                placeholder="수신자 목록에 없으면 아이디 입력란이 보이지 않습니다."
-                value=""
-                readOnly
-                disabled // disabled로 비활성화하여 포커스 방지
-                style={{ display: 'none' }} // 아예 보이지 않도록 처리 (자리 차지 방지)
+                placeholder="@를 제외한 아이디를 입력해주세요"
+                value={mattermostId ?? ''}
+                onChange={(e) => setMattermostId(e.target.value || null)}
+                aria-describedby="mattermost-help"
               />
-            )}
-          </LabelWrap>
-        </FormSection>
-        <BottomSection>
-          <StyledButton
-            onClick={handleGoNext}
-            aria-disabled={!name || name.trim() === ''}
-            backgroundColor="primary"
-          >
-            편지 쓰러 가기
-            <IconWrapper>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </IconWrapper>
-          </StyledButton>
-        </BottomSection>
-      </PageWrapper>
-    </AppContainer>
+            </FormInputContainer>
+          ) : (
+            // shouldShowMattermost가 false일 때의 Input (숨김/비활성화)
+            <Input
+              id="mattermost-id"
+              placeholder="수신자 목록에 없으면 아이디 입력란이 보이지 않습니다."
+              value=""
+              readOnly
+              disabled // disabled로 비활성화하여 포커스 방지
+              style={{ display: 'none' }} // 아예 보이지 않도록 처리 (자리 차지 방지)
+            />
+          )}
+        </LabelWrap>
+      </FormSection>
+      <BottomSection>
+        <StyledButton
+          onClick={handleGoNext}
+          aria-disabled={!name || name.trim() === ''}
+          backgroundColor="primary"
+        >
+          편지 쓰러 가기
+          <IconWrapper>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </IconWrapper>
+        </StyledButton>
+      </BottomSection>
+    </FlexWrapper>
   )
 }
 

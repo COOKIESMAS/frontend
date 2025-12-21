@@ -89,20 +89,13 @@ const UnreadBadge = styled.div`
   box-shadow: 0 0 0 2px #ffffff; /* 버튼과 구분되게 흰색 테두리 느낌 */
 `
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
 const PageWrapper = styled.main`
   position: relative;
   max-width: 375px;
   width: 100%;
   height: 100%;
   padding-top: 20px;
+  margin-bottom: 80px;
   background-color: #e8c7c7;
   display: flex;
   flex-direction: column;
@@ -284,116 +277,113 @@ export default function Home() {
   // const shouldShowTutorial = true
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        <ImageRenderer>
-          <HomeTitle src={logoSrc} />
-        </ImageRenderer>
-        <MenuButton onClick={openMenu}>
-          <MenuIcon icon={faBars} />
-        </MenuButton>
+    // <AppContainer>
+    //   <PageWrapper>
 
+    //   </PageWrapper>
+    // </AppContainer>
+    <PageWrapper>
+      <ImageRenderer>
+        <HomeTitle src={logoSrc} />
+      </ImageRenderer>
+      <MenuButton onClick={openMenu}>
+        <MenuIcon icon={faBars} />
+      </MenuButton>
+
+      <FlexWrapper
+        direction="column"
+        width="100%"
+        height="100%"
+        justify="flex-end"
+        align="center"
+      >
+        <CookieImageRendererWrapper>
+          <TextBoxImage src={Text1} />
+          <CookieImageRenderer2
+            designData={user?.designData as CookieDesignImgDataCamel}
+            isPen={false}
+          />
+        </CookieImageRendererWrapper>
         <FlexWrapper
           direction="column"
+          gap="18px"
           width="100%"
-          height="100%"
-          justify="flex-end"
-          align="center"
-          style={{ marginBottom: '80px' }}
+          style={{ padding: '24px' }}
         >
-          <CookieImageRendererWrapper>
-            <TextBoxImage src={Text1} />
-            <CookieImageRenderer2
-              designData={user?.designData as CookieDesignImgDataCamel}
-              isPen={false}
-            />
-          </CookieImageRendererWrapper>
+          <MakeButtonWrapper ref={makeCookieRef}>
+            <ActionButton
+              backgroundColor="#E2AE71"
+              titleColor="black"
+              textColor="black"
+              onClick={() => handleNavigate('/cookie/step1')}
+            >
+              <ButtonTitle>쿠키 만들기</ButtonTitle>
+              <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
+            </ActionButton>
+          </MakeButtonWrapper>
 
-          {/* <ImageRenderer>
-            
-            <img src={HomeCookie} />
-          </ImageRenderer> */}
-          <FlexWrapper
-            direction="column"
-            gap="18px"
-            width="100%"
-            style={{ padding: '24px' }}
-          >
-            <MakeButtonWrapper ref={makeCookieRef}>
+          <FlexWrapper gap="8px" width="100%" align="stretch">
+            <OvenButtonWrapper>
               <ActionButton
-                backgroundColor="#E2AE71"
+                backgroundColor="white"
                 titleColor="black"
-                textColor="black"
-                onClick={() => handleNavigate('/cookie/step1')}
+                textColor="#555555"
+                style={{ width: '100%' }}
+                onClick={() => handleNavigate('/myoven')}
               >
-                <ButtonTitle>쿠키 만들기</ButtonTitle>
-                <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
+                <ButtonTitle2>내 오븐</ButtonTitle2>
+                <ButtonText>받은 쿠키 구경하기</ButtonText>
               </ActionButton>
-            </MakeButtonWrapper>
 
-            <FlexWrapper gap="8px" width="100%" align="stretch">
-              <OvenButtonWrapper>
-                <ActionButton
-                  backgroundColor="white"
-                  titleColor="black"
-                  textColor="#555555"
-                  style={{ width: '100%' }}
-                  onClick={() => handleNavigate('/myoven')}
-                >
-                  <ButtonTitle2>내 오븐</ButtonTitle2>
-                  <ButtonText>받은 쿠키 구경하기</ButtonText>
-                </ActionButton>
+              {unreadCount > 0 && <UnreadBadge>{unreadCount}</UnreadBadge>}
+            </OvenButtonWrapper>
 
-                {unreadCount > 0 && <UnreadBadge>{unreadCount}</UnreadBadge>}
-              </OvenButtonWrapper>
-
-              {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
-              <ActionButton
-                backgroundColor="#cfcfcf" // 회색 배경
-                textColor="black"
-                disabled={true} // 비활성화
-                style={{ flex: 1 }}
-              >
-                <ButtonText style={{ whiteSpace: 'pre-line' }}>{`comming
+            {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
+            <ActionButton
+              backgroundColor="#cfcfcf" // 회색 배경
+              textColor="black"
+              disabled={true} // 비활성화
+              style={{ flex: 1 }}
+            >
+              <ButtonText style={{ whiteSpace: 'pre-line' }}>{`comming
               soon`}</ButtonText>
-              </ActionButton>
-            </FlexWrapper>
+            </ActionButton>
           </FlexWrapper>
         </FlexWrapper>
-        {shouldShowTutorial && (
-          <TutorialOverlay
-            steps={tutorialSteps}
-            open={shouldShowTutorial}
-            enableAutoAdvance={false}
-            autoAdvanceMs={0}
-            onFinish={() => {
-              setShowActionGuide(true)
-            }}
-          />
-        )}
-        {showActionGuide && buttonRect && (
-          <ActionHighlightOverlay
-            targetRect={buttonRect}
-            onClick={() => {
-              setShowActionGuide(false)
-              mutate(
-                { isTutorialCompleted: true },
-                {
-                  onSuccess: () => {
-                    navigate('/cookie/step1')
-                  },
-                  onError: () => {
-                    alert('에러 발생')
-                  },
+      </FlexWrapper>
+      {shouldShowTutorial && (
+        <TutorialOverlay
+          steps={tutorialSteps}
+          open={shouldShowTutorial}
+          enableAutoAdvance={false}
+          autoAdvanceMs={0}
+          onFinish={() => {
+            setShowActionGuide(true)
+          }}
+        />
+      )}
+      {showActionGuide && buttonRect && (
+        <ActionHighlightOverlay
+          targetRect={buttonRect}
+          onClick={() => {
+            setShowActionGuide(false)
+            mutate(
+              { isTutorialCompleted: true },
+              {
+                onSuccess: () => {
+                  navigate('/cookie/step1')
                 },
-              )
-            }}
-          />
-        )}
+                onError: () => {
+                  alert('에러 발생')
+                },
+              },
+            )
+          }}
+        />
+      )}
 
-        <SideMenu open={isMenuOpen} onClose={closeMenu} />
-        <BottomNavigation />
-      </PageWrapper>
-    </AppContainer>
+      <SideMenu open={isMenuOpen} onClose={closeMenu} />
+      <BottomNavigation />
+    </PageWrapper>
   )
 }

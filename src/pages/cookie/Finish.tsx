@@ -23,14 +23,6 @@ const FlexWrapper = styled.div<{
   height: ${(props) => props.height || 'auto'};
 `
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
 const PageWrapper = styled.main`
   position: relative;
   max-width: 375px;
@@ -41,7 +33,7 @@ const PageWrapper = styled.main`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  padding: 48px 24px;
+  padding: 32px 24px;
 `
 
 const MainWrapper = styled(FlexWrapper)``
@@ -102,37 +94,35 @@ function Finish() {
   }
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        <div></div>
-        <MainWrapper direction="column" align="center" justify="center">
-          <CelebrateImg src={celebrate} />
-          <Title>쿠키 배달 완료!</Title>
-          <Text>{`${location.state.name ?? '김싸피'} 님의 오븐에서 
+    <PageWrapper>
+      <div></div>
+      <MainWrapper direction="column" align="center" justify="center">
+        <CelebrateImg src={celebrate} />
+        <Title>쿠키 배달 완료!</Title>
+        <Text>{`${location.state.name ?? '김싸피'} 님의 오븐에서 
           따뜻하게 구워지고 있어요`}</Text>
-        </MainWrapper>
-        <BottomButtonWrapper direction="column" gap="16px">
-          <StyledButton
-            onClick={() => handleNavigate('/cookie/step1')}
-            backgroundColor="primary"
-          >
-            다른 쿠키 더 굽기
-            <IconWrapper>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </IconWrapper>
-          </StyledButton>
-          <StyledButton
-            onClick={() => handleNavigate('/home')}
-            backgroundColor="secondary"
-          >
-            홈으로 가기
-            <IconWrapper>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </IconWrapper>
-          </StyledButton>
-        </BottomButtonWrapper>
-      </PageWrapper>
-    </AppContainer>
+      </MainWrapper>
+      <BottomButtonWrapper direction="column" gap="16px">
+        <StyledButton
+          onClick={() => handleNavigate('/cookie/step1')}
+          backgroundColor="primary"
+        >
+          다른 쿠키 더 굽기
+          <IconWrapper>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </IconWrapper>
+        </StyledButton>
+        <StyledButton
+          onClick={() => handleNavigate('/home')}
+          backgroundColor="secondary"
+        >
+          홈으로 가기
+          <IconWrapper>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </IconWrapper>
+        </StyledButton>
+      </BottomButtonWrapper>
+    </PageWrapper>
   )
 }
 
