@@ -124,7 +124,7 @@ export default function SideMenu({
           >
             공지사항 <span>›</span>
           </MenuItem>
-          <MenuItem as="div" onClick={handleGmailClick}>
+          <MenuItem as="div" to="" onClick={handleGmailClick}>
             문의하기 <span>›</span>
           </MenuItem>
         </MenuList>
