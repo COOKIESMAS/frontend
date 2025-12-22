@@ -122,9 +122,15 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
-      await useApi.post('/auth/send-code', {
+      const payload = {
         mm_id: mmId.trim(),
-      })
+        role: role,
+        name: name,
+        campus: campus,
+        class_number: classNumber,
+      }
+
+      await useApi.post('/auth/send-code', payload)
 
       setStep('code')
     } catch (error: unknown) {
@@ -146,13 +152,15 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
-      await useApi.post('/auth/send-code', {
+      const payload = {
         mm_id: mmId.trim(),
         role: role,
         name: name,
         campus: campus,
         class_number: classNumber,
-      })
+      }
+
+      await useApi.post('/auth/send-code', payload)
 
       window.alert('인증 코드가 다시 전송되었습니다.')
     } catch (error: unknown) {
