@@ -45,8 +45,8 @@ export const SignupStepRole: React.FC<SignupStepRoleProps> = ({
 
         <RoleButton
           type="button"
-          selected={role === 'instructor'}
-          onClick={handleSelect('instructor')}
+          selected={role === 'staff'}
+          onClick={handleSelect('staff')}
         >
           <RoleImage src="/signup02.png" alt="프로님/강사님" />
           <RoleText>프로님 / 강사님</RoleText>
