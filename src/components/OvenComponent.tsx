@@ -148,7 +148,7 @@ export const OvenComponent: React.FC<MyOvenComponentProps> = ({
           </BackButton>
 
           <CountBadge>
-            <CountLabel style={{ fontSize: 12 }}>보낸 쿠키</CountLabel>
+            <CountLabel style={{ fontSize: 12 }}>받은 쿠키</CountLabel>
             <CountValue style={{ fontSize: 20, lineHeight: 1.4 }}>
               {receivedCount}개
             </CountValue>
