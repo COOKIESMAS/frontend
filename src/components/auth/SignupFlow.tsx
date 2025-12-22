@@ -122,11 +122,13 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
+      const campusLabel = getCampusLabel()
+
       const payload = {
         mm_id: mmId.trim(),
         role: role,
         name: name,
-        campus: campus,
+        campus: campusLabel,
         class_number: classNumber,
       }
 
@@ -152,11 +154,13 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
+      const campusLabel = getCampusLabel()
+
       const payload = {
         mm_id: mmId.trim(),
         role: role,
         name: name,
-        campus: campus,
+        campus: campusLabel,
         class_number: classNumber,
       }
 

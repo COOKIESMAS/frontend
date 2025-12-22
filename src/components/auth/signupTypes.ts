@@ -11,9 +11,9 @@ export interface CampusOption {
 }
 
 export const CAMPUS_OPTIONS: CampusOption[] = [
-  { key: 'SEOUL', label: '서울', maxClass: 22 },
-  { key: 'DAEJEON', label: '대전', maxClass: 8 },
-  { key: 'GWANGJU', label: '광주', maxClass: 6 },
+  { key: 'SEOUL', label: '서울', maxClass: 20 },
+  { key: 'DAEJEON', label: '대전', maxClass: 6 },
+  { key: 'GWANGJU', label: '광주', maxClass: 5 },
   { key: 'GUMI', label: '구미', maxClass: 6 },
   { key: 'BULG', label: '부울경', maxClass: 4 },
 ]
