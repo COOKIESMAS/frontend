@@ -82,6 +82,19 @@ export default function SideMenu({
 }) {
   const { data, isLoading } = useUser()
 
+  const handleGmailClick = () => {
+    const targetEmail = 'cookiesmasteam@gmail.com'
+    const subject = encodeURIComponent('[문의] 쿠키스마스 관련 문의')
+    const body = encodeURIComponent(
+      '안녕하세요, 팀 쿠키스마스입니다.\n\n문의 내용을 입력해주세요.',
+    )
+
+    // 구글 메일 쓰기 URL 형식
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`
+
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer')
+  }
+
   if (isLoading) return null
 
   return (
@@ -102,10 +115,16 @@ export default function SideMenu({
           <MenuItem to="/mypage">
             마이페이지 <span>›</span>
           </MenuItem>
-          <MenuItem to="/notice">
+          <MenuItem
+            as="a"
+            to=""
+            href="https://cookiesmas.notion.site/notice"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             공지사항 <span>›</span>
           </MenuItem>
-          <MenuItem to="/contact">
+          <MenuItem as="div" onClick={handleGmailClick}>
             문의하기 <span>›</span>
           </MenuItem>
         </MenuList>
