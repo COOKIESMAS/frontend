@@ -1,5 +1,5 @@
 export type SignupStep = 'intro' | 'selectRole' | 'form' | 'code' | 'success'
-export type SignupRole = 'student' | 'instructor'
+export type SignupRole = 'student' | 'staff'
 export type RoleState = SignupRole | null
 
 export type CampusKey = 'SEOUL' | 'DAEJEON' | 'GWANGJU' | 'GUMI' | 'BULG'
