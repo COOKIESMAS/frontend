@@ -14,7 +14,7 @@ const PageWrapper = styled.main`
   max-width: 375px;
   width: 100%;
   height: 100%;
-  background-color: #e8c7c7;
+  background-color: #e8c696;
   display: flex;
   flex-direction: column;
   overflow: hidden;

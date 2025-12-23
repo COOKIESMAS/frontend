@@ -12,10 +12,11 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
+  padding: 16px 16px 0;
   box-sizing: border-box;
   gap: 18px;
   background-color: #e2ae71;
+  margin-bottom: 80px;
 `
 
 const HeaderRow = styled.div`
@@ -43,7 +44,7 @@ const PageTitle = styled.h2`
 const LetterWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center; /* 가로 가운데 */
+  align-items: end; /* 가로 가운데 */
   justify-content: center; /* 세로 가운데 */
   flex: 1;
   gap: 20px;
@@ -52,7 +53,7 @@ const LetterWrapper = styled.div`
 const ToPill = styled.div`
   background: #ffffff;
   min-width: 240px;
-  padding: 10px 20px;
+  padding: 4px 20px;
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -112,6 +113,28 @@ const LetterBox = styled.div`
   }
 `
 
+const FriendOvenButton = styled.button`
+  background-color: #b36a2e;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 0 #8c4f1f;
+  font-family: 'DNFBitBitv2';
+  font-size: 16px;
+  line-height: 1.2;
+  cursor: pointer;
+
+  /* 🔑 텍스트 줄바꿈 그대로 적용 */
+  white-space: pre-line;
+  text-align: center;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #8c4f1f;
+  }
+`
+
 /* ------------------ 컴포넌트 ------------------ */
 
 export default function CookieDetail() {
@@ -143,6 +166,12 @@ export default function CookieDetail() {
         <LetterBox id="letter-heading" aria-label="편지 내용">
           {data[0]?.content}
         </LetterBox>
+        <FriendOvenButton
+          onClick={() => navigate(`/oven/${data[0]?.receiverId}`)}
+        >
+          {`친구 오븐
+          놀러가기`}
+        </FriendOvenButton>
       </LetterWrapper>
       <BottomNavigation />
     </Container>

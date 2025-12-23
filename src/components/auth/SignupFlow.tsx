@@ -46,7 +46,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
   const canGoFromRoleStep = role !== null
 
   const canRequestCode =
-    role === 'instructor'
+    role === 'staff'
       ? name.trim().length > 0 && mmId.trim().length > 0
       : campus !== '' &&
         classNumber !== '' &&
@@ -104,7 +104,7 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
   /** 백엔드 role 매핑: student -> STUDENT, instructor -> STAFF */
   const getBackendRole = () => {
     if (role === 'student') return 'STUDENT'
-    if (role === 'instructor') return 'STAFF'
+    if (role === 'staff') return 'STAFF'
     return 'STUDENT'
   }
 
@@ -122,9 +122,27 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
-      await useApi.post('/auth/send-code', {
-        mm_id: mmId.trim(),
-      })
+      if (role === 'student') {
+        const campusLabel = getCampusLabel()
+
+        const payload = {
+          mm_id: mmId.trim(),
+          role: role,
+          name: name,
+          campus: campusLabel,
+          class_number: classNumber,
+        }
+
+        await useApi.post('/auth/send-code', payload)
+      } else {
+        const payload = {
+          name: name,
+          mm_id: mmId.trim(),
+          role: role,
+        }
+
+        await useApi.post('/auth/send-code', payload)
+      }
 
       setStep('code')
     } catch (error: unknown) {
@@ -146,9 +164,27 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingSendCode(true)
 
-      await useApi.post('/auth/send-code', {
-        mm_id: mmId.trim(),
-      })
+      if (role === 'student') {
+        const campusLabel = getCampusLabel()
+
+        const payload = {
+          mm_id: mmId.trim(),
+          role: role,
+          name: name,
+          campus: campusLabel,
+          class_number: classNumber,
+        }
+
+        await useApi.post('/auth/send-code', payload)
+      } else {
+        const payload = {
+          name: name,
+          mm_id: mmId.trim(),
+          role: role,
+        }
+
+        await useApi.post('/auth/send-code', payload)
+      }
 
       window.alert('인증 코드가 다시 전송되었습니다.')
     } catch (error: unknown) {
@@ -170,30 +206,55 @@ const SignupFlow: React.FC<SignupFlowProps> = ({ onCompleted }) => {
     try {
       setIsLoadingVerify(true)
 
-      const campusLabel = getCampusLabel()
-      const backendRole = getBackendRole()
+      if (role === 'student') {
+        const campusLabel = getCampusLabel()
+        const backendRole = getBackendRole()
 
-      const payload = {
-        code: code.trim(),
-        mm_id: mmId.trim(),
-        campus: campusLabel,
-        class_number: campusLabel && classNumber ? Number(classNumber) : null,
-        name: name.trim(),
-        role: backendRole,
-      }
+        const payload = {
+          code: code.trim(),
+          mm_id: mmId.trim(),
+          campus: campusLabel,
+          class_number: campusLabel && classNumber ? Number(classNumber) : null,
+          name: name.trim(),
+          role: backendRole,
+        }
 
-      const response = await useApi.post('/auth/verify-join', payload)
+        const response = await useApi.post('/auth/verify-join', payload)
 
-      const data = response.data as { token?: string; access_token?: string }
-      const newToken = data.token ?? data.access_token
+        const data = response.data as { token?: string; access_token?: string }
+        const newToken = data.token ?? data.access_token
 
-      if (!newToken) {
-        window.alert('새 토큰을 받지 못했습니다. 관리자에게 문의해주세요.')
+        if (!newToken) {
+          window.alert('새 토큰을 받지 못했습니다. 관리자에게 문의해주세요.')
+        } else {
+          setAccessToken(newToken)
+        }
+
+        setStep('success')
       } else {
-        setAccessToken(newToken)
-      }
+        const backendRole = getBackendRole()
 
-      setStep('success')
+        const payload = {
+          code: code.trim(),
+          mm_id: mmId.trim(),
+
+          name: name.trim(),
+          role: backendRole,
+        }
+
+        const response = await useApi.post('/auth/verify-join', payload)
+
+        const data = response.data as { token?: string; access_token?: string }
+        const newToken = data.token ?? data.access_token
+
+        if (!newToken) {
+          window.alert('새 토큰을 받지 못했습니다. 관리자에게 문의해주세요.')
+        } else {
+          setAccessToken(newToken)
+        }
+
+        setStep('success')
+      }
     } catch (error: unknown) {
       const apiError = error as ApiError
       const message =

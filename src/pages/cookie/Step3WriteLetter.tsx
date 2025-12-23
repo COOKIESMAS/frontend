@@ -37,28 +37,10 @@ const FlexWrapper = styled.div<{
   height: ${(props) => props.height || 'auto'};
 `
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
-const PageWrapper = styled.main`
-  position: relative;
-  max-width: 375px;
-  width: 100%;
-  height: 100%;
-  background-color: #e8c696;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 48px 24px;
-`
-
 const HeaderWrapper = styled(FlexWrapper)`
   align-items: end;
+  margin-top: 22px;
+  height: 40px;
 `
 
 const HeaderLeftWrapper = styled(FlexWrapper)`
@@ -194,7 +176,8 @@ const ListItem = styled.li`
 // 하단 버튼 영역
 const BottomSection = styled.section`
   margin-top: auto;
-  padding: 24px 0 8px;
+  margin-bottom: 32px;
+  width: 100%;
 `
 
 const StyledButton = styled.button<{
@@ -288,63 +271,66 @@ function Step3WriteLetter() {
   }
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        {/* 상단 헤더 */}
-        <HeaderWrapper
-          justify="space-between"
-          align="start"
-          width="100%"
-          style={{ padding: '10px' }}
-        >
-          <HeaderLeftWrapper>
-            <BackButton onClick={handleGoBack}>
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </BackButton>
-            <PageTitle>편지 쓰기</PageTitle>
-          </HeaderLeftWrapper>
-        </HeaderWrapper>
+    <FlexWrapper
+      direction="column"
+      align="center"
+      height="100%"
+      style={{ padding: '0 12px' }}
+    >
+      {/* 상단 헤더 */}
+      <HeaderWrapper
+        justify="space-between"
+        align="start"
+        width="100%"
+        style={{ padding: '0 10px' }}
+      >
+        <HeaderLeftWrapper>
+          <BackButton onClick={handleGoBack}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </BackButton>
+          <PageTitle>편지 쓰기</PageTitle>
+        </HeaderLeftWrapper>
+      </HeaderWrapper>
 
-        {/* 타이틀 */}
-        <Title>쿠키 뒷면에 따뜻한 마음을 담아주세요.</Title>
+      {/* 타이틀 */}
+      <Title>쿠키 뒷면에 따뜻한 마음을 담아주세요.</Title>
 
-        {/* 입력폼 */}
-        <FormSection>
-          <TextareaWrapper>
-            <LetterTextarea
-              value={letter}
-              onChange={(e) => setLetter(e.target.value)}
-              maxLength={300}
-            />
-            <CharacterCounter>{letter.length}/300</CharacterCounter>
-          </TextareaWrapper>
-          <NoticeContainer>
-            <NoticeHeader>
-              <NoticeIconWrapper>
-                <FontAwesomeIcon icon={faExclamationCircle} />
-              </NoticeIconWrapper>
-              <NoticeTitle>전송 전 확인!</NoticeTitle>
-            </NoticeHeader>
+      {/* 입력폼 */}
+      <FormSection>
+        <TextareaWrapper>
+          <LetterTextarea
+            value={letter}
+            onChange={(e) => setLetter(e.target.value)}
+            maxLength={300}
+          />
+          <CharacterCounter>{letter.length}/300</CharacterCounter>
+        </TextareaWrapper>
+        <NoticeContainer>
+          <NoticeHeader>
+            <NoticeIconWrapper>
+              <FontAwesomeIcon icon={faExclamationCircle} />
+            </NoticeIconWrapper>
+            <NoticeTitle>전송 전 확인!</NoticeTitle>
+          </NoticeHeader>
 
-            <List>
-              <ListItem>편지는 크리스마스 전까지 익명으로 유지됩니다.</ListItem>
-              <ListItem>욕설이나 비방은 절대 금지!</ListItem>
-              <ListItem>한 번 구운 쿠키는 되돌릴 수 없어요.</ListItem>
-            </List>
-          </NoticeContainer>
-        </FormSection>
+          <List>
+            <ListItem>편지는 크리스마스 전까지 익명으로 유지됩니다.</ListItem>
+            <ListItem>욕설이나 비방은 절대 금지!</ListItem>
+            <ListItem>한 번 구운 쿠키는 되돌릴 수 없어요.</ListItem>
+          </List>
+        </NoticeContainer>
+      </FormSection>
 
-        {/* 하단 버튼 */}
-        <BottomSection>
-          <StyledButton onClick={handleSubmit} backgroundColor="primary">
-            오븐에 넣어주기
-            <IconWrapper>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </IconWrapper>
-          </StyledButton>
-        </BottomSection>
-      </PageWrapper>
-    </AppContainer>
+      {/* 하단 버튼 */}
+      <BottomSection>
+        <StyledButton onClick={handleSubmit} backgroundColor="primary">
+          오븐에 넣어주기
+          <IconWrapper>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </IconWrapper>
+        </StyledButton>
+      </BottomSection>
+    </FlexWrapper>
   )
 }
 

@@ -4,14 +4,14 @@ import { type SelectableSubCategoryKey } from '@/constant/items'
 export const zIndexMap: { [key in SelectableSubCategoryKey]?: number } = {
   body: 2,
   onePiece: 3,
-  top: 3,
+  top: 4,
   pants: 3,
-  blush: 7,
-  accessory: 5,
-  mouth: 7,
-  eyes: 7,
-  hair: 4,
-  hat: 6,
+  blush: 8,
+  accessory: 6,
+  mouth: 8,
+  eyes: 8,
+  hair: 5,
+  hat: 7,
 }
 
 export const styleMap: { [key in SelectableSubCategoryKey]?: CSSProperties } = {

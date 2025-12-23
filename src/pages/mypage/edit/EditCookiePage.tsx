@@ -10,6 +10,7 @@ import SubCategoryTabs from '@/components/cookie/SubCategoryTabs'
 import ItemsGrid from '@/components/cookie/ItemsGrid'
 import { useEditUser } from '@/hooks/mutations/useEditUser'
 import { selectedItemsAtom } from '@/store/atoms/cookieAtoms'
+import { useQueryClient } from '@tanstack/react-query'
 
 const AppContainer = styled.div`
   display: flex;
@@ -91,6 +92,7 @@ export default function EditCookiePage() {
   const setDialogState = useSetAtom(dialogAtom)
   const selectedItems = useAtomValue(selectedItemsAtom)
   const { mutate } = useEditUser()
+  const queryClient = useQueryClient()
 
   const handleGoBack = () => {
     setDialogState({
@@ -109,7 +111,8 @@ export default function EditCookiePage() {
       },
       {
         onSuccess: () => {
-          // navigate('/mypage')
+          queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
+          navigate('/mypage')
         },
         onError: () => {
           alert('알 수 없는 에러 발생.')

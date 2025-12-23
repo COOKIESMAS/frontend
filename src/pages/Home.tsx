@@ -4,7 +4,10 @@ import BottomNavigation from '@/components/BottomNavigation'
 import ActionButton from '@/components/ActionButton'
 import { useNavigate } from 'react-router-dom'
 import Text1 from '@/assets/image/text_1.svg'
-import HomeTitleImg from '@/assets/image/home_title.png'
+import mainLogo0 from '@/assets/image/main_logo_d_0.svg'
+import mainLogo1 from '@/assets/image/main_logo_d_1.svg'
+import mainLogo2 from '@/assets/image/main_logo_d_2.svg'
+import mainLogo3 from '@/assets/image/main_logo_d_3.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useRef, useState } from 'react'
@@ -28,6 +31,7 @@ import { useEditUser } from '@/hooks/mutations/useEditUser'
 import { useApi } from '@/utils/useApi'
 import CookieImageRenderer2 from '@/components/cookie/CookieImageRenderer2'
 import type { CookieDesignImgDataCamel } from '@/types/cookie'
+import { getDDay } from '@/utils/getDDay'
 
 const FlexWrapper = styled.div<{
   direction?: 'row' | 'column'
@@ -85,20 +89,13 @@ const UnreadBadge = styled.div`
   box-shadow: 0 0 0 2px #ffffff; /* 버튼과 구분되게 흰색 테두리 느낌 */
 `
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-`
-
 const PageWrapper = styled.main`
   position: relative;
   max-width: 375px;
   width: 100%;
   height: 100%;
   padding-top: 20px;
+  margin-bottom: 80px;
   background-color: #e8c7c7;
   display: flex;
   flex-direction: column;
@@ -221,6 +218,13 @@ const tutorialSteps = [
   },
 ]
 
+const MAIN_LOGO_BY_DDAY: Record<number, string> = {
+  0: mainLogo0, // D-day
+  1: mainLogo1, // D-1
+  2: mainLogo2, // D-2
+  3: mainLogo3, // D-3
+}
+
 export default function Home() {
   const makeCookieRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
@@ -258,122 +262,128 @@ export default function Home() {
     navigate(dst)
   }
 
+  const TARGET_DATE = new Date('2025-12-25') // 🎄 예시
+
+  const dDay = getDDay(TARGET_DATE)
+
+  // 0~3 범위로 clamp
+  const displayDDay = Math.max(0, Math.min(3, dDay))
+
+  const logoSrc = MAIN_LOGO_BY_DDAY[displayDDay]
+
   if (isLoading) return null
 
   const shouldShowTutorial = !!user && !user.isTutorialCompleted
   // const shouldShowTutorial = true
 
   return (
-    <AppContainer>
-      <PageWrapper>
-        <ImageRenderer>
-          <HomeTitle src={HomeTitleImg} />
-        </ImageRenderer>
-        <MenuButton onClick={openMenu}>
-          <MenuIcon icon={faBars} />
-        </MenuButton>
+    // <AppContainer>
+    //   <PageWrapper>
 
+    //   </PageWrapper>
+    // </AppContainer>
+    <PageWrapper>
+      <ImageRenderer>
+        <HomeTitle src={logoSrc} />
+      </ImageRenderer>
+      <MenuButton onClick={openMenu}>
+        <MenuIcon icon={faBars} />
+      </MenuButton>
+
+      <FlexWrapper
+        direction="column"
+        width="100%"
+        height="100%"
+        justify="flex-end"
+        align="center"
+      >
+        <CookieImageRendererWrapper>
+          <TextBoxImage src={Text1} />
+          <CookieImageRenderer2
+            designData={user?.designData as CookieDesignImgDataCamel}
+            isPen={false}
+          />
+        </CookieImageRendererWrapper>
         <FlexWrapper
           direction="column"
+          gap="18px"
           width="100%"
-          height="100%"
-          justify="flex-end"
-          align="center"
-          style={{ marginBottom: '80px' }}
+          style={{ padding: '24px' }}
         >
-          <CookieImageRendererWrapper>
-            <TextBoxImage src={Text1} />
-            <CookieImageRenderer2
-              designData={user?.designData as CookieDesignImgDataCamel}
-              isPen={false}
-            />
-          </CookieImageRendererWrapper>
+          <MakeButtonWrapper ref={makeCookieRef}>
+            <ActionButton
+              backgroundColor="#E2AE71"
+              titleColor="black"
+              textColor="black"
+              onClick={() => handleNavigate('/cookie/step1')}
+            >
+              <ButtonTitle>쿠키 만들기</ButtonTitle>
+              <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
+            </ActionButton>
+          </MakeButtonWrapper>
 
-          {/* <ImageRenderer>
-            
-            <img src={HomeCookie} />
-          </ImageRenderer> */}
-          <FlexWrapper
-            direction="column"
-            gap="18px"
-            width="100%"
-            style={{ padding: '24px' }}
-          >
-            <MakeButtonWrapper ref={makeCookieRef}>
+          <FlexWrapper gap="8px" width="100%" align="stretch">
+            <OvenButtonWrapper>
               <ActionButton
-                backgroundColor="#E2AE71"
+                backgroundColor="white"
                 titleColor="black"
-                textColor="black"
-                onClick={() => handleNavigate('/cookie/step1')}
+                textColor="#555555"
+                style={{ width: '100%' }}
+                onClick={() => handleNavigate('/myoven')}
               >
-                <ButtonTitle>쿠키 만들기</ButtonTitle>
-                <ButtonText>친구와 강사님, 프로님에게 마음 전하기</ButtonText>
+                <ButtonTitle2>내 오븐</ButtonTitle2>
+                <ButtonText>받은 쿠키 구경하기</ButtonText>
               </ActionButton>
-            </MakeButtonWrapper>
 
-            <FlexWrapper gap="8px" width="100%" align="stretch">
-              <OvenButtonWrapper>
-                <ActionButton
-                  backgroundColor="white"
-                  titleColor="black"
-                  textColor="#555555"
-                  style={{ width: '100%' }}
-                  onClick={() => handleNavigate('/myoven')}
-                >
-                  <ButtonTitle2>내 오븐</ButtonTitle2>
-                  <ButtonText>받은 쿠키 구경하기</ButtonText>
-                </ActionButton>
+              {unreadCount > 0 && <UnreadBadge>{unreadCount}</UnreadBadge>}
+            </OvenButtonWrapper>
 
-                {unreadCount > 0 && <UnreadBadge>{unreadCount}</UnreadBadge>}
-              </OvenButtonWrapper>
-
-              {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
-              <ActionButton
-                backgroundColor="#cfcfcf" // 회색 배경
-                textColor="black"
-                disabled={true} // 비활성화
-                style={{ flex: 1 }}
-              >
-                <ButtonText style={{ whiteSpace: 'pre-line' }}>{`comming
+            {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
+            <ActionButton
+              backgroundColor="#cfcfcf" // 회색 배경
+              textColor="black"
+              disabled={true} // 비활성화
+              style={{ flex: 1 }}
+            >
+              <ButtonText style={{ whiteSpace: 'pre-line' }}>{`comming
               soon`}</ButtonText>
-              </ActionButton>
-            </FlexWrapper>
+            </ActionButton>
           </FlexWrapper>
         </FlexWrapper>
-        {shouldShowTutorial && (
-          <TutorialOverlay
-            steps={tutorialSteps}
-            open={shouldShowTutorial}
-            enableAutoAdvance={false}
-            autoAdvanceMs={0}
-            onFinish={() => {
-              setShowActionGuide(true)
-            }}
-          />
-        )}
-        {showActionGuide && buttonRect && (
-          <ActionHighlightOverlay
-            targetRect={buttonRect}
-            onClick={() => {
-              setShowActionGuide(false)
-              mutate(
-                { isTutorialCompleted: true },
-                {
-                  onSuccess: () => {
-                    navigate('/cookie/step1')
-                  },
-                  onError: () => {
-                    alert('에러 발생')
-                  },
+      </FlexWrapper>
+      {shouldShowTutorial && (
+        <TutorialOverlay
+          steps={tutorialSteps}
+          open={shouldShowTutorial}
+          enableAutoAdvance={false}
+          autoAdvanceMs={0}
+          onFinish={() => {
+            setShowActionGuide(true)
+          }}
+        />
+      )}
+      {showActionGuide && buttonRect && (
+        <ActionHighlightOverlay
+          targetRect={buttonRect}
+          onClick={() => {
+            setShowActionGuide(false)
+            mutate(
+              { isTutorialCompleted: true },
+              {
+                onSuccess: () => {
+                  navigate('/cookie/step1')
                 },
-              )
-            }}
-          />
-        )}
+                onError: () => {
+                  alert('에러 발생')
+                },
+              },
+            )
+          }}
+        />
+      )}
 
-        <SideMenu open={isMenuOpen} onClose={closeMenu} />
-        <BottomNavigation />
-      </PageWrapper>
-    </AppContainer>
+      <SideMenu open={isMenuOpen} onClose={closeMenu} />
+      <BottomNavigation />
+    </PageWrapper>
   )
 }

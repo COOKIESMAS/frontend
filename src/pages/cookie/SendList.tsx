@@ -16,10 +16,10 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
   gap: 12px;
-  padding: 16px;
+  padding: 16px 16px 0;
   box-sizing: border-box;
   background-color: #e2ae71;
-  padding-bottom: 80px;
+  margin-bottom: 80px;
 `
 
 const LoadingWrapper = styled.div`
