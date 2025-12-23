@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/components/DdayCookieComponent.tsx
 import React, { useState, type TouchEvent } from 'react'
 import styled, { css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,7 +6,10 @@ import {
   faAngleLeft,
   faAngleRight,
 } from '@fortawesome/free-solid-svg-icons'
-import type { CookieDesignImgDataCamel, CookieItem } from '@/types/cookie'
+import type {
+  CookieItem,
+  CookieDesignImgDataCamel,
+} from '@/types/cookie'
 import CookieImageRenderer2 from './cookie/CookieImageRenderer2'
 
 interface DdayCookieComponentProps {
@@ -23,6 +25,14 @@ interface DdayCookieComponentProps {
 }
 
 type SlideDirection = 'left' | 'right' | null
+
+type VisibleCookie = {
+  cookie: CookieItem
+  angle: number
+  isCenter: boolean
+  sourceIndex: number
+  slotIndex: number
+}
 
 export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
   loading,
@@ -43,9 +53,12 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
   const receivedCount = total
 
   const triggerSlide = (dir: Exclude<SlideDirection, null>) => {
-    setSlideDirection(null)
-    // 다음 render 사이클 이후 방향을 넣어 애니메이션 재시작
-    requestAnimationFrame(() => setSlideDirection(dir))
+    // ✅ 애니메이션 동안만 방향 유지하고, 끝나면 다시 0으로 복귀
+    setSlideDirection(dir)
+
+    window.setTimeout(() => {
+      setSlideDirection(null)
+    }, 0) // WheelInner의 transition 시간(0.35s)과 맞춤
   }
 
   const goPrev = () => {
@@ -61,7 +74,6 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
     triggerSlide('left')
     onChangeIndex(nextIndex)
   }
-
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     if (!hasCookies) return
@@ -84,26 +96,51 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
     setTouchStartX(null)
   }
 
-  /** 원형 캐러셀에 표시할 쿠키 5개(또는 그 이하) 계산 */
-  const getVisibleCookies = () => {
+  /** 원형 캐러셀에 표시할 쿠키 계산 (중복 렌더링 없이) */
+  const getVisibleCookies = (): VisibleCookie[] => {
     if (!total) return []
 
-    // 항상 8등분 기준으로 5슬롯(-2, -1, 0, 1, 2)만 사용
-    const ANGLE_STEP = 45 // 360 / 8
-    const BASE_ANGLE = -90
+    const BASE_ANGLE = 0 // 0도 = 위쪽
+
+    // 1) 쿠키 5개 이하 → 전부를 원 위에 골고루 배치 (중복 X)
+    if (total <= 5) {
+      const STEP = 360 / total
+
+      return cookies.map((cookie, idx) => {
+        const offset = idx - currentIndex
+        const angle = BASE_ANGLE + STEP * offset
+        const isCenter = idx === currentIndex
+
+        return {
+          cookie,
+          angle,
+          isCenter,
+          sourceIndex: idx,
+          slotIndex: idx,
+        }
+      })
+    }
+
+    // 2) 5개 초과 → 8등분 중 위쪽 기준 5슬롯(-2,-1,0,1,2)만 사용
+    const ANGLE_STEP = 45 // 360/8
     const offsets = [-2, -1, 0, 1, 2]
 
-    return offsets.map((offset) => {
+    return offsets.map((offset, slotIndex) => {
       const sourceIndex =
         ((currentIndex + offset) % total + total) % total
       const cookie = cookies[sourceIndex]
-      const angle = BASE_ANGLE + offset * ANGLE_STEP
+      const angle = BASE_ANGLE + ANGLE_STEP * offset
       const isCenter = offset === 0
 
-      return { cookie, angle, isCenter, sourceIndex }
+      return {
+        cookie,
+        angle,
+        isCenter,
+        sourceIndex,
+        slotIndex,
+      }
     })
   }
-
 
   const visibleCookies = getVisibleCookies()
 
@@ -163,24 +200,21 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
           <strong>{receivedCount}개</strong>
         </ReceivedCountBadge>
 
-        {/* 좌우 화살표 버튼 */}
-            {hasCookies && (
-              <>
-                <ArrowButtonLeft type="button" onClick={goPrev}>
-                  <FontAwesomeIcon icon={faAngleLeft} />
-                </ArrowButtonLeft>
-                <ArrowButtonRight type="button" onClick={goNext}>
-                  <FontAwesomeIcon icon={faAngleRight} />
-                </ArrowButtonRight>
-              </>
-            )}
-
         {/* 원형 쿠키 캐러셀 영역 */}
         <CarouselArea
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-
+          {hasCookies && (
+          <>
+            <ArrowButtonLeft type="button" onClick={goPrev}>
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </ArrowButtonLeft>
+            <ArrowButtonRight type="button" onClick={goNext}>
+              <FontAwesomeIcon icon={faAngleRight} />
+            </ArrowButtonRight>
+          </>
+        )}
           <WheelWrapper>
             {/* 접시 배경 */}
             <PlateImage src="/d_day_plate.png" alt="쿠키 접시" />
@@ -188,8 +222,7 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
             {/* 쿠키 & 말풍선 레이어 */}
             <WheelInner $direction={slideDirection}>
               {visibleCookies.map(
-                ({ cookie, angle, isCenter, sourceIndex }) => {
-                  // 소속/이름 텍스트 (서버 스펙 확장 대비, 없으면 sender_name만 사용)
+                ({ cookie, angle, isCenter, sourceIndex, slotIndex }) => {
                   const senderName =
                     (cookie as any).sender_name ??
                     (cookie as any).senderName ??
@@ -201,29 +234,28 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
 
                   return (
                     <CookieOrbitItem
-                      key={`${sourceIndex}-${cookie.cookie_pk}`}
+                      key={slotIndex} // 슬롯 번호 기반 key → DOM 재사용
                       $angle={angle}
                       $isCenter={isCenter}
+                      $slotIndex={slotIndex}
                       onClick={() => onClickCookie(sourceIndex)}
                     >
-                      <SpeechBubble>
-                        <SpeechLine1>
-                          {senderAffiliation || 'SSAFY'}
-                        </SpeechLine1>
-                        <SpeechLine2>
-                          {senderName || '싸피'}
-                        </SpeechLine2>
-                      </SpeechBubble>
+                      {isCenter && (
+                        <SpeechBubble>
+                          <SpeechLine1>{senderAffiliation || 'SSAFY'}</SpeechLine1>
+                          <SpeechLine2>{senderName || '싸피'}</SpeechLine2>
+                        </SpeechBubble>
+                      )}
 
                       <CookieCircle>
                         <CookieImageRenderer2
-                            designData={
+                          designData={
                             cookie.design_data as unknown as CookieDesignImgDataCamel
-                            }
-                            isPen={false}
-                            isRound
+                          }
+                          isPen={false}
+                          isRound
                         />
-                        </CookieCircle>
+                      </CookieCircle>
                     </CookieOrbitItem>
                   )
                 },
@@ -256,7 +288,8 @@ const ContentContainer = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  color: #ffffff;
+    overflow: hidden;
+
 
   background-image: url('/home.png');
   background-size: cover;
@@ -272,7 +305,6 @@ const CenterBody = styled.div`
 `
 
 const HeaderRow = styled.header`
-  display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
@@ -287,7 +319,7 @@ const BackButton = styled.button`
 `
 
 const Logo = styled.img`
-  height: 60px;
+  width: 280px;
   width: auto;
 `
 
@@ -306,7 +338,7 @@ const Subtitle = styled.div`
 
 /* 기존 ReceivedCountBadge와 동일 + 색상만 변경 */
 const ReceivedCountBadge = styled.div`
-  align-self: flex-end;
+  align-self: flex-start;
   min-width: 80px;
   padding: 6px 12px;
   border-radius: 12px;
@@ -340,13 +372,16 @@ const CarouselArea = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* overflow: hidden; 화면 밖으로 나가는 거대 원을 숨김 */
 `
 
+/**
+ * 큰 원 전체 (눈에는 아래쪽 일부만 보이도록)
+ * pointer-events: none → 안쪽 쿠키만 클릭되게
+ */
 const WheelWrapper = styled.div`
   position: absolute;
-  bottom: -280px; /* 원의 중심을 화면 아래로 푹 내림 (조절 필요) */
-  width: 600px;   /* 가상의 큰 원 지름 */
+  bottom: -500px; /* 원 중심을 화면 아래로 */
+  width: 600px;
   height: 600px;
   display: flex;
   justify-content: center;
@@ -356,10 +391,10 @@ const WheelWrapper = styled.div`
 
 const PlateImage = styled.img`
   position: absolute;
-  top: 0; /* 원의 꼭대기 근처에 접시 배치 */
+  top: -100px;
   left: 50%;
-  width: 500px; /* 접시 크기를 키워 화면을 꽉 채우게 */
-  transform: translate(-50%, -10%); 
+  width: 900px;
+  transform: translate(-50%, -10%);
   z-index: 0;
   pointer-events: none;
 `
@@ -367,65 +402,74 @@ const PlateImage = styled.img`
 const WheelInner = styled.div<{ $direction: SlideDirection }>`
   position: absolute;
   inset: 0;
-  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-  
-  /* 인덱스 변경 시 부드러운 회전 효과를 위해 (선택 사항) */
+  transition: transform 0.35s ease-out;
+
   ${({ $direction }) =>
-    $direction === 'left' && css`animation: rotateLeft 0.4s ease-out;`}
+    $direction === 'left' &&
+    css`
+      transform: translateX(-8%);
+    `}
   ${({ $direction }) =>
-    $direction === 'right' && css`animation: rotateRight 0.4s ease-out;`}
+    $direction === 'right' &&
+    css`
+      transform: translateX(8%);
+    `}
 `
 
+const ROTATION_BY_SLOT = [-25, -12, 0, 12, 25] as const
+
 const CookieOrbitItem = styled.div<{
-  $angle: number;
-  $isCenter: boolean;
+  $angle: number
+  $isCenter: boolean
+  $slotIndex: number
 }>`
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 120px;
-  height: 120px;
+  width: 300px;
+  height: 300px;
   pointer-events: auto;
   cursor: pointer;
 
-  ${({ $angle, $isCenter }) => {
-    // R: 원의 반지름
-    const R = 320; 
-    // 각도 변환 (0도가 정중앙 상단이 되도록 계산)
-    // 현재 코드의 offsets [-2, -1, 0, 1, 2]에 맞춘 간격 조정
-    const adjustedAngle = $angle + 90; // -90도가 0(상단)이 되도록
-    const rad = (adjustedAngle * Math.PI) / 180;
+  ${({ $angle, $isCenter, $slotIndex }) => {
+    const R = 350
+    const rad = ($angle * Math.PI) / 180
 
-    const x = R * Math.sin(rad);
-    const y = -R * Math.cos(rad); // 위쪽으로 배치
+    const x = R * Math.sin(rad)
+    const y = -R * Math.cos(rad)
 
-    const scale = $isCenter ? 1.1 : 0.7;
-    const opacity = $isCenter ? 1 : 0.4; // 양옆 쿠키는 흐릿하게
-    const blur = $isCenter ? 0 : 2;
+    const scale = $isCenter ? 1.1 : 0.8
+    const opacity = $isCenter ? 1 : 0.5
+    const rotateDeg = $isCenter
+      ? 0
+      : ROTATION_BY_SLOT[$slotIndex] ?? 0 // ✅ 슬롯별 고정 회전값
 
     return css`
-      transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale});
+      transform:
+        translate(calc(-50% + ${x}px), calc(-50% + ${y}px))
+        rotate(${rotateDeg}deg)
+        scale(${scale});
       opacity: ${opacity};
-      filter: blur(${blur}px);
       z-index: ${$isCenter ? 10 : 5};
-      transition: all 0.4s ease-out;
-    `;
+      transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+    `
   }}
 `
 
+
 const SpeechBubble = styled.div`
   position: absolute;
-  bottom: 110%; /* 쿠키 위로 띄움 */
+  bottom: 110%;
   left: 50%;
   transform: translateX(-50%);
   min-width: 140px;
   padding: 10px 20px;
   background-color: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
 
-  &::after { /* 말풍선 꼬리 */
+  &::after {
     content: '';
     position: absolute;
     top: 100%;
@@ -436,9 +480,10 @@ const SpeechBubble = styled.div`
     border-color: white transparent transparent transparent;
   }
 `
+
 const CookieCircle = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 300px;
+  height: 300px;
   border-radius: 999px;
   background-color: transparent;
 `
@@ -461,7 +506,7 @@ const SpeechLine2 = styled.div`
 
 const ArrowButtonBase = styled.button`
   position: absolute;
-  top: 50%;
+  top: 60%; /* 쿠키 중간보다 살짝 아래 */
   transform: translateY(-50%);
   background: transparent;
   border: none;
@@ -471,6 +516,7 @@ const ArrowButtonBase = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 20;
 
   svg {
     font-size: 36px;

@@ -1,11 +1,13 @@
-// src/containers/DdayCookieContainer.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApi, type ApiError } from '@/utils/useApi'
 import type { CookieItem } from '@/types/cookie'
 import { useAtom } from 'jotai'
-import { dDayCookieListAtom, dDayCurrentIndexAtom } from '@/store/dDayCookieAtoms'
+import {
+  dDayCookieListAtom,
+  dDayCurrentIndexAtom,
+} from '@/store/dDayCookieAtoms'
 import { DdayCookieComponent } from '@/components/DdayCookieComponent'
 
 const DdayCookieContainer: React.FC = () => {
@@ -22,20 +24,17 @@ const DdayCookieContainer: React.FC = () => {
       setIsLoading(true)
       setErrorMessage(null)
 
-      // 내 오븐 + 받은 쿠키(type=received)
       const response = await useApi.get<CookieItem[]>('/cookies/', {
-        params: {
-          type: 'received',
-        },
+        params: { type: 'received' },
       })
 
       const data = response.data ?? []
       setCookies(data)
 
-      // 현재 인덱스가 범위를 벗어나 있으면 보정
       if (data.length > 0) {
         setCurrentIndex((prev) => {
-          const safe = ((prev % data.length) + data.length) % data.length
+          const safe =
+            ((prev % data.length) + data.length) % data.length
           return safe
         })
       } else {
@@ -79,11 +78,8 @@ const DdayCookieContainer: React.FC = () => {
 
     const cookie = cookies[safe]
 
-    // 2번 페이지로 이동하면서 cookie_pk를 같이 넘김 (나중에 상세 페이지에서 사용)
-    navigate('/cookie/d-day/detail', {
-      state: {
-        cookiePk: cookie.cookie_pk,
-      },
+    navigate('/d-day/detail', {
+      state: { cookiePk: cookie.cookie_pk },
     })
   }
 
@@ -92,18 +88,16 @@ const DdayCookieContainer: React.FC = () => {
   }
 
   return (
-    <>
-      <DdayCookieComponent
-        loading={isLoading}
-        errorMessage={errorMessage}
-        cookies={cookies}
-        currentIndex={currentIndex}
-        onRetry={fetchCookies}
-        onClickBack={handleClickBack}
-        onChangeIndex={handleChangeIndex}
-        onClickCookie={handleClickCookie}
-      />
-    </>
+    <DdayCookieComponent
+      loading={isLoading}
+      errorMessage={errorMessage}
+      cookies={cookies}
+      currentIndex={currentIndex}
+      onRetry={fetchCookies}
+      onClickBack={handleClickBack}
+      onChangeIndex={handleChangeIndex}
+      onClickCookie={handleClickCookie}
+    />
   )
 }
 
