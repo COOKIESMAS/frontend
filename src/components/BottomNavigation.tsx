@@ -81,7 +81,7 @@ export default function BottomNavigation() {
       </NavItem>
 
       {/* 중앙 버튼에 primary 색상 적용 */}
-      <NavItem to="/" colorStyle="primary">
+      <NavItem to="/home" colorStyle="primary">
         <IconWrapper colorStyle="primary">
           <FontAwesomeIcon icon={faHouse} />
         </IconWrapper>

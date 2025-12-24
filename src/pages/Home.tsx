@@ -353,7 +353,7 @@ export default function Home() {
                 padding: '10px', // 내용이 경계선에 가까워지지 않도록 여백을 설정
               }}
             >
-              <ButtonText style={{ whiteSpace: 'pre-line', fontWeight: 'bold' }}
+              <ButtonText style={{ whiteSpace: 'pre-line', fontWeight: 'bold', fontSize: '15px' }}
                   onClick={() => handleNavigate('/d-day')}
               >{`쿠키 보러가기`}</ButtonText>
             </ActionButton>
