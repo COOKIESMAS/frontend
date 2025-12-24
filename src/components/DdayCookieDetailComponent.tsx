@@ -157,7 +157,7 @@ const ContentInner = styled.div`
   box-sizing: border-box;
   margin: 0 auto;
   display: flex;
-  background-color: #9D6A37;
+  background-color: #c08b55;
   flex-direction: column;
   align-items: center;
 `
