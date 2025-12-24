@@ -51,10 +51,10 @@ const GoogleConnectingComponents: React.FC = () => {
         navigate('/api/v1/auth/ssafy', { replace: true })
       } else if (status === 'verified') {
         // 이미 정회원
-        navigate('/home', { replace: true })
+        navigate('/', { replace: true })
       } else {
         // status가 없거나 알 수 없는 값이면 일단 홈으로
-        navigate('/home', { replace: true })
+        navigate('/', { replace: true })
       }
       return
     }

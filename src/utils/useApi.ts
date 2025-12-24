@@ -10,6 +10,7 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
   'https://backend-production-acf4.up.railway.app/api/v1'
+  // 'https://after-xmas-test-production.up.railway.app/api/v1'
 
 /**
  * localStorage 에서 액세스 토큰을 가져오는 헬퍼

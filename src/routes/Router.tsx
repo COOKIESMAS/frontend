@@ -18,11 +18,14 @@ import MyPage from '@/pages/mypage/MyPage'
 import NoticePage from '@/pages/NoticePage'
 import CookieStepGuard from './CookieStepGuard'
 import EditCookiePage from '@/pages/mypage/edit/EditCookiePage'
+import DdayCookiePage from '@/pages/DdayCookiePage'
 import OvenPage from '@/pages/oven/OvenPage'
+import DdayCookieDetailPage from '@/pages/DdayCookieDetailPage'
 
 const Router = () => {
   return (
     <BrowserRouter>
+
       <Routes>
         {/* 🔒 로그인하지 않은 사용자만 접근 가능 구역 */}
         <Route element={<PublicRoute />}>
@@ -36,7 +39,7 @@ const Router = () => {
           <Route path="/api/v1/auth/ssafy" element={<SignupPage />} />
 
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<DdayCookiePage />} />
             <Route path="/home" element={<Home />} />
             <Route path="/myoven" element={<MyOvenPage />} />
             <Route path="/oven/:id" element={<OvenPage />} />
@@ -63,6 +66,8 @@ const Router = () => {
               <Route path=":id" element={<CookieDetail />} />
             </Route>
           </Route>
+            <Route path="/d-day" element={<DdayCookiePage />} />
+            <Route path="/d-day/detail" element={<DdayCookieDetailPage />} />
         </Route>
 
         {/* 잘못된 경로 처리 */}
