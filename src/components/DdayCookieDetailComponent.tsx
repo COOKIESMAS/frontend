@@ -55,13 +55,25 @@ export const DdayCookieDetailComponent: React.FC<Props> = ({
 
   const senderName =
     (cookie as any).sender_name ?? (cookie as any).senderName ?? ''
-  const senderAffiliation =
-    (cookie as any).sender_affiliation ??
-    (cookie as any).senderAffiliation ??
-    ''
+
+  const senderCampus =
+    (cookie as any).sender_campus ?? (cookie as any).senderCampus ?? ''
+
+  const senderClassNumber =
+    (cookie as any).sender_class_number ??
+    (cookie as any).senderClassNumber
+
+  // "대전 3반" 또는 데이터 없으면 "프로/강사님"
+  const senderAffiliationText =
+    senderCampus && senderClassNumber
+      ? `${senderCampus} ${senderClassNumber}반`
+      : '프로/강사님'
+
   const content =
     (cookie as any).content ??
     '메시지 내용을 불러오는 중입니다.'
+
+
 
   return (
     <PageWrapper>
@@ -85,8 +97,8 @@ export const DdayCookieDetailComponent: React.FC<Props> = ({
         <FromBadge>
           <FromLabel>From.</FromLabel>
           <FromText>
-            {senderAffiliation ? `${senderAffiliation} ` : ''}
-            {senderName}
+            {senderAffiliationText}
+            {senderName ? ` ${senderName}` : ''}
           </FromText>
         </FromBadge>
 
@@ -260,6 +272,8 @@ const MessageBubble = styled.div`
 
 const MessageText = styled.p`
   width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
   font-family: 'Galmuri14', system-ui, -apple-system,
@@ -268,6 +282,7 @@ const MessageText = styled.p`
   line-height: 1.6;
   color: #000000;
 `
+
 
 const CookieArea = styled.div`
   flex: 1;

@@ -166,7 +166,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
     setModalMessage(OVEN_MESSAGES[randomIndex])
 
     // 모달 오픈
-    setIsModalOpen(true)
+    // setIsModalOpen(true)
   }
 
   const handleCloseModal = () => {

@@ -214,11 +214,22 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
                       (cookie as any).sender_name ??
                       (cookie as any).senderName ??
                       ''
-                    const senderAffiliation =
-                      (cookie as any).sender_affiliation ??
-                      (cookie as any).senderAffiliation ??
+
+                    // 캠퍼스 / 반 정보
+                    const senderCampus =
+                      (cookie as any).sender_campus ??
+                      (cookie as any).senderCampus ??
                       ''
 
+                    const senderClassNumber =
+                      (cookie as any).sender_class_number ??
+                      (cookie as any).senderClassNumber
+
+                    // "대전 3반" 또는 데이터 없으면 "프로/강사님"
+                    const line1Text =
+                      senderCampus && senderClassNumber
+                        ? `${senderCampus} ${senderClassNumber}반`
+                        : '프로/강사님'
                     return (
                       <CookieOrbitItem
                         key={
@@ -232,15 +243,10 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
                       >
                         {isCenter && (
                           <SpeechBubble>
-                            <SpeechLine1>
-                              {senderAffiliation || 'SSAFY'}
-                            </SpeechLine1>
-                            <SpeechLine2>
-                              {senderName || '싸피'}
-                            </SpeechLine2>
+                            <SpeechLine1>{line1Text}</SpeechLine1>
+                            <SpeechLine2>{senderName || 'SSAFY'}</SpeechLine2>
                           </SpeechBubble>
                         )}
-
                         <CookieCircle>
                           <CookieImageRenderer2
                             designData={
