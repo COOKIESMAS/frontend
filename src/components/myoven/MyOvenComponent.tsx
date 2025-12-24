@@ -166,7 +166,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
     setModalMessage(OVEN_MESSAGES[randomIndex])
 
     // 모달 오픈
-    setIsModalOpen(true)
+    // setIsModalOpen(true)
   }
 
   const handleCloseModal = () => {
@@ -251,7 +251,7 @@ export const MyOvenComponent: React.FC<MyOvenComponentProps> = ({
             onTouchEnd={handleTouchEnd}
           >
             {isBeforeXmas && (
-              <PanCaption>맛있게 구워지는 중...♥</PanCaption>
+              <PanCaption>맛있는 쿠키가 완성됐어요 ♥</PanCaption>
             )}
 
             <PanWrapper $direction={slideDirection}>

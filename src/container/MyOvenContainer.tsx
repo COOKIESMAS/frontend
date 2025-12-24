@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/containers/MyOvenContainer.tsx
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useApi, type ApiError } from '../utils/useApi'
-import type { CookieItem } from '../types/cookie'
-import { MyOvenComponent } from '../components/myoven/MyOvenComponent'
+import { useApi, type ApiError } from '@/utils/useApi'
+import type { CookieItem } from '@/types/cookie'
+import { useAtom } from 'jotai'
+import {
+  dDayCookieListAtom,
+  } from '@/store/dDayCookieAtoms'
+import { MyOvenComponent } from '@/components/myoven/MyOvenComponent'
 import BottomNavigation from '@/components/BottomNavigation'
 
 const MyOvenContainer: React.FC = () => {
-  const [cookies, setCookies] = useState<CookieItem[]>([])
+  const [cookies, setCookies] = useAtom(dDayCookieListAtom)
+  // const [currentIndex, setCurrentIndex] = useAtom(dDayCurrentIndexAtom)
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -38,8 +43,8 @@ const MyOvenContainer: React.FC = () => {
     } catch (error: unknown) {
       const apiError = error as ApiError
       const message =
-        (apiError.response?.data as any)?.message ??
-        (apiError.response?.data as any)?.detail ??
+        (apiError.response?.data as any)?.message ?? 
+        (apiError.response?.data as any)?.detail ?? 
         '오븐 정보를 불러오는 중 오류가 발생했습니다.'
 
       setErrorMessage(message)
@@ -90,7 +95,9 @@ const MyOvenContainer: React.FC = () => {
   const handleClickCookie = async (cookie: CookieItem) => {
     // ✅ 이미 읽은 쿠키면 요청 안 보냄
     if (cookie.is_read) {
-      return
+      navigate(`/d-day/detail`, {
+        state: { cookiePk: cookie.cookie_pk },
+      })
     }
 
     try {
@@ -102,6 +109,11 @@ const MyOvenContainer: React.FC = () => {
           c.cookie_pk === cookie.cookie_pk ? { ...c, is_read: true } : c,
         ),
       )
+
+      // 쿠키 클릭 시 d-day 페이지로 이동
+      navigate(`/d-day/detail`, {
+        state: { cookiePk: cookie.cookie_pk },
+      })
     } catch (error) {
       console.error('쿠키 읽음 처리 실패', error)
     }

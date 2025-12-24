@@ -39,7 +39,7 @@ const Router = () => {
           <Route path="/api/v1/auth/ssafy" element={<SignupPage />} />
 
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<DdayCookiePage />} />
             <Route path="/home" element={<Home />} />
             <Route path="/myoven" element={<MyOvenPage />} />
             <Route path="/oven/:id" element={<OvenPage />} />
