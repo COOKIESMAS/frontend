@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, type TouchEvent } from 'react'
-import styled, { css } from 'styled-components'
+import styled, { createGlobalStyle, css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faAngleLeft,
-  faAngleRight,
-} from '@fortawesome/free-solid-svg-icons'
-import type {
-  CookieItem,
-  CookieDesignImgDataCamel,
-} from '@/types/cookie'
+import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import type { CookieItem, CookieDesignImgDataCamel } from '@/types/cookie'
 import CookieImageRenderer2 from './cookie/CookieImageRenderer2'
 
 interface DdayCookieComponentProps {
@@ -23,8 +17,6 @@ interface DdayCookieComponentProps {
   /** 쿠키 + 말풍선 세트를 클릭했을 때 (인덱스 기반) */
   onClickCookie: (cookieIndex: number) => void
 }
-
-type SlideDirection = 'left' | 'right' | null
 
 type VisibleCookie = {
   cookie: CookieItem
@@ -44,34 +36,21 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
   onChangeIndex,
   onClickCookie,
 }) => {
-  const [slideDirection, setSlideDirection] =
-    useState<SlideDirection>(null)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   const hasCookies = cookies.length > 0
   const total = cookies.length
   const receivedCount = total
 
-  const triggerSlide = (dir: Exclude<SlideDirection, null>) => {
-    // ✅ 애니메이션 동안만 방향 유지하고, 끝나면 다시 0으로 복귀
-    setSlideDirection(dir)
-
-    window.setTimeout(() => {
-      setSlideDirection(null)
-    }, 0) // WheelInner의 transition 시간(0.35s)과 맞춤
-  }
-
   const goPrev = () => {
     if (!total) return
     const nextIndex = (currentIndex - 1 + total) % total
-    triggerSlide('right')
     onChangeIndex(nextIndex)
   }
 
   const goNext = () => {
     if (!total) return
     const nextIndex = (currentIndex + 1) % total
-    triggerSlide('left')
     onChangeIndex(nextIndex)
   }
 
@@ -180,95 +159,141 @@ export const DdayCookieComponent: React.FC<DdayCookieComponentProps> = ({
 
   // ───────────── 일반 화면 ─────────────
   return (
-    <PageWrapper>
-      <ContentContainer>
-        {/* 상단 헤더 영역 */}
-        <HeaderRow>
-          <BackButton type="button" onClick={onClickBack}>
-            <FontAwesomeIcon icon={faAngleLeft} />
-          </BackButton>
-
-          <Logo src="/d_day_logo.svg" alt="메리 쿠키스마스 D-Day" />
-        </HeaderRow>
-
-        <Subtitle>
-          마음이 담긴 쿠키와 메세지를 확인해보세요🤍
-        </Subtitle>
-
-        <ReceivedCountBadge>
-          <span>받은 쿠키</span>
-          <strong>{receivedCount}개</strong>
-        </ReceivedCountBadge>
-
-        {/* 원형 쿠키 캐러셀 영역 */}
-        <CarouselArea
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {hasCookies && (
-          <>
-            <ArrowButtonLeft type="button" onClick={goPrev}>
+    <>
+      <LocalFontStyles />
+      <PageWrapper>
+        <ContentContainer>
+          {/* 상단 헤더 영역 */}
+          <HeaderRow>
+            <BackButton type="button" onClick={onClickBack}>
               <FontAwesomeIcon icon={faAngleLeft} />
-            </ArrowButtonLeft>
-            <ArrowButtonRight type="button" onClick={goNext}>
-              <FontAwesomeIcon icon={faAngleRight} />
-            </ArrowButtonRight>
-          </>
-        )}
-          <WheelWrapper>
-            {/* 접시 배경 */}
-            <PlateImage src="/d_day_plate.png" alt="쿠키 접시" />
+            </BackButton>
 
-            {/* 쿠키 & 말풍선 레이어 */}
-            <WheelInner $direction={slideDirection}>
-              {visibleCookies.map(
-                ({ cookie, angle, isCenter, sourceIndex, slotIndex }) => {
-                  const senderName =
-                    (cookie as any).sender_name ??
-                    (cookie as any).senderName ??
-                    ''
-                  const senderAffiliation =
-                    (cookie as any).sender_affiliation ??
-                    (cookie as any).senderAffiliation ??
-                    ''
+            <Logo src="/d_day_logo.svg" alt="메리 쿠키스마스 D-Day" />
+          </HeaderRow>
 
-                  return (
-                    <CookieOrbitItem
-                      key={slotIndex} // 슬롯 번호 기반 key → DOM 재사용
-                      $angle={angle}
-                      $isCenter={isCenter}
-                      $slotIndex={slotIndex}
-                      onClick={() => onClickCookie(sourceIndex)}
-                    >
-                      {isCenter && (
-                        <SpeechBubble>
-                          <SpeechLine1>{senderAffiliation || 'SSAFY'}</SpeechLine1>
-                          <SpeechLine2>{senderName || '싸피'}</SpeechLine2>
-                        </SpeechBubble>
-                      )}
+          <Subtitle>
+            마음이 담긴 쿠키와 메세지를 확인해보세요🤍
+          </Subtitle>
 
-                      <CookieCircle>
-                        <CookieImageRenderer2
-                          designData={
-                            cookie.design_data as unknown as CookieDesignImgDataCamel
-                          }
-                          isPen={false}
-                          isRound
-                        />
-                      </CookieCircle>
-                    </CookieOrbitItem>
-                  )
-                },
-              )}
-            </WheelInner>
-          </WheelWrapper>
-        </CarouselArea>
-      </ContentContainer>
-    </PageWrapper>
+          <ReceivedCountBadge>
+            <span>받은 쿠키</span>
+            <strong>{receivedCount}개</strong>
+          </ReceivedCountBadge>
+
+          {/* 원형 쿠키 캐러셀 영역 */}
+          <CarouselArea
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {hasCookies && (
+              <>
+                <ArrowButtonLeft type="button" onClick={goPrev}>
+                  <FontAwesomeIcon icon={faAngleLeft} />
+                </ArrowButtonLeft>
+                <ArrowButtonRight type="button" onClick={goNext}>
+                  <FontAwesomeIcon icon={faAngleRight} />
+                </ArrowButtonRight>
+              </>
+            )}
+            <WheelWrapper>
+              {/* 접시 배경 */}
+              <PlateImage src="/d_day_plate.png" alt="쿠키 접시" />
+
+              {/* 쿠키 & 말풍선 레이어 */}
+              <WheelInner>
+                {visibleCookies.map(
+                  ({
+                    cookie,
+                    angle,
+                    isCenter,
+                    sourceIndex,
+                    slotIndex,
+                  }) => {
+                    const senderName =
+                      (cookie as any).sender_name ??
+                      (cookie as any).senderName ??
+                      ''
+                    const senderAffiliation =
+                      (cookie as any).sender_affiliation ??
+                      (cookie as any).senderAffiliation ??
+                      ''
+
+                    return (
+                      <CookieOrbitItem
+                        key={
+                          (cookie as any).cookie_pk ??
+                          `${sourceIndex}-${slotIndex}`
+                        }
+                        $angle={angle}
+                        $isCenter={isCenter}
+                        $slotIndex={slotIndex}
+                        onClick={() => onClickCookie(sourceIndex)}
+                      >
+                        {isCenter && (
+                          <SpeechBubble>
+                            <SpeechLine1>
+                              {senderAffiliation || 'SSAFY'}
+                            </SpeechLine1>
+                            <SpeechLine2>
+                              {senderName || '싸피'}
+                            </SpeechLine2>
+                          </SpeechBubble>
+                        )}
+
+                        <CookieCircle>
+                          <CookieImageRenderer2
+                            designData={
+                              cookie
+                                .design_data as unknown as CookieDesignImgDataCamel
+                            }
+                            isPen={false}
+                            isRound
+                          />
+                        </CookieCircle>
+                      </CookieOrbitItem>
+                    )
+                  },
+                )}
+              </WheelInner>
+            </WheelWrapper>
+          </CarouselArea>
+        </ContentContainer>
+      </PageWrapper>
+    </>
   )
 }
 
 /* ───────────── styled-components ───────────── */
+
+const LocalFontStyles = createGlobalStyle`
+  /* DNF Bit Bit v2 */
+  @font-face {
+    font-family: 'DNFBitBitv2';
+    src: url('/fonts/DNFBitBitv2.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Galmuri14 */
+  @font-face {
+    font-family: 'Galmuri14';
+    src: url('/fonts/Galmuri14.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Nanum JangMiCe */
+  @font-face {
+    font-family: 'Nanum JangMiCe';
+    src: url('/fonts/NanumJangMiCe.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+`
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -288,8 +313,7 @@ const ContentContainer = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-    overflow: hidden;
-
+  overflow: hidden;
 
   background-image: url('/home.png');
   background-size: cover;
@@ -305,6 +329,7 @@ const CenterBody = styled.div`
 `
 
 const HeaderRow = styled.header`
+  display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
@@ -336,13 +361,12 @@ const Subtitle = styled.div`
   color: #ffffff;
 `
 
-/* 기존 ReceivedCountBadge와 동일 + 색상만 변경 */
 const ReceivedCountBadge = styled.div`
   align-self: flex-start;
   min-width: 80px;
   padding: 6px 12px;
   border-radius: 12px;
-  background-color: rgba(249, 163, 194, 0.4); /* #F9A3C2 40% */
+  background-color: rgba(249, 163, 194, 0.4);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -374,13 +398,9 @@ const CarouselArea = styled.section`
   align-items: center;
 `
 
-/**
- * 큰 원 전체 (눈에는 아래쪽 일부만 보이도록)
- * pointer-events: none → 안쪽 쿠키만 클릭되게
- */
 const WheelWrapper = styled.div`
   position: absolute;
-  bottom: -500px; /* 원 중심을 화면 아래로 */
+  bottom: -500px;
   width: 600px;
   height: 600px;
   display: flex;
@@ -399,21 +419,10 @@ const PlateImage = styled.img`
   pointer-events: none;
 `
 
-const WheelInner = styled.div<{ $direction: SlideDirection }>`
+// ✅ 더 이상 방향 상태 안씀 – 고정 컨테이너
+const WheelInner = styled.div`
   position: absolute;
   inset: 0;
-  transition: transform 0.35s ease-out;
-
-  ${({ $direction }) =>
-    $direction === 'left' &&
-    css`
-      transform: translateX(-8%);
-    `}
-  ${({ $direction }) =>
-    $direction === 'right' &&
-    css`
-      transform: translateX(8%);
-    `}
 `
 
 const ROTATION_BY_SLOT = [-25, -12, 0, 12, 25] as const
@@ -442,7 +451,7 @@ const CookieOrbitItem = styled.div<{
     const opacity = $isCenter ? 1 : 0.5
     const rotateDeg = $isCenter
       ? 0
-      : ROTATION_BY_SLOT[$slotIndex] ?? 0 // ✅ 슬롯별 고정 회전값
+      : ROTATION_BY_SLOT[$slotIndex] ?? 0
 
     return css`
       transform:
@@ -456,7 +465,6 @@ const CookieOrbitItem = styled.div<{
   }}
 `
 
-
 const SpeechBubble = styled.div`
   position: absolute;
   bottom: 110%;
@@ -468,6 +476,11 @@ const SpeechBubble = styled.div`
   border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   &::after {
     content: '';
@@ -506,7 +519,7 @@ const SpeechLine2 = styled.div`
 
 const ArrowButtonBase = styled.button`
   position: absolute;
-  top: 60%; /* 쿠키 중간보다 살짝 아래 */
+  top: 60%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
