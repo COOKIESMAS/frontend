@@ -19,8 +19,8 @@ import NoticePage from '@/pages/NoticePage'
 import CookieStepGuard from './CookieStepGuard'
 import EditCookiePage from '@/pages/mypage/edit/EditCookiePage'
 import DdayCookiePage from '@/pages/DdayCookiePage'
-import CookieMessageDetailPage from '@/pages/CookieMessageDetailPage'
 import OvenPage from '@/pages/oven/OvenPage'
+import DdayCookieDetailPage from '@/pages/DdayCookieDetailPage'
 
 const Router = () => {
   return (
@@ -67,7 +67,7 @@ const Router = () => {
             </Route>
           </Route>
             <Route path="/d-day" element={<DdayCookiePage />} />
-            <Route path="/d-day/detail" element={<CookieMessageDetailPage />} />
+            <Route path="/d-day/detail" element={<DdayCookieDetailPage />} />
         </Route>
 
         {/* 잘못된 경로 처리 */}
