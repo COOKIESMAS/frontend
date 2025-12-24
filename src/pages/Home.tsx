@@ -342,11 +342,18 @@ export default function Home() {
 
             {/* 3. Coming Soon (Frame 3374) - 제목만 있음, 비활성화 처리 */}
             <ActionButton
-              backgroundColor="white" // 회색 배경
+              backgroundColor="#ffffff"
               textColor="#000000"
-              style={{ flex: 1 }}
+              style={{
+                flex: 1,
+                borderWidth: '8px',
+                borderStyle: 'solid',
+                borderImage: 'repeating-linear-gradient(45deg, #e0e0e0 0px, #e8e8e8 16px, #00a84f 16px, #00a84f 32px, #ff2b2b 32px, #ff2b2b 48px) 1',
+                borderRadius: '16px', // 외곽선만 둥글게 설정
+                padding: '10px', // 내용이 경계선에 가까워지지 않도록 여백을 설정
+              }}
             >
-              <ButtonText style={{ whiteSpace: 'pre-line' }}
+              <ButtonText style={{ whiteSpace: 'pre-line', fontWeight: 'bold' }}
                   onClick={() => handleNavigate('/d-day')}
               >{`쿠키 보러가기`}</ButtonText>
             </ActionButton>
